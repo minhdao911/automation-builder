@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export const LampComponent = () => {
   return (
@@ -31,9 +32,12 @@ export const LampComponent = () => {
           }}
         >
           <Button className="p-6 text-xl w-full sm:w-fit border-t-2 rounded-full border-[#4D4D4D] bg-neutral-300 group transition-all flex items-center justify-center gap-4 hover:shadow-xl hover:shadow-neutral-500 duration-500">
-            <span className="text-neutral-800 md:text-center font-sans">
+            <Link
+              href="/sign-up"
+              className="text-neutral-800 md:text-center font-sans"
+            >
               Sign up
-            </span>
+            </Link>
           </Button>
         </motion.div>
       </div>

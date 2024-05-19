@@ -2,11 +2,12 @@ import { BackgroundBeams } from "@/components/background-beams";
 import { ContainerScroll } from "@/components/container-scroll-animation";
 import { InfiniteMovingCards } from "@/components/infinite-moving-cards";
 import { LampComponent } from "@/components/lamp";
-import NavBar from "@/components/navbar";
+import LandingNavBar from "@/components/landing-navbar";
 import { StickyScroll } from "@/components/sticky-scroll-reveal";
 import { Button } from "@/components/ui/button";
 import { integrations } from "@/lib/constant";
 import Image from "next/image";
+import Link from "next/link";
 
 const keyFeatures = [
   {
@@ -34,7 +35,7 @@ const keyFeatures = [
 export default function Home() {
   return (
     <main>
-      <NavBar />
+      <LandingNavBar />
       <section className="h-[800px] md:h-screen w-full bg-neutral-950 rounded-md !overflow-visible relative flex flex-col items-center antialiased">
         <div className="absolute inset-0 h-[90%] w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_35%,#223_100%)]"></div>
         <div className="flex flex-col">
@@ -51,9 +52,12 @@ export default function Home() {
                   size={"lg"}
                   className="p-6 md:p-8 mb-0 text-xl md:text-2xl w-fit border-t-2 rounded-full border-[#4D4D4D] bg-[#1F1F1F] hover:bg-white group transition-all flex items-center justify-center gap-4 hover:shadow-xl hover:shadow-neutral-500 duration-500"
                 >
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-neutral-200 to-neutral-300  md:text-center font-sans group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-black">
+                  <Link
+                    className="bg-clip-text text-transparent bg-gradient-to-r from-neutral-200 to-neutral-300  md:text-center font-sans group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-black"
+                    href="/workflows"
+                  >
                     Try it out!
-                  </span>
+                  </Link>
                 </Button>
               </div>
             }
