@@ -1,7 +1,6 @@
 import Category from "@/components/icons/category";
 import Workflows from "@/components/icons/workflows";
-// import Home from "@/components/icons/home";
-// import Settings from "@/components/icons/settings";
+import { Connection } from "./types";
 
 export const integrations = [
   "gmail",
@@ -15,5 +14,15 @@ export const integrations = [
 export const menuOptions = [
   { name: "Workflows", Component: Workflows, href: "/workflows" },
   { name: "Connections", Component: Category, href: "/connections" },
-  // { name: "Settings", Component: Settings, href: "/settings" },
+];
+
+export const CONNECTIONS: Connection[] = [
+  {
+    type: "Google Drive",
+    description:
+      "Connect your Google Drive account to listen to folder changes",
+    icon: "google-drive",
+    connectionKey: "googleNode",
+    alwaysTrue: true,
+  },
 ];
