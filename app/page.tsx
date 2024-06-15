@@ -74,6 +74,7 @@ export default function Home() {
         </div>
       </section>
       <InfiniteMovingCards
+        className="md:mt-[260px] 3xl:mt-[100px]"
         items={integrations}
         direction="right"
         speed="slow"
