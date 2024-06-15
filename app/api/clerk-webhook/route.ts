@@ -55,12 +55,13 @@ export async function POST(req: Request) {
           clerkId: evt.data.id,
         },
       });
+      return new NextResponse("User created successfully", { status: 201 });
     }
-    return new NextResponse("User created successfully", { status: 200 });
+    return new Response("Event not supported", { status: 200 });
   } catch (err) {
     console.error("Error saving user:", err);
     return new Response("Error creating user in database", {
-      status: 400,
+      status: 500,
     });
   }
 }
