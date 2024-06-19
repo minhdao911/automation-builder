@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { menuOptions } from "@/lib/constant";
+import { menuOptions } from "@/lib/constants";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import Logo from "./icons/logo";

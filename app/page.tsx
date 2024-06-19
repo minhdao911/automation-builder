@@ -5,7 +5,7 @@ import { LampComponent } from "@/components/lamp";
 import LandingNavBar from "@/components/landing-navbar";
 import { StickyScroll } from "@/components/sticky-scroll-reveal";
 import { Button } from "@/components/ui/button";
-import { integrations } from "@/lib/constant";
+import { integrations } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 

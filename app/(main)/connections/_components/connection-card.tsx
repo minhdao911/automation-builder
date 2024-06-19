@@ -9,14 +9,14 @@ interface ConnectionCardProps {
   type: ConnectionType;
   icon: string;
   description: string;
-  //   connected: { [key: string]: boolean };
+  connections: { [key: string]: boolean };
 }
 
 const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({
   type,
   icon,
   description,
-  //   connected,
+  connections,
 }) => {
   return (
     <Card className="flex w-full items-center justify-between">
@@ -26,12 +26,12 @@ const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({
           alt={type}
           height={150}
           width={150}
-          className="object-contain"
+          className="h-7 w-fit object-contain"
         />
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <div className="flex flex-col items-center gap-2 p-4">
-        {true ? (
+        {connections[type] ? (
           <div className="flex items-center font-bold text-white">
             Connected
             <CircleCheck size={24} className="ml-2 text-green-500" />
