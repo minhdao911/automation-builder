@@ -20,6 +20,7 @@ const WorkflowsPage: FunctionComponent<WorkflowsPageProps> = async () => {
             id={workflow.id}
             name={workflow.name}
             description={workflow.description}
+            published={workflow.published}
           />
         ))}
       </div>

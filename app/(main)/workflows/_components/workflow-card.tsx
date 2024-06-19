@@ -12,9 +12,10 @@ type Props = {
   id: string;
   name: string;
   description: string | null;
+  published: boolean;
 };
 
-const WorkflowCard = ({ description, id, name }: Props) => {
+const WorkflowCard = ({ description, id, name, published }: Props) => {
   return (
     <Card className="flex w-full items-center justify-between">
       <CardHeader className="flex flex-col">
@@ -27,8 +28,14 @@ const WorkflowCard = ({ description, id, name }: Props) => {
             <CardDescription>{description}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-green-500" />
-            <p className="text-sm text-gray-500">Published</p>
+            <span
+              className={`h-2 w-2 rounded-full ${
+                published ? "bg-green-500" : "bg-orange-400"
+              }`}
+            />
+            <p className="text-sm text-gray-500">
+              {published ? "Published" : "Not published"}
+            </p>
           </div>
         </Link>
       </CardHeader>
