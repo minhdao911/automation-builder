@@ -36,3 +36,18 @@ export const getWorkflows = async (): Promise<Workflow[] | undefined> => {
     });
   }
 };
+
+export const getWorkflow = async (
+  id: string
+): Promise<Workflow | null | undefined> => {
+  const { userId } = auth();
+
+  if (userId) {
+    return await db.workflow.findFirst({
+      where: {
+        userId,
+        id,
+      },
+    });
+  }
+};

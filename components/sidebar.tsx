@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { menuOptions } from "@/lib/constants";
+import { MENU_OPTIONS } from "@/lib/constants";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import Logo from "./icons/logo";
@@ -26,7 +26,7 @@ const Sidebar: FunctionComponent<SidebarProps> = () => {
           <Logo />
         </Link>
         <TooltipProvider>
-          {menuOptions.map((menuItem) => (
+          {MENU_OPTIONS.map((menuItem) => (
             <ul key={menuItem.name}>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger>

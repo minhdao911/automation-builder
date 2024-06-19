@@ -5,7 +5,7 @@ import { LampComponent } from "@/components/lamp";
 import LandingNavBar from "@/components/landing-navbar";
 import { StickyScroll } from "@/components/sticky-scroll-reveal";
 import { Button } from "@/components/ui/button";
-import { integrations } from "@/lib/constants";
+import { INTEGRATIONS } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -75,7 +75,7 @@ export default function Home() {
       </section>
       <InfiniteMovingCards
         className="md:mt-[260px] 3xl:mt-[100px]"
-        items={integrations}
+        items={INTEGRATIONS}
         direction="right"
         speed="slow"
       />

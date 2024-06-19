@@ -1,8 +1,14 @@
 import Category from "@/components/icons/category";
 import Workflows from "@/components/icons/workflows";
-import { Connection, ConnectionKey, ConnectionType } from "./types";
+import {
+  Connection,
+  ConnectionKey,
+  ConnectionType,
+  WorkflowNodeDataType,
+  WorkflowNodeType,
+} from "./types";
 
-export const integrations = [
+export const INTEGRATIONS = [
   "gmail",
   "google-drive",
   "google-calendar",
@@ -11,7 +17,7 @@ export const integrations = [
   "discord",
 ];
 
-export const menuOptions = [
+export const MENU_OPTIONS = [
   { name: "Workflows", Component: Workflows, href: "/workflows" },
   { name: "Connections", Component: Category, href: "/connections" },
 ];
@@ -63,3 +69,37 @@ export const CONNECTIONS: Connection[] = [
     accessTokenKey: "slackAccessToken",
   },
 ];
+
+export const EDITOR_DEFAULT_CARDS = {
+  [WorkflowNodeType.Action]: [
+    {
+      title: "Send email",
+      description: "Send email to a user with Gmail",
+      type: WorkflowNodeDataType.Gmail,
+    },
+    {
+      title: "Send Slack notification",
+      description: "Send a notification to Slack",
+      type: WorkflowNodeDataType.Slack,
+    },
+  ],
+  [WorkflowNodeType.Trigger]: [
+    {
+      title: "Google Drive folder change",
+      description: "Connect with Google drive to listen for folder changes",
+      type: WorkflowNodeDataType.GoogleDrive,
+    },
+  ],
+  [WorkflowNodeType.Logical]: [
+    {
+      title: "Condition",
+      description: "Boolean operator that creates different conditions lanes.",
+      type: WorkflowNodeDataType.Condition,
+    },
+    {
+      title: "Time delay",
+      description: "Delay the next action step by using the wait timer.",
+      type: WorkflowNodeDataType.TimeDelay,
+    },
+  ],
+};

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Zap } from "lucide-react";
+import StatusDot from "@/components/ui/status-dot";
 
 type Props = {
   id: string;
@@ -28,11 +29,7 @@ const WorkflowCard = ({ description, id, name, published }: Props) => {
             <CardDescription>{description}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <span
-              className={`h-2 w-2 rounded-full ${
-                published ? "bg-green-500" : "bg-orange-400"
-              }`}
-            />
+            <StatusDot available={published} />
             <p className="text-sm text-gray-500">
               {published ? "Published" : "Not published"}
             </p>

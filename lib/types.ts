@@ -32,3 +32,36 @@ const CreateWorkflowInputsSchema = z.object({
   description: z.string().optional(),
 });
 export type CreateWorkFlowInputs = z.infer<typeof CreateWorkflowInputsSchema>;
+
+export enum WorkflowNodeType {
+  Action = "Action",
+  Trigger = "Trigger",
+  Logical = "Logical",
+}
+
+export enum WorkflowNodeDataType {
+  GoogleDrive = "Google Drive",
+  Gmail = "Gmail",
+  GoogleCalendar = "Google Calendar",
+  Notion = "Notion",
+  Slack = "Slack",
+  Discord = "Discord",
+  Condition = "Condition",
+  TimeDelay = "Time Delay",
+}
+
+export type WorkflowNodeData = {
+  title: string;
+  description: string;
+  type: WorkflowNodeDataType;
+  connected?: boolean;
+  selected?: boolean;
+  metadata?: any;
+};
+
+export type WorkflowNode = {
+  id: string;
+  type: WorkflowNodeType;
+  position: { x: number; y: number };
+  data: WorkflowNodeData;
+};
