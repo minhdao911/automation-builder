@@ -9,8 +9,35 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  clerkId   String   @unique
+  id      String @id @default(uuid())
+  clerkId String @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  workflows        Workflow[]
+  googleCredential GoogleCredential?
+}
+
+model GoogleCredential {
+  id          String @id @default(uuid())
+  accessToken String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User   @relation(fields: [userId], references: [clerkId])
+  userId String @unique
+}
+
+model Workflow {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User   @relation(fields: [userId], references: [clerkId])
+  userId String
 }

@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
@@ -50,11 +50,25 @@ export async function POST(req: Request) {
   try {
     const eventType = evt.type;
     if (eventType === "user.created") {
-      await db.user.create({
+      const user = await db.user.create({
         data: {
           clerkId: evt.data.id,
         },
       });
+
+      if (user) {
+        const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
+          evt.data.id,
+          "oauth_google"
+        );
+        const accessToken = clerkResponse.data[0].token;
+        await db.googleCredential.create({
+          data: {
+            accessToken,
+            userId: user.clerkId,
+          },
+        });
+      }
       return new NextResponse("User created successfully", { status: 201 });
     }
     return new Response("Event not supported", { status: 200 });
