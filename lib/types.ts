@@ -51,6 +51,7 @@ export enum WorkflowNodeDataType {
 }
 
 export type WorkflowNodeData = {
+  id: string;
   title: string;
   description: string;
   type: WorkflowNodeDataType;

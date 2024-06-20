@@ -4,6 +4,7 @@ import {
   Connection,
   ConnectionKey,
   ConnectionType,
+  WorkflowNodeData,
   WorkflowNodeDataType,
   WorkflowNodeType,
 } from "./types";
@@ -70,14 +71,19 @@ export const CONNECTIONS: Connection[] = [
   },
 ];
 
-export const EDITOR_DEFAULT_CARDS = {
+export const EDITOR_DEFAULT_NODES: Record<
+  WorkflowNodeType,
+  WorkflowNodeData[]
+> = {
   [WorkflowNodeType.Action]: [
     {
+      id: "1",
       title: "Send email",
       description: "Send email to a user with Gmail",
       type: WorkflowNodeDataType.Gmail,
     },
     {
+      id: "2",
       title: "Send Slack notification",
       description: "Send a notification to Slack",
       type: WorkflowNodeDataType.Slack,
@@ -85,6 +91,7 @@ export const EDITOR_DEFAULT_CARDS = {
   ],
   [WorkflowNodeType.Trigger]: [
     {
+      id: "1",
       title: "Google Drive folder change",
       description: "Connect with Google drive to listen for folder changes",
       type: WorkflowNodeDataType.GoogleDrive,
@@ -92,11 +99,13 @@ export const EDITOR_DEFAULT_CARDS = {
   ],
   [WorkflowNodeType.Logical]: [
     {
+      id: "1",
       title: "Condition",
       description: "Boolean operator that creates different conditions lanes.",
       type: WorkflowNodeDataType.Condition,
     },
     {
+      id: "2",
       title: "Time delay",
       description: "Delay the next action step by using the wait timer.",
       type: WorkflowNodeDataType.TimeDelay,

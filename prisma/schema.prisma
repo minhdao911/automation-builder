@@ -42,3 +42,31 @@ model Workflow {
   User   User   @relation(fields: [userId], references: [clerkId])
   userId String
 }
+
+// model EditorNodeData {
+//   id          String   @id @default(uuid())
+//   name        String
+//   description String
+//   nodeType    NodeType
+//   dataType    DataType
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+// enum NodeType {
+//   Action
+//   Trigger
+//   Logical
+// }
+
+// enum DataType {
+//   GoogleDrive
+//   Gmail
+//   GoogleCalendar
+//   Notion
+//   Slack
+//   Discord
+//   Condition
+//   TimeDelay
+// }
