@@ -1,4 +1,4 @@
-import { getWorkflow } from "../../_actions/workflow-connections";
+import { getWorkflow } from "../../_actions/workflow";
 import EditorCanvas from "./_components/editor-canvas";
 
 interface IParams {

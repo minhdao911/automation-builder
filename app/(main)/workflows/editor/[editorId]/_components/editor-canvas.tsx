@@ -1,6 +1,12 @@
 "use client";
 
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -19,6 +25,8 @@ import { v4 } from "uuid";
 import "reactflow/dist/style.css";
 import { useToast } from "@/components/ui/use-toast";
 import { useEditorStore } from "@/stores/editor-store";
+import { loadWorkflowData } from "../_actions/editor";
+import Loader from "@/components/loader";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -33,22 +41,26 @@ const nodeTypes = {
 const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>();
+  const [isPending, startTransition] = useTransition();
 
   const { toast } = useToast();
   const {
     nodes,
     edges,
     setNodes,
+    setEdges,
     onNodesChange,
     onEdgesChange,
     onConnect,
-    loadData,
     deselectNodes,
-    save,
   } = useEditorStore();
 
   useEffect(() => {
-    loadData();
+    startTransition(async () => {
+      const data = await loadWorkflowData(workflow.id);
+      setEdges(data.edges);
+      setNodes(data.nodes);
+    });
   }, []);
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
@@ -116,29 +128,33 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
 
   return (
     <div className="flex h-full">
-      <div className="w-full h-full">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onInit={onInit}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onClick={onCanvasClick}
-        >
-          <Controls position="top-left" />
-          <MiniMap
-            position="bottom-left"
-            maskColor="bg-black"
-            className="!bg-background"
-          />
-          <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-        </ReactFlow>
+      <div className="w-full h-full flex items-center justify-center">
+        {isPending ? (
+          <Loader />
+        ) : (
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onInit={onInit}
+            onConnect={onConnect}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onClick={onCanvasClick}
+          >
+            <Controls position="top-left" />
+            <MiniMap
+              position="bottom-left"
+              maskColor="bg-black"
+              className="!bg-background"
+            />
+            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+          </ReactFlow>
+        )}
       </div>
-      <EditorCanvasSidebar workflowName={workflow.name} onSave={save} />
+      <EditorCanvasSidebar workflow={workflow} />
     </div>
   );
 };

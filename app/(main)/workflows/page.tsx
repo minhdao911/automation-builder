@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import WorkflowDialog from "./_components/workflow-dialog";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { getWorkflows } from "./_actions/workflow-connections";
+import { getWorkflows } from "./_actions/workflow";
 import WorkflowCard from "./_components/workflow-card";
 
 interface WorkflowsPageProps {}

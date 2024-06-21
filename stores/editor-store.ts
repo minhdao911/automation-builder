@@ -1,3 +1,4 @@
+import { db } from "@/lib/db";
 import { WorkflowNodeData } from "@/lib/types";
 import {
   Connection,
@@ -29,7 +30,6 @@ type EditorAction = {
   selectNode: (nodeId: string) => void;
   deselectNodes: () => void;
   removeNode: (nodeId: string) => void;
-  save: () => void;
 };
 
 export const useEditorStore = create<EditorState & EditorAction>(
@@ -105,10 +105,6 @@ export const useEditorStore = create<EditorState & EditorAction>(
 
       set({ nodes });
       set({ edges });
-    },
-    save: () => {
-      console.log("nodes", get().nodes);
-      console.log("edges", get().edges);
     },
   })
 );

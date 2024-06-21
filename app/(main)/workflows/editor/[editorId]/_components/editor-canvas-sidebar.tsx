@@ -6,36 +6,54 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkflowNodeDataType, WorkflowNodeType } from "@/lib/types";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useTransition } from "react";
 import EditorCanvasNodeIcon from "./editor-canvas-node-icon";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { EDITOR_DEFAULT_NODES } from "@/lib/constants";
+import { useEditorStore } from "@/stores/editor-store";
+import { toast } from "@/components/ui/use-toast";
+import { saveWorkflow } from "../_actions/editor";
+import { Workflow } from "@prisma/client";
+import Loader from "@/components/loader";
 
 interface EditorCanvasSidebarProps {
-  workflowName: string;
-  onSave: () => void;
-  // onPublish: () => void;
+  workflow: Workflow;
 }
 
 const EditorCanvasSidebar: FunctionComponent<EditorCanvasSidebarProps> = ({
-  workflowName,
-  onSave,
-  // onPublish,
+  workflow,
 }) => {
+  const { nodes, edges } = useEditorStore();
+  const [isPending, startTransition] = useTransition();
+
   return (
     <aside>
       <div className="flex items-center justify-between p-4">
-        <h3 className="text-lg font-semibold">{workflowName}</h3>
+        <h3 className="text-lg font-semibold">{workflow.name}</h3>
         <div className="flex gap-3">
-          <Button size="sm" variant="secondary" onClick={onSave}>
-            Save
-          </Button>
           <Button
             size="sm"
             variant="secondary"
-            // onClick={onPublish}
+            className="w-14"
+            onClick={() => {
+              startTransition(async () => {
+                const isSaved = await saveWorkflow(workflow.id, {
+                  nodes: JSON.stringify(nodes),
+                  edges: JSON.stringify(edges),
+                });
+                toast({
+                  description: isSaved
+                    ? "Workflow saved successfully"
+                    : "Failed to save workflow",
+                  variant: isSaved ? undefined : "destructive",
+                });
+              });
+            }}
           >
+            {isPending ? <Loader size={16} /> : "Save"}
+          </Button>
+          <Button size="sm" variant="secondary" className="w-[70px]">
             Publish
           </Button>
         </div>

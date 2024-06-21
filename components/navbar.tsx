@@ -4,21 +4,33 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, Search } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEditorStore } from "@/stores/editor-store";
 
 const NavBar = () => {
   const pathname = usePathname();
   const isEditor = pathname.includes("editor");
 
+  const { setNodes, setEdges } = useEditorStore();
+  const router = useRouter();
+
   return (
     <div className="flex items-center justify-between dark:bg-black px-4 py-4 w-full">
       {isEditor && (
-        <Button variant="ghost" size="sm" className="pl-1.5">
-          <Link href="/workflows" className="flex items-center">
-            <ChevronLeft size={24} />
-            Back
-          </Link>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="pl-1.5"
+          onClick={() => {
+            router.push("/workflows");
+            setTimeout(() => {
+              setNodes([]);
+              setEdges([]);
+            }, 1000);
+          }}
+        >
+          <ChevronLeft size={24} />
+          Back
         </Button>
       )}
       <div className="flex justify-end gap-6 items-center w-full">
