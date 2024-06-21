@@ -1,18 +1,16 @@
 "use client";
 
-import { FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Controls,
   MiniMap,
+  Node,
   ReactFlowInstance,
-  addEdge,
-  useEdgesState,
-  useNodesState,
 } from "reactflow";
 import EditorCanvasNode from "./editor-canvas-node";
-import { WorkflowNode, WorkflowNodeType } from "@/lib/types";
+import { WorkflowNodeData, WorkflowNodeType } from "@/lib/types";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { Workflow } from "@prisma/client";
 import { EDITOR_DEFAULT_NODES } from "@/lib/constants";
@@ -20,6 +18,7 @@ import { v4 } from "uuid";
 
 import "reactflow/dist/style.css";
 import { useToast } from "@/components/ui/use-toast";
+import { useEditorStore } from "@/stores/editor-store";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -31,24 +30,30 @@ const nodeTypes = {
   [WorkflowNodeType.Logical]: EditorCanvasNode,
 };
 
-// const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
-
 const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>();
 
   const { toast } = useToast();
+  const {
+    nodes,
+    edges,
+    setNodes,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    loadData,
+    deselectNodes,
+    save,
+  } = useEditorStore();
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
     setReactFlowInstance(instance);
   }, []);
-
-  const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
-  );
 
   const getNodeFromDefaultList = (
     nodeType: WorkflowNodeType,
@@ -84,28 +89,30 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
       const nodeData = getNodeFromDefaultList(type as WorkflowNodeType, id);
       if (!nodeData) return;
 
-      const newNode: WorkflowNode = {
+      const newNode: Node<WorkflowNodeData> = {
         id: v4(),
         type: type as WorkflowNodeType,
         position,
         data: nodeData,
       };
 
-      setNodes((nodes) => [...nodes, newNode]);
+      setNodes([...nodes, newNode]);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [reactFlowInstance, nodes]
   );
 
-  const onSave = useCallback(() => {
-    console.log("nodes", nodes);
-    console.log("edges", edges);
-  }, [nodes, edges]);
-
   const onDragOver = useCallback((event: any) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
+
+  const onCanvasClick = (event: any) => {
+    const target = event.target as HTMLElement;
+    if (target.classList.contains("react-flow__pane")) {
+      deselectNodes();
+    }
+  };
 
   return (
     <div className="flex h-full">
@@ -120,6 +127,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
           onConnect={onConnect}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          onClick={onCanvasClick}
         >
           <Controls position="top-left" />
           <MiniMap
@@ -130,7 +138,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
         </ReactFlow>
       </div>
-      <EditorCanvasSidebar workflowName={workflow.name} onSave={onSave} />
+      <EditorCanvasSidebar workflowName={workflow.name} onSave={save} />
     </div>
   );
 };

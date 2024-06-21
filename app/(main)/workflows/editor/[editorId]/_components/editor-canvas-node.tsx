@@ -11,18 +11,22 @@ import { NodeProps, Position, useNodeId } from "reactflow";
 import CustomHandle from "./custom-handle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { useEditorStore } from "@/stores/editor-store";
 
 const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
   type,
   data,
 }) => {
   const { title, description, connected, selected } = data;
-  const nodeId = useNodeId();
   const isLogicalNode = type === WorkflowNodeType.Logical;
+  const nodeId = useNodeId();
+  const { selectNode, removeNode } = useEditorStore();
+
+  if (!nodeId) return null;
 
   return (
-    <div>
+    <div onClick={() => selectNode(nodeId)}>
       {type !== WorkflowNodeType.Trigger && (
         <CustomHandle
           type="target"
@@ -39,9 +43,10 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
           <Button
             variant="secondary"
             size="icon"
-            className="absolute -top-2 -right-2 rounded-full w-6 h-6"
+            className="absolute -top-3 -right-3 rounded-full w-8 h-8"
+            onClick={() => removeNode(nodeId)}
           >
-            <X size={16} />
+            <Trash2 size={16} className="text-red-500" />
           </Button>
         )}
         <CardHeader className="p-4">

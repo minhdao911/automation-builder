@@ -59,10 +59,3 @@ export type WorkflowNodeData = {
   selected?: boolean;
   metadata?: any;
 };
-
-export type WorkflowNode = {
-  id: string;
-  type: WorkflowNodeType;
-  position: { x: number; y: number };
-  data: WorkflowNodeData;
-};
