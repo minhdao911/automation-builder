@@ -7,7 +7,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkflowNodeDataType, WorkflowNodeType } from "@/lib/types";
 import { FunctionComponent, useTransition } from "react";
-import EditorCanvasNodeIcon from "./editor-canvas-node-icon";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { EDITOR_DEFAULT_NODES } from "@/lib/constants";
@@ -16,6 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 import { saveWorkflow } from "../_actions/editor";
 import { Workflow } from "@prisma/client";
 import Loader from "@/components/loader";
+import WorkflowIconHelper from "@/components/workflow-icon-helper";
 
 interface EditorCanvasSidebarProps {
   workflow: Workflow;
@@ -129,7 +129,7 @@ const EditorCanvasSidebarCard = ({
       }}
     >
       <CardHeader className="flex flex-row items-center gap-4 p-4">
-        <EditorCanvasNodeIcon type={type} />
+        <WorkflowIconHelper type={type} />
         <CardTitle className="text-md">
           {title}
           <CardDescription>{description}</CardDescription>

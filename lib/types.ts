@@ -48,6 +48,7 @@ export enum WorkflowNodeDataType {
   Discord = "Discord",
   Condition = "Condition",
   TimeDelay = "Time Delay",
+  None = "None",
 }
 
 export type WorkflowNodeData = {

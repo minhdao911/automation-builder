@@ -33,6 +33,9 @@ export const getWorkflows = async (): Promise<Workflow[] | undefined> => {
       where: {
         userId,
       },
+      orderBy: {
+        updatedAt: "desc",
+      },
     });
   }
 };

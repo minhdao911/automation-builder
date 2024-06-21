@@ -6,13 +6,13 @@ import {
 } from "@/components/ui/card";
 import { WorkflowNodeData, WorkflowNodeType } from "@/lib/types";
 import { FunctionComponent } from "react";
-import EditorCanvasNodeIcon from "./editor-canvas-node-icon";
 import { NodeProps, Position, useNodeId } from "reactflow";
 import CustomHandle from "./custom-handle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useEditorStore } from "@/stores/editor-store";
+import WorkflowIconHelper from "@/components/workflow-icon-helper";
 
 const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
   type,
@@ -51,7 +51,7 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
         )}
         <CardHeader className="p-4">
           <div className="flex gap-4 items-center">
-            <EditorCanvasNodeIcon type={data.type} />
+            <WorkflowIconHelper type={data.type} />
             <div>
               <CardTitle className="text-md">{title}</CardTitle>
               <p className="text-xs text-muted-foreground/50">

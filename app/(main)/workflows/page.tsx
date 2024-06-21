@@ -15,13 +15,7 @@ const WorkflowsPage: FunctionComponent<WorkflowsPageProps> = async () => {
     <PageContainer title="Workflows" headerButton={<WorkflowDialog />}>
       <div className="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 p-5">
         {workflows?.map((workflow) => (
-          <WorkflowCard
-            key={workflow.id}
-            id={workflow.id}
-            name={workflow.name}
-            description={workflow.description}
-            published={workflow.published}
-          />
+          <WorkflowCard key={workflow.id} workflow={workflow} />
         ))}
       </div>
     </PageContainer>

@@ -8,14 +8,15 @@ import {
   Mail,
   Slack,
   Timer,
+  Zap,
 } from "lucide-react";
 import { FunctionComponent } from "react";
 
-interface EditorCanvasNodeIconProps {
+interface WorkflowIconHelperProps {
   type: WorkflowNodeDataType;
 }
 
-const EditorCanvasNodeIcon: FunctionComponent<EditorCanvasNodeIconProps> = ({
+const WorkflowIconHelper: FunctionComponent<WorkflowIconHelperProps> = ({
   type,
 }) => {
   switch (type) {
@@ -36,8 +37,8 @@ const EditorCanvasNodeIcon: FunctionComponent<EditorCanvasNodeIconProps> = ({
     case WorkflowNodeDataType.TimeDelay:
       return <Timer className="flex-shrink-0" size={30} />;
     default:
-      return <></>;
+      return <Zap className="flex-shrink-0" size={30} />;
   }
 };
 
-export default EditorCanvasNodeIcon;
+export default WorkflowIconHelper;
