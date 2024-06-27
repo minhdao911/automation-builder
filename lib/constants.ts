@@ -79,21 +79,21 @@ export const EDITOR_DEFAULT_NODES: Record<
     {
       id: "1",
       title: "Send email",
-      description: "Send email to a user with Gmail",
+      // description: "Send email to a user with Gmail",
       type: WorkflowNodeDataType.Gmail,
     },
     {
       id: "2",
-      title: "Send Slack notification",
-      description: "Send a notification to Slack",
+      title: "Send notification",
+      // description: "Send a notification to Slack",
       type: WorkflowNodeDataType.Slack,
     },
   ],
   [WorkflowNodeType.Trigger]: [
     {
       id: "1",
-      title: "Google Drive folder change",
-      description: "Connect with Google drive to listen for folder changes",
+      title: "When folder changes",
+      // description: "Connect with Google drive to listen for folder changes",
       type: WorkflowNodeDataType.GoogleDrive,
     },
   ],
@@ -101,13 +101,13 @@ export const EDITOR_DEFAULT_NODES: Record<
     {
       id: "1",
       title: "Condition",
-      description: "Boolean operator that creates different conditions lanes.",
+      // description: "Boolean operator that creates different conditions lanes.",
       type: WorkflowNodeDataType.Condition,
     },
     {
       id: "2",
       title: "Time delay",
-      description: "Delay the next action step by using the wait timer.",
+      // description: "Delay the next action step by using the wait timer.",
       type: WorkflowNodeDataType.TimeDelay,
     },
   ],

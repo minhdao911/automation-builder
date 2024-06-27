@@ -13,6 +13,7 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 import Logo from "./icons/logo";
 import { ModeToggle } from "./mode-toggle";
+import { UserButton } from "@clerk/nextjs";
 
 interface SidebarProps {}
 
@@ -58,7 +59,10 @@ const Sidebar: FunctionComponent<SidebarProps> = () => {
           ))}
         </TooltipProvider>
       </div>
-      <ModeToggle />
+      <div className="flex flex-col items-center gap-5">
+        <ModeToggle />
+        <UserButton />
+      </div>
     </nav>
   );
 };

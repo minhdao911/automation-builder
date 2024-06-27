@@ -54,7 +54,7 @@ export enum WorkflowNodeDataType {
 export type WorkflowNodeData = {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   type: WorkflowNodeDataType;
   connected?: boolean;
   selected?: boolean;

@@ -26,7 +26,12 @@ import "reactflow/dist/style.css";
 import { useToast } from "@/components/ui/use-toast";
 import { useEditorStore } from "@/stores/editor-store";
 import { loadWorkflowData } from "../_actions/editor";
-import Loader from "@/components/loader";
+import Loader from "@/components/ui/loader";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -127,35 +132,40 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
   };
 
   return (
-    <div className="flex h-full">
-      <div className="w-full h-full flex items-center justify-center">
-        {isPending ? (
-          <Loader />
-        ) : (
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onInit={onInit}
-            onConnect={onConnect}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onClick={onCanvasClick}
-          >
-            <Controls position="top-left" />
-            <MiniMap
-              position="bottom-left"
-              maskColor="bg-black"
-              className="!bg-background"
-            />
-            <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-          </ReactFlow>
-        )}
-      </div>
-      <EditorCanvasSidebar workflow={workflow} />
-    </div>
+    <ResizablePanelGroup direction="horizontal">
+      <ResizablePanel defaultSize={25}>
+        <EditorCanvasSidebar />
+      </ResizablePanel>
+      <ResizableHandle />
+      <ResizablePanel>
+        <div className="w-full h-full flex items-center justify-center">
+          {isPending ? (
+            <Loader />
+          ) : (
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onInit={onInit}
+              onConnect={onConnect}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onClick={onCanvasClick}
+            >
+              <Controls position="top-left" />
+              <MiniMap
+                position="bottom-left"
+                maskColor="bg-black"
+                className="!bg-background"
+              />
+              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+            </ReactFlow>
+          )}
+        </div>
+      </ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
 

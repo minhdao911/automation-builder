@@ -1,4 +1,3 @@
-import NavBar from "@/components/navbar";
 import Sidebar from "@/components/sidebar";
 import { FunctionComponent } from "react";
 
@@ -12,7 +11,6 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }: LayoutProps) => {
       <Sidebar />
       <div className="w-full">
         <div className="border-l-[1px] border-t-[1px] pb-20 h-screen rounded-l-3xl border-muted-foreground/20 overflow-scroll">
-          <NavBar />
           {children}
         </div>
       </div>
