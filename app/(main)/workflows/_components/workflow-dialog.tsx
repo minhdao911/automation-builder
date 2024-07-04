@@ -1,8 +1,6 @@
 "use client";
 
-import { FunctionComponent } from "react";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FunctionComponent, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,37 +11,48 @@ import {
 } from "@/components/ui/dialog";
 import { SubmitHandler } from "react-hook-form";
 import { CreateWorkFlowInputs } from "@/lib/types";
-import { createWorkflow } from "../_actions/workflow";
+import { createWorkflow, updateWorkflowDetails } from "../_actions/workflow";
 import WorkflowForm from "./workflow-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { Workflow } from "@prisma/client";
 
-interface WorkflowDialogProps {}
+interface WorkflowDialogProps {
+  trigger?: React.ReactNode;
+  workflow?: Workflow;
+}
 
-const WorkflowDialog: FunctionComponent<WorkflowDialogProps> = () => {
+const WorkflowDialog: FunctionComponent<WorkflowDialogProps> = ({
+  trigger,
+  workflow,
+}) => {
   const { toast } = useToast();
   const router = useRouter();
 
+  const [open, setOpen] = useState(false);
+
   const onSubmit: SubmitHandler<CreateWorkFlowInputs> = async (data) => {
-    const workflow = await createWorkflow(data);
+    let wf;
     if (workflow) {
+      wf = await updateWorkflowDetails(data, workflow.id);
+    } else {
+      wf = await createWorkflow(data);
+    }
+    if (wf) {
       toast({
-        description: workflow.message,
-        variant: workflow.error ? "destructive" : undefined,
+        description: wf.message,
+        variant: wf.error ? "destructive" : undefined,
       });
-      if (!workflow.error) {
+      if (!wf.error) {
         router.refresh();
       }
     }
+    setOpen(false);
   };
 
   return (
-    <Dialog>
-      <DialogTrigger>
-        <Button size="sm" className="h-8 w-8 p-1.5">
-          <Plus size={24} />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create a Workflow Automation</DialogTitle>
@@ -51,7 +60,11 @@ const WorkflowDialog: FunctionComponent<WorkflowDialogProps> = () => {
             Create a new workflow automation to automate your tasks
           </DialogDescription>
         </DialogHeader>
-        <WorkflowForm onSubmit={onSubmit} />
+        <WorkflowForm
+          name={workflow?.name}
+          description={workflow?.description}
+          onSubmit={onSubmit}
+        />
       </DialogContent>
     </Dialog>
   );

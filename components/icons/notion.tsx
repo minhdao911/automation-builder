@@ -3,9 +3,10 @@ import React from "react";
 type Props = {
   size?: number;
   bgColor?: string;
+  className?: string;
 };
 
-function Notion({ size = 24, bgColor }: Props) {
+function Notion({ size = 24, bgColor, className }: Props) {
   return (
     <svg
       width={size}
@@ -13,10 +14,11 @@ function Notion({ size = 24, bgColor }: Props) {
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M49 0H15C6.71573 0 0 6.71573 0 15V49C0 57.2843 6.71573 64 15 64H49C57.2843 64 64 57.2843 64 49V15C64 6.71573 57.2843 0 49 0Z"
-        fill={bgColor ?? "#262626"}
+        fill={bgColor ?? "#303030"}
       />
       <path
         d="M13.6401 11.8929L37.921 10.0997C40.9035 9.8438 41.6698 10.0164 43.5451 11.3796L51.2959 16.8399C52.5744 17.7788 53 18.035 53 19.0574V49.0032C53 50.8799 52.3183 51.99 49.9327 52.1598L21.7363 53.8667C19.9458 53.9515 19.0932 53.6956 18.1556 52.5005L12.448 45.0788C11.4243 43.7127 11 42.6901 11 41.4951V14.8769C11 13.3426 11.6817 12.0627 13.6401 11.8929Z"

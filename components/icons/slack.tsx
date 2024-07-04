@@ -3,9 +3,10 @@ import React from "react";
 type Props = {
   size?: number;
   bgColor?: string;
+  className?: string;
 };
 
-function Slack({ size = 24, bgColor }: Props) {
+function Slack({ size = 24, bgColor, className }: Props) {
   return (
     <svg
       width={size}
@@ -13,10 +14,11 @@ function Slack({ size = 24, bgColor }: Props) {
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M49 0H15C6.71573 0 0 6.71573 0 15V49C0 57.2843 6.71573 64 15 64H49C57.2843 64 64 57.2843 64 49V15C64 6.71573 57.2843 0 49 0Z"
-        fill={bgColor ?? "#262626"}
+        fill={bgColor ?? "#303030"}
       />
       <path
         d="M19.8231 37.5402C19.8231 39.9693 17.8421 41.9533 15.4127 41.9533C12.9833 41.9533 11 39.9693 11 37.5402C11 35.1112 12.984 33.1272 15.413 33.1272H19.8234L19.8231 37.5402ZM22.0464 37.5402C22.0464 35.1112 24.0304 33.1272 26.4594 33.1272C28.8885 33.1272 30.8725 35.1109 30.8725 37.5402V48.5869C30.8725 51.016 28.8888 53 26.4594 53C24.0304 53 22.0464 51.016 22.0464 48.5869V37.5402Z"

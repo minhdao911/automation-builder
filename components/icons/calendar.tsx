@@ -3,9 +3,10 @@ import React from "react";
 type Props = {
   size?: number;
   bgColor?: string;
+  className?: string;
 };
 
-function Calendar({ size = 24, bgColor }: Props) {
+function Calendar({ size = 24, bgColor, className }: Props) {
   return (
     <svg
       width={size}
@@ -13,10 +14,11 @@ function Calendar({ size = 24, bgColor }: Props) {
       viewBox="0 0 64 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
       <path
         d="M49 0H15C6.71573 0 0 6.71573 0 15V49C0 57.2843 6.71573 64 15 64H49C57.2843 64 64 57.2843 64 49V15C64 6.71573 57.2843 0 49 0Z"
-        fill={bgColor ?? "#262626"}
+        fill={bgColor ?? "#303030"}
       />
       <path
         d="M43.0522 20.9474H20.9473V43.0524H43.0522V20.9474Z"

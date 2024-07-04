@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { CreateWorkFlowInputs } from "@/lib/types";
+import { CreateWorkFlowInputs, UpdateWorkFlowInputs } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { Workflow } from "@prisma/client";
 
@@ -21,6 +21,30 @@ export const createWorkflow = async (
       return { message: "Workflow created successfully" };
     } catch (e) {
       return { message: "Error creating workflow", error: true };
+    }
+  }
+};
+
+export const updateWorkflowDetails = async (
+  input: UpdateWorkFlowInputs,
+  workflowId: string
+): Promise<{ message: string; error?: boolean } | undefined> => {
+  const { userId } = auth();
+
+  if (userId) {
+    try {
+      await db.workflow.update({
+        where: {
+          id: workflowId,
+          userId,
+        },
+        data: {
+          ...input,
+        },
+      });
+      return { message: "Workflow details updated successfully" };
+    } catch (e) {
+      return { message: "Error updating workflow details", error: true };
     }
   }
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -11,6 +12,9 @@ import { Workflow } from "@prisma/client";
 import { Node } from "reactflow";
 import { WorkflowNodeData, WorkflowNodeDataType } from "@/lib/types";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
+import { Minus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import WorkflowDialog from "./workflow-dialog";
 
 type Props = {
   workflow: Workflow;
@@ -28,26 +32,43 @@ const WorkflowCard = ({ workflow }: Props) => {
   const connections = getConnections(workflow.nodes);
 
   return (
-    <Card className="flex w-full items-center justify-between">
-      <CardHeader className="flex flex-col">
+    <Card className="relative">
+      <CardHeader className="w-full flex flex-col p-0">
+        <div className="w-full h-24 flex items-center justify-center gap-2 bg-neutral-200 dark:bg-neutral-900">
+          {connections.map((connection, index) => (
+            <div className="flex items-center gap-2" key={index}>
+              <WorkflowIconHelper type={connection} />
+              {index !== connections.length - 1 && (
+                <Minus className="text-neutral-400 dark:text-neutral-600" />
+              )}
+            </div>
+          ))}
+        </div>
+      </CardHeader>
+      <CardContent className="px-4">
         <Link href={`/workflows/editor/${id}`}>
-          <div className="flex items-center gap-3">
-            {connections.map((connection, index) => (
-              <WorkflowIconHelper key={index} type={connection} />
-            ))}
-          </div>
-          <div className="my-2.5">
+          <div className="mt-2.5 mb-7">
             <CardTitle className="text-lg">{name}</CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          <div className="flex items-center gap-2">
-            <StatusDot available={published} />
-            <p className="text-sm text-gray-500">
-              {published ? "Published" : "Not published"}
-            </p>
-          </div>
         </Link>
-      </CardHeader>
+      </CardContent>
+      <div className="absolute left-0 bottom-3 px-4 w-full flex justify-between">
+        <div className="flex items-center gap-2">
+          <StatusDot available={published} />
+          <p className="text-sm text-gray-500">
+            {published ? "Published" : "Not published"}
+          </p>
+        </div>
+        <WorkflowDialog
+          trigger={
+            <Button variant="outline" size="sm">
+              Edit
+            </Button>
+          }
+          workflow={workflow}
+        />
+      </div>
     </Card>
   );
 };

@@ -10,14 +10,24 @@ import { FunctionComponent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 interface WorkflowFormProps {
+  name?: string;
+  description?: string | null;
   onSubmit: SubmitHandler<CreateWorkFlowInputs>;
 }
 
-const WorkflowForm: FunctionComponent<WorkflowFormProps> = ({ onSubmit }) => {
-  const { register, handleSubmit } = useForm<CreateWorkFlowInputs>({
+const WorkflowForm: FunctionComponent<WorkflowFormProps> = ({
+  name,
+  description,
+  onSubmit,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateWorkFlowInputs>({
     defaultValues: {
-      name: "",
-      description: "",
+      name,
+      description: description ?? "",
     },
   });
 
@@ -26,13 +36,14 @@ const WorkflowForm: FunctionComponent<WorkflowFormProps> = ({ onSubmit }) => {
       <div className="grid gap-4 py-4">
         <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="name" className="text-right">
-            Name
+            Name *
           </Label>
           <Input
             id="name"
             placeholder="Workflow name"
-            className="col-span-3"
+            className={`col-span-3 ${errors.name ? "border-red-500" : ""}`}
             {...register("name", { required: true })}
+            aria-invalid={errors.name ? "true" : "false"}
           />
         </div>
         <div className="grid grid-cols-4 items-center gap-4">
@@ -48,9 +59,7 @@ const WorkflowForm: FunctionComponent<WorkflowFormProps> = ({ onSubmit }) => {
         </div>
       </div>
       <DialogFooter>
-        <DialogClose asChild>
-          <Button type="submit">Save settings</Button>
-        </DialogClose>
+        <Button type="submit">Save settings</Button>
       </DialogFooter>
     </form>
   );

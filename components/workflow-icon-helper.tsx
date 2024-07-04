@@ -17,20 +17,19 @@ const WorkflowIconHelper: FunctionComponent<WorkflowIconHelperProps> = ({
 }) => {
   switch (type) {
     case WorkflowNodeDataType.Gmail:
-      // return <Mail className="flex-shrink-0" size={30} />;
-      return <Gmail size={36} />;
+      return <Gmail className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.GoogleDrive:
-      return <Drive size={36} />;
+      return <Drive className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.GoogleCalendar:
-      return <Calendar size={36} />;
+      return <Calendar className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.Condition:
       return <GitBranch className="flex-shrink-0" size={28} />;
     case WorkflowNodeDataType.Slack:
-      return <Slack size={36} />;
+      return <Slack className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.Notion:
-      return <Notion size={36} />;
+      return <Notion className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.Discord:
-      return <Discord size={36} />;
+      return <Discord className="shadow-lg" size={36} />;
     case WorkflowNodeDataType.TimeDelay:
       return <Timer className="flex-shrink-0" size={28} />;
     default:

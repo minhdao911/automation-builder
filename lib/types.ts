@@ -32,6 +32,7 @@ const CreateWorkflowInputsSchema = z.object({
   description: z.string().optional(),
 });
 export type CreateWorkFlowInputs = z.infer<typeof CreateWorkflowInputsSchema>;
+export type UpdateWorkFlowInputs = CreateWorkFlowInputs;
 
 export enum WorkflowNodeType {
   Action = "Action",
