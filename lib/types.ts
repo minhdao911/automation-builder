@@ -56,6 +56,7 @@ export type WorkflowNodeData = {
   title: string;
   description?: string;
   type: WorkflowNodeDataType;
+  nodeType: WorkflowNodeType;
   connected?: boolean;
   selected?: boolean;
   metadata?: any;

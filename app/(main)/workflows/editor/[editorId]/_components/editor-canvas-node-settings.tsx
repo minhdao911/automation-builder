@@ -1,34 +1,27 @@
-import {
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import CustomSheet, { CustomSheetTitle } from "@/components/ui/custom-sheet";
+import { Separator } from "@/components/ui/separator";
 import { useEditorStore } from "@/stores/editor-store";
+import { useNodeModalStore } from "@/stores/node-modal-store";
 import { FunctionComponent } from "react";
 
-interface EditorCanvasNodeSettingsProps {
-  title: string;
-  setOpenModal: (open: boolean) => void;
-}
+interface EditorCanvasNodeSettingsProps {}
 
 const EditorCanvasNodeSettings: FunctionComponent<
   EditorCanvasNodeSettingsProps
-> = ({ title, setOpenModal }) => {
-  const { deselectNodes } = useEditorStore();
+> = () => {
+  const { open, setOpen } = useNodeModalStore();
+  const { selectedNode } = useEditorStore();
+
+  if (!selectedNode) return null;
 
   return (
-    <SheetContent className={`top-[80px]`}>
-      <SheetHeader>
-        <SheetTitle>{title}</SheetTitle>
-      </SheetHeader>
-      <SheetClose
-        onClick={() => {
-          deselectNodes();
-          setOpenModal(false);
-        }}
-      />
-    </SheetContent>
+    <CustomSheet
+      className="top-[80px] p-6"
+      open={open}
+      onClose={() => setOpen(false)}
+    >
+      <CustomSheetTitle>{selectedNode.data.title}</CustomSheetTitle>
+    </CustomSheet>
   );
 };
 

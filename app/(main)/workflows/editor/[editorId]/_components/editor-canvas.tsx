@@ -32,6 +32,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import CustomSheet from "@/components/ui/custom-sheet";
+import { useNodeModalStore } from "@/stores/node-modal-store";
+import EditorCanvasNodeSettings from "./editor-canvas-node-settings";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -59,6 +62,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
     onConnect,
     deselectNodes,
   } = useEditorStore();
+  const { setOpen } = useNodeModalStore();
 
   useEffect(() => {
     startTransition(async () => {
@@ -66,6 +70,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
       setEdges(data.edges);
       setNodes(data.nodes);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onInit = useCallback((instance: ReactFlowInstance) => {
@@ -128,6 +133,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
     const target = event.target as HTMLElement;
     if (target.classList.contains("react-flow__pane")) {
       deselectNodes();
+      setOpen(false);
     }
   };
 
@@ -142,26 +148,33 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
           {isPending ? (
             <Loader />
           ) : (
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              nodeTypes={nodeTypes}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onInit={onInit}
-              onConnect={onConnect}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              onClick={onCanvasClick}
-            >
-              <Controls position="top-left" />
-              <MiniMap
-                position="bottom-left"
-                maskColor="bg-black"
-                className="!bg-background"
-              />
-              <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
-            </ReactFlow>
+            <>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                nodeTypes={nodeTypes}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onInit={onInit}
+                onConnect={onConnect}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                onClick={onCanvasClick}
+              >
+                <Controls position="top-left" />
+                <MiniMap
+                  position="bottom-left"
+                  maskColor="bg-black"
+                  className="!bg-background"
+                />
+                <Background
+                  variant={BackgroundVariant.Dots}
+                  gap={12}
+                  size={1}
+                />
+              </ReactFlow>
+              <EditorCanvasNodeSettings />
+            </>
           )}
         </div>
       </ResizablePanel>

@@ -17,6 +17,7 @@ import { create } from "zustand";
 type EditorState = {
   nodes: Node<WorkflowNodeData>[];
   edges: Edge[];
+  selectedNode: Node<WorkflowNodeData> | null;
 };
 
 type EditorAction = {
@@ -35,6 +36,7 @@ export const useEditorStore = create<EditorState & EditorAction>(
   (set, get) => ({
     nodes: [],
     edges: [],
+    selectedNode: null,
     onNodesChange: (changes: NodeChange[]) => {
       set({
         nodes: applyNodeChanges(changes, get().nodes),
@@ -79,6 +81,7 @@ export const useEditorStore = create<EditorState & EditorAction>(
       });
 
       set({ nodes });
+      set({ selectedNode: nodes.find((node) => node.id === nodeId) });
     },
     deselectNodes: () => {
       const nodes = get().nodes.map((node) => {
@@ -102,7 +105,9 @@ export const useEditorStore = create<EditorState & EditorAction>(
         (edge) => edge.source !== nodeId && edge.target !== nodeId
       );
 
-      set({ nodes });
+      set({
+        nodes: applyNodeChanges([], nodes),
+      });
       set({ edges });
     },
   })
