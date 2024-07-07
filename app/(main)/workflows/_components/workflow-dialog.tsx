@@ -1,6 +1,6 @@
 "use client";
 
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,35 +15,32 @@ import { createWorkflow, updateWorkflowDetails } from "../_actions/workflow";
 import WorkflowForm from "./workflow-form";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { Workflow } from "@prisma/client";
+import { useWorkflowModalStore } from "@/stores/workflow-modal-store";
 
 interface WorkflowDialogProps {
   trigger?: React.ReactNode;
-  workflow?: Workflow;
 }
 
 const WorkflowDialog: FunctionComponent<WorkflowDialogProps> = ({
   trigger,
-  workflow,
 }) => {
   const { toast } = useToast();
   const router = useRouter();
-
-  const [open, setOpen] = useState(false);
+  const { open, setOpen, workflow } = useWorkflowModalStore();
 
   const onSubmit: SubmitHandler<CreateWorkFlowInputs> = async (data) => {
-    let wf;
+    let response;
     if (workflow) {
-      wf = await updateWorkflowDetails(data, workflow.id);
+      response = await updateWorkflowDetails(data, workflow.id);
     } else {
-      wf = await createWorkflow(data);
+      response = await createWorkflow(data);
     }
-    if (wf) {
+    if (response) {
       toast({
-        description: wf.message,
-        variant: wf.error ? "destructive" : undefined,
+        description: response.message,
+        variant: response.error ? "destructive" : undefined,
       });
-      if (!wf.error) {
+      if (!response.error) {
         router.refresh();
       }
     }
@@ -52,7 +49,7 @@ const WorkflowDialog: FunctionComponent<WorkflowDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{trigger}</DialogTrigger>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create a Workflow Automation</DialogTitle>

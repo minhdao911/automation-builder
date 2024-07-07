@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={font.className}>
+        <body className={`${font.className} !pointer-events-auto`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

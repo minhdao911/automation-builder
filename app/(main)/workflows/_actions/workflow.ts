@@ -49,6 +49,26 @@ export const updateWorkflowDetails = async (
   }
 };
 
+export const deleteWorkflow = async (
+  workflowId: string
+): Promise<{ message: string; error?: boolean } | undefined> => {
+  const { userId } = auth();
+
+  if (userId) {
+    try {
+      await db.workflow.delete({
+        where: {
+          id: workflowId,
+          userId,
+        },
+      });
+      return { message: "Workflow deleted successfully" };
+    } catch (e) {
+      return { message: "Error deleting workflow", error: true };
+    }
+  }
+};
+
 export const getWorkflows = async (): Promise<Workflow[] | undefined> => {
   const { userId } = auth();
 

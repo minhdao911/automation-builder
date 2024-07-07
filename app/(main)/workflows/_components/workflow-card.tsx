@@ -13,8 +13,7 @@ import { Node } from "reactflow";
 import { WorkflowNodeData, WorkflowNodeDataType } from "@/lib/types";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { Minus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import WorkflowDialog from "./workflow-dialog";
+import WorkflowOptions from "./workflow-options";
 
 type Props = {
   workflow: Workflow;
@@ -60,14 +59,7 @@ const WorkflowCard = ({ workflow }: Props) => {
             {published ? "Published" : "Not published"}
           </p>
         </div>
-        <WorkflowDialog
-          trigger={
-            <Button variant="outline" size="sm">
-              Edit
-            </Button>
-          }
-          workflow={workflow}
-        />
+        <WorkflowOptions workflow={workflow} />
       </div>
     </Card>
   );

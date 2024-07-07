@@ -5,7 +5,6 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CreateWorkFlowInputs } from "@/lib/types";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { FunctionComponent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
