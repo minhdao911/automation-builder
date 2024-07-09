@@ -16,10 +16,9 @@ import ReactFlow, {
   ReactFlowInstance,
 } from "reactflow";
 import EditorCanvasNode from "./editor-canvas-node";
-import { WorkflowNodeData, WorkflowNodeType } from "@/lib/types";
+import { WorkflowConnectorEnriched, WorkflowNodeData } from "@/lib/types";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
-import { Workflow } from "@prisma/client";
-import { EDITOR_DEFAULT_NODES } from "@/lib/constants";
+import { ConnectorNodeType, Workflow } from "@prisma/client";
 import { v4 } from "uuid";
 
 import "reactflow/dist/style.css";
@@ -32,21 +31,24 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import CustomSheet from "@/components/ui/custom-sheet";
 import { useNodeModalStore } from "@/stores/node-modal-store";
 import EditorCanvasNodeSettings from "./editor-canvas-node-settings";
 
 interface EditorCanvasProps {
   workflow: Workflow;
+  connectors: WorkflowConnectorEnriched[];
 }
 
 const nodeTypes = {
-  [WorkflowNodeType.Action]: EditorCanvasNode,
-  [WorkflowNodeType.Trigger]: EditorCanvasNode,
-  [WorkflowNodeType.Logical]: EditorCanvasNode,
+  [ConnectorNodeType.Action]: EditorCanvasNode,
+  [ConnectorNodeType.Trigger]: EditorCanvasNode,
+  [ConnectorNodeType.Logical]: EditorCanvasNode,
 };
 
-const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
+const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
+  workflow,
+  connectors,
+}) => {
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>();
   const [isPending, startTransition] = useTransition();
@@ -78,9 +80,12 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
   }, []);
 
   const getNodeFromDefaultList = (
-    nodeType: WorkflowNodeType,
+    nodeType: ConnectorNodeType,
     nodeDataId: string
-  ) => EDITOR_DEFAULT_NODES[nodeType].find((node) => node.id === nodeDataId);
+  ) =>
+    connectors.find(
+      (node) => node.id === nodeDataId && node.nodeType === nodeType
+    );
 
   const onDrop = useCallback(
     (event: any) => {
@@ -90,9 +95,9 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
       const type = event.dataTransfer.getData("nodeType");
       if (!id || !type) return;
 
-      const isTriggerNode = type === WorkflowNodeType.Trigger;
+      const isTriggerNode = type === ConnectorNodeType.Trigger;
       const isTriggerExisted = nodes.find(
-        (node) => node.type === WorkflowNodeType.Trigger
+        (node) => node.type === ConnectorNodeType.Trigger
       );
       if (isTriggerNode && isTriggerExisted) {
         toast({
@@ -108,12 +113,12 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
         y: event.clientY - 60,
       });
 
-      const nodeData = getNodeFromDefaultList(type as WorkflowNodeType, id);
+      const nodeData = getNodeFromDefaultList(type as ConnectorNodeType, id);
       if (!nodeData) return;
 
       const newNode: Node<WorkflowNodeData> = {
         id: v4(),
-        type: type as WorkflowNodeType,
+        type: type as ConnectorNodeType,
         position,
         data: nodeData,
       };
@@ -140,7 +145,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({ workflow }) => {
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={25}>
-        <EditorCanvasSidebar />
+        <EditorCanvasSidebar connectors={connectors} />
       </ResizablePanel>
       <ResizableHandle />
       <ResizablePanel>

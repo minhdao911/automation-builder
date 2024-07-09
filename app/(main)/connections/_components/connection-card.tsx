@@ -39,7 +39,7 @@ const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({
         ) : (
           <Link
             href="#"
-            className=" rounded-lg bg-primary p-2 font-bold text-primary-foreground"
+            className="rounded-lg bg-primary p-2 font-bold text-primary-foreground"
           >
             Connect
           </Link>

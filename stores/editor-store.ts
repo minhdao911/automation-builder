@@ -29,6 +29,7 @@ type EditorAction = {
   loadData: () => void;
   selectNode: (nodeId: string) => void;
   deselectNodes: () => void;
+  updateNode: (nodeId: string, data: Partial<WorkflowNodeData>) => void;
   removeNode: (nodeId: string) => void;
 };
 
@@ -95,6 +96,26 @@ export const useEditorStore = create<EditorState & EditorAction>(
       });
 
       set({ nodes });
+    },
+    updateNode: (nodeId, data) => {
+      const nodes = get().nodes.map((node) => {
+        if (node.id === nodeId) {
+          const newNode = {
+            ...node,
+            data: {
+              ...node.data,
+              ...data,
+            },
+          };
+          set({ selectedNode: newNode });
+          return newNode;
+        }
+        return node;
+      });
+
+      set({
+        nodes: applyNodeChanges([], nodes),
+      });
     },
     removeNode: (nodeId) => {
       const nodes = get().nodes;

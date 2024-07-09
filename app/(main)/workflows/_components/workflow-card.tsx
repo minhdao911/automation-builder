@@ -22,7 +22,7 @@ type Props = {
 const getConnections = (nodes: string | null) => {
   if (!nodes) return [WorkflowNodeDataType.None];
   const parsedNodes = JSON.parse(nodes) as Node<WorkflowNodeData>[];
-  const connections = new Set(parsedNodes.map((node) => node.data.type));
+  const connections = new Set(parsedNodes.map((node) => node.data.dataType));
   return Array.from(connections).slice(0, 3);
 };
 

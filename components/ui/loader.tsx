@@ -1,7 +1,13 @@
+import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 
-const Loader = ({ size = 24 }: { size?: number }) => {
-  return <LoaderCircle size={size} className="animate-spin" />;
+interface LoaderProps {
+  size?: number;
+  className?: string;
+}
+
+const Loader = ({ size = 24, className }: LoaderProps) => {
+  return <LoaderCircle size={size} className={cn("animate-spin", className)} />;
 };
 
 export default Loader;

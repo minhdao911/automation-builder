@@ -41,7 +41,7 @@ const CustomSheet: FunctionComponent<CustomSheetProps> = ({
     <div
       data-state={open ? "open" : "closed"}
       className={cn(
-        `fixed w-[400px] h-full z-50 gap-4 bg-background shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 inset-y-0 right-0 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm`,
+        `fixed w-[450px] h-full z-50 gap-4 bg-background shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 inset-y-0 right-0 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right`,
         className
       )}
     >
@@ -105,5 +105,19 @@ export const CustomSheetDescription = ({
     >
       {children}
     </p>
+  );
+};
+
+interface CustomSheetSectionTitleProps {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+export const CustomSheetSectionTitle = ({
+  className,
+  children,
+}: CustomSheetSectionTitleProps) => {
+  return (
+    <p className={cn("font-semibold text-foreground", className)}>{children}</p>
   );
 };

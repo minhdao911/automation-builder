@@ -1,3 +1,4 @@
+import { WorkflowConnector } from "@prisma/client";
 import { z } from "zod";
 
 export enum ConnectionType {
@@ -34,23 +35,6 @@ const CreateWorkflowInputsSchema = z.object({
 export type CreateWorkFlowInputs = z.infer<typeof CreateWorkflowInputsSchema>;
 export type UpdateWorkFlowInputs = CreateWorkFlowInputs;
 
-export enum WorkflowNodeType {
-  Action = "Action",
-  Trigger = "Trigger",
-  Logical = "Logical",
-}
-
-export enum WorkflowNodeDataType {
-  GoogleDrive = "Google Drive",
-  Gmail = "Gmail",
-  GoogleCalendar = "Google Calendar",
-  Notion = "Notion",
-  Slack = "Slack",
-  Discord = "Discord",
-  Condition = "Condition",
-  TimeDelay = "Time Delay",
-  None = "None",
-}
 export type WorkflowConnectorEnriched = Omit<
   WorkflowConnector,
   "createdAt" | "updatedAt"
@@ -58,13 +42,7 @@ export type WorkflowConnectorEnriched = Omit<
   connected: boolean;
 };
 
-export type WorkflowNodeData = {
-  id: string;
-  title: string;
-  description?: string;
-  type: WorkflowNodeDataType;
-  nodeType: WorkflowNodeType;
-  connected?: boolean;
+export type WorkflowNodeData = WorkflowConnectorEnriched & {
   selected?: boolean;
   metadata?: any;
 };

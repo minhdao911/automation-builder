@@ -4,8 +4,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { WorkflowNodeData, WorkflowNodeType } from "@/lib/types";
-import { FunctionComponent, useState } from "react";
+import { WorkflowNodeData } from "@/lib/types";
+import { FunctionComponent } from "react";
 import { NodeProps, Position, useNodeId } from "reactflow";
 import CustomHandle from "./custom-handle";
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +14,15 @@ import { Trash2 } from "lucide-react";
 import { useEditorStore } from "@/stores/editor-store";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { useNodeModalStore } from "@/stores/node-modal-store";
+import { ConnectorNodeType } from "@prisma/client";
+import { mapConnectorDataType } from "@/lib/utils";
 
 const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
   type,
   data,
 }) => {
-  const { title, description, connected, selected } = data;
-  const isLogicalNode = type === WorkflowNodeType.Logical;
+  const { name, description, connected, selected, dataType } = data;
+  const isLogicalNode = type === ConnectorNodeType.Logical;
   const nodeId = useNodeId();
   const { selectNode, removeNode } = useEditorStore();
   const { setOpen } = useNodeModalStore();
@@ -29,7 +31,7 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
 
   return (
     <div className="relative">
-      {type !== WorkflowNodeType.Trigger && (
+      {type !== ConnectorNodeType.Trigger && (
         <CustomHandle
           type="target"
           position={Position.Top}
@@ -60,9 +62,9 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
       >
         <CardHeader className="p-4">
           <div className="flex gap-4 items-center">
-            <WorkflowIconHelper type={data.type} />
+            <WorkflowIconHelper type={dataType} />
             <div>
-              <CardTitle className="text-md">{title}</CardTitle>
+              <CardTitle className="text-md">{name}</CardTitle>
               <p className="text-xs text-muted-foreground/50">
                 <b className="text-muted-foreground/80">ID: </b>
                 {nodeId}
@@ -76,7 +78,7 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
                 variant="secondary"
                 className="text-neutral-600 dark:text-neutral-400"
               >
-                {data.type}
+                {mapConnectorDataType(dataType)}
               </Badge>
               <Badge
                 variant="secondary"
