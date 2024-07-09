@@ -51,6 +51,12 @@ export enum WorkflowNodeDataType {
   TimeDelay = "Time Delay",
   None = "None",
 }
+export type WorkflowConnectorEnriched = Omit<
+  WorkflowConnector,
+  "createdAt" | "updatedAt"
+> & {
+  connected: boolean;
+};
 
 export type WorkflowNodeData = {
   id: string;

@@ -19,3 +19,11 @@ bun ngrok
 3. Copy URL from ngrok and update Clerk webhook endpoint
 
 4. Open [https://localhost:3000](https://localhost:3000) with your browser to see the result.
+
+## DB Migrations
+
+To create new migration, run
+
+```bash
+bun db-migrate --name $migrationName
+```

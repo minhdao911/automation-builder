@@ -45,30 +45,31 @@ model Workflow {
   userId String
 }
 
-// model EditorNodeData {
-//   id          String   @id @default(uuid())
-//   name        String
-//   description String
-//   nodeType    NodeType
-//   dataType    DataType
+model WorkflowConnector {
+  id          String            @id @default(uuid())
+  name        String
+  description String?
+  nodeType    ConnectorNodeType
+  dataType    ConnectorDataType
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
 
-// enum NodeType {
-//   Action
-//   Trigger
-//   Logical
-// }
+enum ConnectorNodeType {
+  Action
+  Trigger
+  Logical
+}
 
-// enum DataType {
-//   GoogleDrive
-//   Gmail
-//   GoogleCalendar
-//   Notion
-//   Slack
-//   Discord
-//   Condition
-//   TimeDelay
-// }
+enum ConnectorDataType {
+  GoogleDrive
+  Gmail
+  GoogleCalendar
+  Notion
+  Slack
+  Discord
+  Condition
+  TimeDelay
+  None
+}

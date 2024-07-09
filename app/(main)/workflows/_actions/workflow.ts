@@ -1,9 +1,13 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { CreateWorkFlowInputs, UpdateWorkFlowInputs } from "@/lib/types";
+import {
+  CreateWorkFlowInputs,
+  UpdateWorkFlowInputs,
+  WorkflowConnectorEnriched,
+} from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
-import { Workflow } from "@prisma/client";
+import { ConnectorDataType, Workflow } from "@prisma/client";
 
 export const createWorkflow = async (
   input: CreateWorkFlowInputs
@@ -96,5 +100,44 @@ export const getWorkflow = async (
         id,
       },
     });
+  }
+};
+
+export const getWorkflowConnectors = async (): Promise<
+  WorkflowConnectorEnriched[] | undefined
+> => {
+  const { userId } = auth();
+
+  if (userId) {
+    const connectorsMap: Record<ConnectorDataType, boolean> = {
+      [ConnectorDataType.GoogleDrive]: false,
+      [ConnectorDataType.Gmail]: false,
+      [ConnectorDataType.GoogleCalendar]: false,
+      [ConnectorDataType.Notion]: false,
+      [ConnectorDataType.Slack]: false,
+      [ConnectorDataType.Discord]: false,
+      [ConnectorDataType.Condition]: false,
+      [ConnectorDataType.TimeDelay]: false,
+      [ConnectorDataType.None]: false,
+    };
+
+    const googleConnection = await db.googleCredential.findFirst({
+      where: {
+        userId,
+      },
+    });
+    if (googleConnection) {
+      connectorsMap[ConnectorDataType.GoogleDrive] = true;
+      connectorsMap[ConnectorDataType.GoogleCalendar] = true;
+      connectorsMap[ConnectorDataType.Gmail] = true;
+    }
+
+    const connectors = await db.workflowConnector.findMany();
+    return connectors.map((connector) => ({
+      ...connector,
+      connected: connectorsMap[connector.dataType],
+      createdAt: undefined,
+      updatedAt: undefined,
+    }));
   }
 };
