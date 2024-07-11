@@ -5,6 +5,7 @@ import {
   CreateWorkFlowInputs,
   UpdateWorkFlowInputs,
   WorkflowConnectorEnriched,
+  WorkflowConnectorSchema,
 } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { ConnectorDataType, Workflow } from "@prisma/client";
@@ -109,35 +110,41 @@ export const getWorkflowConnectors = async (): Promise<
   const { userId } = auth();
 
   if (userId) {
-    const connectorsMap: Record<ConnectorDataType, boolean> = {
-      [ConnectorDataType.GoogleDrive]: false,
-      [ConnectorDataType.Gmail]: false,
-      [ConnectorDataType.GoogleCalendar]: false,
-      [ConnectorDataType.Notion]: false,
-      [ConnectorDataType.Slack]: false,
-      [ConnectorDataType.Discord]: false,
-      [ConnectorDataType.Condition]: false,
-      [ConnectorDataType.TimeDelay]: false,
-      [ConnectorDataType.None]: false,
-    };
+    try {
+      const connectorsMap: Record<ConnectorDataType, boolean> = {
+        [ConnectorDataType.GoogleDrive]: false,
+        [ConnectorDataType.Gmail]: false,
+        [ConnectorDataType.GoogleCalendar]: false,
+        [ConnectorDataType.Notion]: false,
+        [ConnectorDataType.Slack]: false,
+        [ConnectorDataType.Discord]: false,
+        [ConnectorDataType.Condition]: false,
+        [ConnectorDataType.TimeDelay]: false,
+        [ConnectorDataType.None]: false,
+      };
 
-    const googleConnection = await db.googleCredential.findFirst({
-      where: {
-        userId,
-      },
-    });
-    if (googleConnection) {
-      connectorsMap[ConnectorDataType.GoogleDrive] = true;
-      connectorsMap[ConnectorDataType.GoogleCalendar] = true;
-      connectorsMap[ConnectorDataType.Gmail] = true;
+      const googleConnection = await db.googleCredential.findFirst({
+        where: {
+          userId,
+        },
+      });
+      if (googleConnection) {
+        connectorsMap[ConnectorDataType.GoogleDrive] = true;
+        connectorsMap[ConnectorDataType.GoogleCalendar] = true;
+        connectorsMap[ConnectorDataType.Gmail] = true;
+      }
+
+      const connectors = await db.workflowConnector.findMany();
+      return connectors.map((connector) => {
+        const parsedConnector = WorkflowConnectorSchema.parse(connector);
+        return {
+          ...parsedConnector,
+          connected: connectorsMap[parsedConnector.dataType],
+        };
+      });
+    } catch (e) {
+      console.error(e);
+      return undefined;
     }
-
-    const connectors = await db.workflowConnector.findMany();
-    return connectors.map((connector) => ({
-      ...connector,
-      connected: connectorsMap[connector.dataType],
-      createdAt: undefined,
-      updatedAt: undefined,
-    }));
   }
 };

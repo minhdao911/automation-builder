@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 
-export const loadWorkflowData = async (workflowId: string) => {
+export const loadWorkflow = async (workflowId: string) => {
   const emptyState = { nodes: [], edges: [] };
   try {
     const workflow = await db.workflow.findFirst({

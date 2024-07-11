@@ -24,7 +24,7 @@ import { v4 } from "uuid";
 import "reactflow/dist/style.css";
 import { useToast } from "@/components/ui/use-toast";
 import { useEditorStore } from "@/stores/editor-store";
-import { loadWorkflowData } from "../_actions/editor";
+import { loadWorkflow } from "../_actions/editor";
 import Loader from "@/components/ui/loader";
 import {
   ResizableHandle,
@@ -68,7 +68,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
 
   useEffect(() => {
     startTransition(async () => {
-      const data = await loadWorkflowData(workflow.id);
+      const data = await loadWorkflow(workflow.id);
       setEdges(data.edges);
       setNodes(data.nodes);
     });
@@ -178,7 +178,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
                   size={1}
                 />
               </ReactFlow>
-              <EditorCanvasNodeSettings />
+              <EditorCanvasNodeSettings workflowId={workflow.id} />
             </>
           )}
         </div>

@@ -26,7 +26,6 @@ type EditorAction = {
   onConnect: OnConnect;
   setNodes: (nodes: Node<WorkflowNodeData>[]) => void;
   setEdges: (edges: Edge[]) => void;
-  loadData: () => void;
   selectNode: (nodeId: string) => void;
   deselectNodes: () => void;
   updateNode: (nodeId: string, data: Partial<WorkflowNodeData>) => void;
@@ -59,7 +58,6 @@ export const useEditorStore = create<EditorState & EditorAction>(
     setEdges: (edges: Edge[]) => {
       set({ edges });
     },
-    loadData: () => {},
     selectNode: (nodeId) => {
       const nodes = get().nodes.map((node) => {
         if (node.id === nodeId) {

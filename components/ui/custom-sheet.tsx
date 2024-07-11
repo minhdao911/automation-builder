@@ -21,6 +21,10 @@ const CustomSheet: FunctionComponent<CustomSheetProps> = ({
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
+    setHidden(true);
+  }, []);
+
+  useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     if (!open) {
       timeout = setTimeout(() => {

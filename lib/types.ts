@@ -1,4 +1,4 @@
-import { WorkflowConnector } from "@prisma/client";
+import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { z } from "zod";
 
 export enum ConnectionType {
@@ -35,14 +35,50 @@ const CreateWorkflowInputsSchema = z.object({
 export type CreateWorkFlowInputs = z.infer<typeof CreateWorkflowInputsSchema>;
 export type UpdateWorkFlowInputs = CreateWorkFlowInputs;
 
-export type WorkflowConnectorEnriched = Omit<
-  WorkflowConnector,
-  "createdAt" | "updatedAt"
-> & {
-  connected: boolean;
-};
+const PostitionSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+});
 
-export type WorkflowNodeData = WorkflowConnectorEnriched & {
-  selected?: boolean;
-  metadata?: any;
-};
+const WorkflowNodeMetadataSchema = z.object({
+  googleDrive: z
+    .object({
+      channelId: z.string(),
+      resourceId: z.string().nullish(),
+    })
+    .optional(),
+});
+export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
+
+export const WorkflowConnectorSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string().nullable(),
+  nodeType: z.nativeEnum(ConnectorNodeType),
+  dataType: z.nativeEnum(ConnectorDataType),
+});
+export type WorkflowConnector = z.infer<typeof WorkflowConnectorSchema>;
+
+export const WorkflowConnectorEnrichedSchema = WorkflowConnectorSchema.extend({
+  connected: z.boolean(),
+});
+export type WorkflowConnectorEnriched = z.infer<
+  typeof WorkflowConnectorEnrichedSchema
+>;
+
+const WorkflowNodeDataSchema = WorkflowConnectorEnrichedSchema.extend({
+  selected: z.boolean().optional(),
+  metadata: WorkflowNodeMetadataSchema.optional(),
+});
+export type WorkflowNodeData = z.infer<typeof WorkflowNodeDataSchema>;
+
+export const WorkflowNodeSchema = z.object({
+  id: z.string(),
+  type: z.string(),
+  position: PostitionSchema,
+  data: WorkflowNodeDataSchema,
+  width: z.number().optional(),
+  height: z.number().optional(),
+  positionAbsolute: PostitionSchema.optional(),
+});
+export type WorkflowNode = z.infer<typeof WorkflowNodeSchema>;

@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import StatusDot from "@/components/ui/status-dot";
-import { Workflow } from "@prisma/client";
+import { ConnectorDataType, Workflow } from "@prisma/client";
 import { Node } from "reactflow";
-import { WorkflowNodeData, WorkflowNodeDataType } from "@/lib/types";
+import { WorkflowNodeData } from "@/lib/types";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { Minus } from "lucide-react";
 import WorkflowOptions from "./workflow-options";
@@ -20,7 +20,7 @@ type Props = {
 };
 
 const getConnections = (nodes: string | null) => {
-  if (!nodes) return [WorkflowNodeDataType.None];
+  if (!nodes) return [ConnectorDataType.None];
   const parsedNodes = JSON.parse(nodes) as Node<WorkflowNodeData>[];
   const connections = new Set(parsedNodes.map((node) => node.data.dataType));
   return Array.from(connections).slice(0, 3);
