@@ -42,7 +42,7 @@ const PostitionSchema = z.object({
 });
 
 const WorkflowNodeMetadataSchema = z.object({
-  googleDrive: DriveMetadataSchema.optional(),
+  googleDrive: DriveMetadataSchema.nullable(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 

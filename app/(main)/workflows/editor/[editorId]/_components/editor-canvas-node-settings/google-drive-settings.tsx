@@ -32,7 +32,6 @@ import { useEditorStore } from "@/stores/editor-store";
 import dayjs from "dayjs";
 import { Node } from "reactflow";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 
 interface GoogleDriveSettingsProps {
   selectedNode: Node<WorkflowNodeData>;
@@ -64,7 +63,7 @@ const GoogleDriveSettings = ({ selectedNode }: GoogleDriveSettingsProps) => {
         updateNode(selectedNode.id, {
           metadata: {
             ...selectedNode.data.metadata,
-            googleDrive: undefined,
+            googleDrive: null,
           },
         });
       } else {

@@ -30,6 +30,8 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   const { nodes, edges } = useEditorStore();
   const [isPending, startTransition] = useTransition();
 
+  const router = useRouter();
+
   const handleSave = () => {
     startTransition(async () => {
       const nodesToSave = nodes.map((node) => WorkflowNodeSchema.parse(node));
@@ -43,6 +45,7 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
           : "Failed to save workflow",
         variant: isSaved ? undefined : "destructive",
       });
+      router.refresh();
     });
   };
 
@@ -80,7 +83,8 @@ interface GoBackButtonProps {
 
 const GoBackButton = ({ workflow }: GoBackButtonProps) => {
   const router = useRouter();
-  const { nodes, edges, setNodes, setEdges } = useEditorStore();
+  const { nodes, edges, selectedNode, setNodes, setEdges, updateNode } =
+    useEditorStore();
 
   const [open, setOpen] = useState(false);
 
@@ -92,13 +96,39 @@ const GoBackButton = ({ workflow }: GoBackButtonProps) => {
     }, 1000);
   };
 
+  const removeListeners = async () => {
+    for (const node of nodes) {
+      const driveData = node.data?.metadata?.googleDrive;
+      if (driveData) {
+        const response = await fetch("/api/drive-activity", {
+          method: "DELETE",
+          body: JSON.stringify({
+            channelId: driveData!.channelId,
+            resourceId: driveData!.resourceId,
+          }),
+        });
+        if (response.status === 200) {
+          updateNode(selectedNode!.id, {
+            metadata: {
+              ...selectedNode!.data.metadata,
+              googleDrive: null,
+            },
+          });
+        }
+      }
+    }
+  };
+
   const handleGoBack = () => {
     const oldData = {
-      nodes: workflow.nodes,
-      edges: workflow.edges,
+      nodes: workflow.nodes ? JSON.parse(workflow.nodes) : null,
+      edges: workflow.edges ? JSON.parse(workflow.edges) : null,
     };
     const currentData = {
-      nodes: nodes.length > 0 ? nodes : null,
+      nodes:
+        nodes.length > 0
+          ? nodes.map((node) => WorkflowNodeSchema.parse(node))
+          : null,
       edges: edges.length > 0 ? edges : null,
     };
     const isDataChanged = !isEqual(oldData, currentData);
@@ -107,6 +137,11 @@ const GoBackButton = ({ workflow }: GoBackButtonProps) => {
     } else {
       goBack();
     }
+  };
+
+  const handleContinue = async () => {
+    await removeListeners();
+    goBack();
   };
 
   return (
@@ -128,7 +163,9 @@ const GoBackButton = ({ workflow }: GoBackButtonProps) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={goBack}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={handleContinue}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

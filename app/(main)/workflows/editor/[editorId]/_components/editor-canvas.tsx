@@ -144,7 +144,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
 
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel defaultSize={25}>
+      <ResizablePanel defaultSize={20}>
         <EditorCanvasSidebar connectors={connectors} />
       </ResizablePanel>
       <ResizableHandle />
