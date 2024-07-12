@@ -24,7 +24,7 @@ const EditorCanvasNodeSettings: FunctionComponent<
   const getSettingsBasedOnType = (type: ConnectorDataType) => {
     switch (type) {
       case ConnectorDataType.GoogleDrive:
-        return <GoogleDriveSettings selectedNodeData={selectedNode.data} />;
+        return <GoogleDriveSettings selectedNode={selectedNode} />;
       default:
         return null;
     }

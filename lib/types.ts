@@ -1,5 +1,6 @@
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { z } from "zod";
+import { DriveMetadataSchema } from "./google-schemas";
 
 export enum ConnectionType {
   GoogleDrive = "Google Drive",
@@ -41,12 +42,7 @@ const PostitionSchema = z.object({
 });
 
 const WorkflowNodeMetadataSchema = z.object({
-  googleDrive: z
-    .object({
-      channelId: z.string(),
-      resourceId: z.string().nullish(),
-    })
-    .optional(),
+  googleDrive: DriveMetadataSchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 
