@@ -10,6 +10,7 @@ import {
 import ReactFlow, {
   Background,
   BackgroundVariant,
+  Connection,
   Controls,
   MiniMap,
   Node,
@@ -142,6 +143,19 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
     }
   };
 
+  const onNodeConnect = (connection: Connection) => {
+    const edgesOfSource = edges.filter(
+      (edge) => edge.source === connection.source
+    );
+    if (edgesOfSource.length === 2) {
+      toast({
+        description: "One node has maximum 2 connections",
+      });
+    } else {
+      onConnect(connection);
+    }
+  };
+
   return (
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel defaultSize={20}>
@@ -161,7 +175,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onInit={onInit}
-                onConnect={onConnect}
+                onConnect={onNodeConnect}
                 onDrop={onDrop}
                 onDragOver={onDragOver}
                 onClick={onCanvasClick}
@@ -178,7 +192,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
                   size={1}
                 />
               </ReactFlow>
-              <EditorCanvasNodeSettings />
+              <EditorCanvasNodeSettings workflowId={workflow.id} />
             </>
           )}
         </div>

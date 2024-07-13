@@ -25,6 +25,7 @@ export const createWorkflow = async (
       });
       return { message: "Workflow created successfully" };
     } catch (e) {
+      console.error(e);
       return { message: "Error creating workflow", error: true };
     }
   }
@@ -49,6 +50,7 @@ export const updateWorkflowDetails = async (
       });
       return { message: "Workflow details updated successfully" };
     } catch (e) {
+      console.error(e);
       return { message: "Error updating workflow details", error: true };
     }
   }
@@ -69,6 +71,7 @@ export const deleteWorkflow = async (
       });
       return { message: "Workflow deleted successfully" };
     } catch (e) {
+      console.error(e);
       return { message: "Error deleting workflow", error: true };
     }
   }

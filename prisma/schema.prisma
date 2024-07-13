@@ -9,8 +9,11 @@ generator client {
 }
 
 model User {
-  id      String @id @default(uuid())
-  clerkId String @unique
+  id        String  @id @default(uuid())
+  clerkId   String  @unique
+  email     String  @unique
+  firstName String?
+  lastName  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -31,12 +34,14 @@ model GoogleCredential {
 }
 
 model Workflow {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  published   Boolean @default(false)
-  nodes       String?
-  edges       String?
+  id              String  @id @default(uuid())
+  name            String
+  description     String?
+  published       Boolean @default(false)
+  nodes           String?
+  edges           String?
+  flowPaths       String?
+  driveResourceId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
