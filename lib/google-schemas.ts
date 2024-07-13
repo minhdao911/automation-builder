@@ -41,3 +41,10 @@ export const DriveMetadataSchema = z.object({
   expiration: z.number(),
   events: z.array(z.nativeEnum(DriveNotificationEventType)).min(1),
 });
+
+export const EmailSchema = z.object({
+  to: z.string().email(),
+  subject: z.string(),
+  html: z.string(),
+});
+export type Email = z.infer<typeof EmailSchema>;

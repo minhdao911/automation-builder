@@ -3,14 +3,24 @@
 import { Button } from "@/components/ui/button";
 import { useEditorStore } from "@/stores/editor-store";
 import { Workflow } from "@prisma/client";
-import { FunctionComponent, useState, useTransition } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { saveWorkflow } from "../_actions/editor";
 import { toast } from "@/components/ui/use-toast";
 import Loader from "@/components/ui/loader";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { WorkflowNodeSchema } from "@/lib/types";
-import { isEqual } from "lodash";
+import {
+  WorkflowNode,
+  WorkflowNodeDataSchema,
+  WorkflowNodeSchema,
+} from "@/lib/types";
+import { identity, pickBy } from "lodash";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,18 +36,55 @@ interface EditorNavbarProps {
   workflow: Workflow;
 }
 
+const WorkflowNodeDataSchemaForComparison = WorkflowNodeDataSchema.omit({
+  selected: true,
+});
+
 const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   const { nodes, edges } = useEditorStore();
   const [isPending, startTransition] = useTransition();
+  const [isDataChanged, setIsDataChanged] = useState(false);
 
   const router = useRouter();
+
+  const checkIfDataChanged = useCallback(() => {
+    const oldData = {
+      nodes: workflow.nodes ? JSON.parse(workflow.nodes) : null,
+      edges: workflow.edges ? JSON.parse(workflow.edges) : null,
+    };
+    oldData.nodes = oldData.nodes.map((node: WorkflowNode) =>
+      pickBy(WorkflowNodeDataSchemaForComparison.parse(node.data), identity)
+    );
+    const currentData = {
+      nodes:
+        nodes.length > 0
+          ? nodes.map((node) =>
+              pickBy(
+                WorkflowNodeDataSchemaForComparison.parse(node.data),
+                identity
+              )
+            )
+          : null,
+      edges: edges.length > 0 ? edges : null,
+    };
+    return JSON.stringify(oldData) !== JSON.stringify(currentData);
+  }, [nodes, edges, workflow]);
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setTimeout>;
+    interval = setInterval(() => {
+      const changed = checkIfDataChanged();
+      setIsDataChanged(changed);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [checkIfDataChanged]);
 
   const handleSave = () => {
     startTransition(async () => {
       const nodesToSave = nodes.map((node) => WorkflowNodeSchema.parse(node));
       const isSaved = await saveWorkflow(workflow.id, {
-        nodes: JSON.stringify(nodesToSave),
-        edges: JSON.stringify(edges),
+        nodes: nodesToSave,
+        edges,
       });
       toast({
         description: isSaved
@@ -45,6 +92,7 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
           : "Failed to save workflow",
         variant: isSaved ? undefined : "destructive",
       });
+      setIsDataChanged(false);
       router.refresh();
     });
   };
@@ -52,13 +100,16 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   return (
     <div className="flex items-center justify-between dark:bg-black px-4 py-4 w-full">
       <div className="flex items-center gap-4">
-        <GoBackButton workflow={workflow} />
+        <GoBackButton checkIfDataChanged={checkIfDataChanged} />
         <div>
           <p className="text-sm text-neutral-500">Workflow</p>
           <h3 className="text-lg font-semibold">{workflow.name}</h3>
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="flex gap-3 items-center">
+        {isDataChanged && (
+          <p className="text-sm text-neutral-400">You have unsaved changes</p>
+        )}
         <Button
           size="sm"
           variant="secondary"
@@ -78,12 +129,12 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
 export default EditorNavbar;
 
 interface GoBackButtonProps {
-  workflow: Workflow;
+  checkIfDataChanged: () => boolean;
 }
 
-const GoBackButton = ({ workflow }: GoBackButtonProps) => {
+const GoBackButton = ({ checkIfDataChanged }: GoBackButtonProps) => {
   const router = useRouter();
-  const { nodes, edges, selectedNode, setNodes, setEdges, updateNode } =
+  const { nodes, selectedNode, setNodes, setEdges, updateNode } =
     useEditorStore();
 
   const [open, setOpen] = useState(false);
@@ -111,7 +162,7 @@ const GoBackButton = ({ workflow }: GoBackButtonProps) => {
           updateNode(selectedNode!.id, {
             metadata: {
               ...selectedNode!.data.metadata,
-              googleDrive: null,
+              googleDrive: undefined,
             },
           });
         }
@@ -120,18 +171,7 @@ const GoBackButton = ({ workflow }: GoBackButtonProps) => {
   };
 
   const handleGoBack = () => {
-    const oldData = {
-      nodes: workflow.nodes ? JSON.parse(workflow.nodes) : null,
-      edges: workflow.edges ? JSON.parse(workflow.edges) : null,
-    };
-    const currentData = {
-      nodes:
-        nodes.length > 0
-          ? nodes.map((node) => WorkflowNodeSchema.parse(node))
-          : null,
-      edges: edges.length > 0 ? edges : null,
-    };
-    const isDataChanged = !isEqual(oldData, currentData);
+    const isDataChanged = checkIfDataChanged();
     if (isDataChanged) {
       setOpen(true);
     } else {

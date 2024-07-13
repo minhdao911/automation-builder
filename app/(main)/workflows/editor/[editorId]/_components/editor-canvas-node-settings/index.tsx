@@ -1,13 +1,11 @@
-import { Button } from "@/components/ui/button";
 import CustomSheet, { CustomSheetTitle } from "@/components/ui/custom-sheet";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useEditorStore } from "@/stores/editor-store";
 import { useNodeModalStore } from "@/stores/node-modal-store";
-import { FunctionComponent, useEffect, useState } from "react";
-import { SettingsSection } from "./common";
+import { FunctionComponent } from "react";
+import { ConnectionSections, DetailsSection } from "./common";
 import GoogleDriveSettings from "./google-drive-settings";
-import { ConnectorDataType } from "@prisma/client";
+import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
+import GmailSettings from "./gmail-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -19,12 +17,16 @@ const EditorCanvasNodeSettings: FunctionComponent<
 
   if (!selectedNode) return null;
 
-  const { name, description, dataType } = selectedNode.data;
+  const { name, description, dataType, nodeType, connected } =
+    selectedNode.data;
+  const showConnectionSettings = nodeType !== ConnectorNodeType.Logical;
 
   const getSettingsBasedOnType = (type: ConnectorDataType) => {
     switch (type) {
       case ConnectorDataType.GoogleDrive:
         return <GoogleDriveSettings selectedNode={selectedNode} />;
+      case ConnectorDataType.Gmail:
+        return <GmailSettings selectedNode={selectedNode} />;
       default:
         return null;
     }
@@ -45,6 +47,9 @@ const EditorCanvasNodeSettings: FunctionComponent<
           name={name}
           description={description}
         />
+        {showConnectionSettings && (
+          <ConnectionSections connected={connected} dataType={dataType} />
+        )}
         {getSettingsBasedOnType(dataType)}
       </div>
     </CustomSheet>
@@ -52,54 +57,3 @@ const EditorCanvasNodeSettings: FunctionComponent<
 };
 
 export default EditorCanvasNodeSettings;
-
-const DetailsSection = ({
-  id,
-  name,
-  description,
-}: {
-  id: string;
-  name: string;
-  description: string | null;
-}) => {
-  const { updateNode } = useEditorStore();
-
-  const [nodeName, setName] = useState(name);
-  const [nodeDescription, setDescription] = useState(description);
-
-  useEffect(() => {
-    setName(name);
-    setDescription(description);
-  }, [name, description]);
-
-  const onSubmit = () => {
-    if (!nodeName) return;
-    updateNode(id, { name: nodeName, description: nodeDescription });
-  };
-
-  return (
-    <SettingsSection title="Details">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            value={nodeName}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="description">Description (optional)</Label>
-          <Input
-            id="description"
-            value={nodeDescription ?? ""}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <Button size="sm" type="submit" variant="secondary" onClick={onSubmit}>
-          Save
-        </Button>
-      </div>
-    </SettingsSection>
-  );
-};

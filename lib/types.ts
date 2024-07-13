@@ -1,6 +1,6 @@
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { z } from "zod";
-import { DriveMetadataSchema } from "./google-schemas";
+import { DriveMetadataSchema, EmailSchema } from "./google-schemas";
 
 export enum ConnectionType {
   GoogleDrive = "Google Drive",
@@ -42,7 +42,8 @@ const PostitionSchema = z.object({
 });
 
 const WorkflowNodeMetadataSchema = z.object({
-  googleDrive: DriveMetadataSchema.nullable(),
+  googleDrive: DriveMetadataSchema.optional(),
+  gmail: EmailSchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 
@@ -62,7 +63,7 @@ export type WorkflowConnectorEnriched = z.infer<
   typeof WorkflowConnectorEnrichedSchema
 >;
 
-const WorkflowNodeDataSchema = WorkflowConnectorEnrichedSchema.extend({
+export const WorkflowNodeDataSchema = WorkflowConnectorEnrichedSchema.extend({
   selected: z.boolean().optional(),
   metadata: WorkflowNodeMetadataSchema.optional(),
 });

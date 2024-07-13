@@ -8,7 +8,6 @@ import {
 import { WorkflowNodeData } from "@/lib/types";
 import { useEffect, useState, useTransition } from "react";
 import { SettingsSection } from "./common";
-import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import {
   Select,
   SelectContent,
@@ -18,12 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
-import {
-  cn,
-  fetcher,
-  fetcherMutation,
-  mapConnectorDataType,
-} from "@/lib/utils";
+import { cn, fetcher, fetcherMutation } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { RefreshCcw } from "lucide-react";
 import Loader from "@/components/ui/loader";
@@ -40,12 +34,11 @@ interface GoogleDriveSettingsProps {
 const MAX_EXPIRATION = 86400;
 
 const GoogleDriveSettings = ({ selectedNode }: GoogleDriveSettingsProps) => {
-  const { connected, dataType, metadata } = selectedNode.data;
-  const driveData = metadata?.googleDrive;
-
   const { updateNode } = useEditorStore();
-
   const [isPending, startTransition] = useTransition();
+
+  const { connected, metadata } = selectedNode.data;
+  const driveData = metadata?.googleDrive;
 
   const handleRemoveListener = () => {
     startTransition(async () => {
@@ -63,7 +56,7 @@ const GoogleDriveSettings = ({ selectedNode }: GoogleDriveSettingsProps) => {
         updateNode(selectedNode.id, {
           metadata: {
             ...selectedNode.data.metadata,
-            googleDrive: null,
+            googleDrive: undefined,
           },
         });
       } else {
@@ -77,40 +70,36 @@ const GoogleDriveSettings = ({ selectedNode }: GoogleDriveSettingsProps) => {
 
   return (
     <>
-      <SettingsSection title="Connection">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <WorkflowIconHelper type={dataType} bgColor="transparent" />
-            <span>{mapConnectorDataType(dataType)}</span>
+      <SettingsSection
+        title={
+          <div className="flex items-center justify-between">
+            <p>Listener</p>
+            {driveData && (
+              <p className="text-red-500 text-sm">
+                {dayjs().isAfter(dayjs(driveData.expiration)) ? "Expired" : ""}
+              </p>
+            )}
           </div>
-          {connected ? (
-            <div className="text-sm font-semibold text-green-500">
-              Connected
-            </div>
-          ) : (
-            <Button size="sm">Connect</Button>
-          )}
-        </div>
-      </SettingsSection>
-      <SettingsSection title="Listener">
+        }
+      >
         {driveData ? (
           <div>
-            <p>
-              <span className="capitalize text-sm">{driveData.type}:</span>{" "}
-              <b>{driveData.name}</b>
-            </p>
-            <p>
-              <span className="text-sm">Expiration Date:</span>{" "}
-              <b>{dayjs(driveData.expiration).format("DD-MM-YYYY HH:mm:ss")}</b>
-            </p>
-            <p>
-              <span className="text-sm">Subscribed Events:</span>{" "}
-              <b>{driveData.events.join(", ")}</b>
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold capitalize">{driveData.type}:</p>
+              <p>{driveData.name}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold">Expiration date:</p>
+              <p>{dayjs(driveData.expiration).format("DD-MM-YYYY HH:mm:ss")}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold">Subscribed events:</p>
+              <p>{driveData.events.join(", ")}</p>
+            </div>
             <Button
               size="sm"
               variant="secondary"
-              className="mt-3 w-full"
+              className="mt-5 w-full"
               onClick={handleRemoveListener}
             >
               {isPending ? <Loader /> : <span>Remove Listener</span>}

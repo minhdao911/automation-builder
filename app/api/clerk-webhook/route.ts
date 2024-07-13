@@ -53,6 +53,9 @@ export async function POST(req: Request) {
       const user = await db.user.create({
         data: {
           clerkId: evt.data.id,
+          email: evt.data.email_addresses[0].email_address,
+          firstName: evt.data.first_name,
+          lastName: evt.data.last_name,
         },
       });
 

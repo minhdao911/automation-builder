@@ -192,7 +192,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
                   size={1}
                 />
               </ReactFlow>
-              <EditorCanvasNodeSettings workflowId={workflow.id} />
+              <EditorCanvasNodeSettings />
             </>
           )}
         </div>
