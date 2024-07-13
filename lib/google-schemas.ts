@@ -48,3 +48,24 @@ export const EmailSchema = z.object({
   html: z.string(),
 });
 export type Email = z.infer<typeof EmailSchema>;
+
+export const CalendarEventSchema = z.object({
+  summary: z.string(),
+  description: z.string().optional(),
+  start: z.object({
+    dateTime: z.string(),
+  }),
+  end: z.object({
+    dateTime: z.string(),
+  }),
+});
+export type CalendarEvent = z.infer<typeof CalendarEventSchema>;
+
+export const CalendarEventFormSchema = CalendarEventSchema.pick({
+  summary: true,
+  description: true,
+}).extend({
+  startTime: z.string().time(),
+  endTime: z.string().time(),
+});
+export type CalendarEventForm = z.infer<typeof CalendarEventFormSchema>;

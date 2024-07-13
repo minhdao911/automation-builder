@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       },
     });
     if (listener.status === 200) {
-      console.log(listener);
+      console.log(listener.data);
       return NextResponse.json(listener.data);
     }
     return NextResponse.json(

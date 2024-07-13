@@ -2,7 +2,7 @@ import { WorkflowNodeData } from "@/lib/types";
 import { Node } from "reactflow";
 import { SettingsSection } from "./common";
 import { Button } from "@/components/ui/button";
-import { sendEmail } from "@/lib/email-helpers";
+import { sendEmail } from "@/lib/google-helpers";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Email } from "@/lib/google-schemas";
@@ -87,7 +87,7 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
     <>
       <SettingsSection title="Email">
         {showEdit ? (
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-4 py-4">
               <div className="flex items-center gap-4">
                 <Label htmlFor="from" className="w-12">
@@ -129,7 +129,7 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
               <Button size="sm" variant="secondary" onClick={onSendTestEmail}>
                 {isPending ? <Loader /> : <>Send test email</>}
               </Button>
-              <Button size="sm" type="submit">
+              <Button size="sm" type="submit" onClick={handleSubmit(onSubmit)}>
                 Save
               </Button>
             </div>

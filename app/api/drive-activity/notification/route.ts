@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { sendEmail } from "@/lib/email-helpers";
+import { createCalendarEvent, sendEmail } from "@/lib/google-helpers";
 import { DriveNotificationEventType } from "@/lib/google-schemas";
 import { WorkflowNode } from "@/lib/types";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
@@ -53,17 +53,16 @@ export async function POST() {
         const node = nodes.find((n) => n.id === path[i]);
         switch (node?.data.dataType) {
           case ConnectorDataType.Gmail:
-            const emailMetadata = node.data.metadata?.gmail;
-            if (!emailMetadata) break;
+            const emailData = node.data.metadata?.gmail;
+            if (!emailData) break;
             console.log("Sending email");
-            await sendEmail(
-              {
-                to: emailMetadata.to,
-                subject: emailMetadata.subject,
-                html: emailMetadata.html,
-              },
-              { userId: workflow.userId }
-            );
+            await sendEmail(emailData, workflow.userId);
+            break;
+          case ConnectorDataType.GoogleCalendar:
+            const calendarData = node.data.metadata?.googleCalendar;
+            if (!calendarData) break;
+            console.log("Creating calendar event");
+            await createCalendarEvent(calendarData, workflow.userId);
             break;
           default:
             break;

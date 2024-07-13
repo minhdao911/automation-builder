@@ -6,6 +6,7 @@ import { ConnectionSections, DetailsSection } from "./common";
 import GoogleDriveSettings from "./google-drive-settings";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import GmailSettings from "./gmail-settings";
+import CalendarSettings from "./calendar-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -27,6 +28,8 @@ const EditorCanvasNodeSettings: FunctionComponent<
         return <GoogleDriveSettings selectedNode={selectedNode} />;
       case ConnectorDataType.Gmail:
         return <GmailSettings selectedNode={selectedNode} />;
+      case ConnectorDataType.GoogleCalendar:
+        return <CalendarSettings selectedNode={selectedNode} />;
       default:
         return null;
     }
