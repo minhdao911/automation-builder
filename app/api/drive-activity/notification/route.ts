@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { createCalendarEvent, sendEmail } from "@/lib/google-helpers";
 import { DriveNotificationEventType } from "@/lib/google-schemas";
+import { sendMessage } from "@/lib/slack-helpers";
 import { WorkflowNode } from "@/lib/types";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { headers } from "next/headers";
@@ -63,6 +64,16 @@ export async function POST() {
             if (!calendarData) break;
             console.log("Creating calendar event");
             await createCalendarEvent(calendarData, workflow.userId);
+            break;
+          case ConnectorDataType.Slack:
+            const slackData = node.data.metadata?.slack;
+            if (!slackData) break;
+            console.log("Sending slack message");
+            await sendMessage(
+              slackData.channelId,
+              slackData.text,
+              node.data.connectionKey
+            );
             break;
           default:
             break;

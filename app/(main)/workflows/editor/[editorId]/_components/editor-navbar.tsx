@@ -52,9 +52,11 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
       nodes: workflow.nodes ? JSON.parse(workflow.nodes) : null,
       edges: workflow.edges ? JSON.parse(workflow.edges) : null,
     };
-    oldData.nodes = oldData.nodes.map((node: WorkflowNode) =>
-      pickBy(WorkflowNodeDataSchemaForComparison.parse(node.data), identity)
-    );
+    if (oldData.nodes) {
+      oldData.nodes = oldData.nodes.map((node: WorkflowNode) =>
+        pickBy(WorkflowNodeDataSchemaForComparison.parse(node.data), identity)
+      );
+    }
     const currentData = {
       nodes:
         nodes.length > 0

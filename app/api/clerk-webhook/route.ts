@@ -59,19 +59,23 @@ export async function POST(req: Request) {
         },
       });
 
-      if (user) {
-        const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
-          evt.data.id,
-          "oauth_google"
-        );
-        const accessToken = clerkResponse.data[0].token;
-        await db.googleCredential.create({
-          data: {
-            accessToken,
-            userId: user.clerkId,
-          },
-        });
-      }
+      const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
+        evt.data.id,
+        "oauth_google"
+      );
+      const accessToken = clerkResponse.data[0].token;
+      const googleCredential = await db.googleCredential.create({
+        data: {
+          accessToken,
+          userId: user.clerkId,
+        },
+      });
+      await db.connection.create({
+        data: {
+          userId: user.clerkId,
+          googleCredentialId: googleCredential.id,
+        },
+      });
       return new NextResponse("User created successfully", { status: 201 });
     }
     return new Response("Event not supported", { status: 200 });

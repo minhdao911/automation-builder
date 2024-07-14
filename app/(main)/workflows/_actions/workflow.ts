@@ -9,6 +9,7 @@ import {
 } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import { ConnectorDataType, Workflow } from "@prisma/client";
+import { getConnection } from "../../connections/_actions/connection";
 
 export const createWorkflow = async (
   input: CreateWorkFlowInputs
@@ -114,27 +115,39 @@ export const getWorkflowConnectors = async (): Promise<
 
   if (userId) {
     try {
-      const connectorsMap: Record<ConnectorDataType, boolean> = {
-        [ConnectorDataType.GoogleDrive]: false,
-        [ConnectorDataType.Gmail]: false,
-        [ConnectorDataType.GoogleCalendar]: false,
-        [ConnectorDataType.Notion]: false,
-        [ConnectorDataType.Slack]: false,
-        [ConnectorDataType.Discord]: false,
-        [ConnectorDataType.Condition]: false,
-        [ConnectorDataType.TimeDelay]: false,
-        [ConnectorDataType.None]: false,
+      const connectorsMap: Record<
+        ConnectorDataType,
+        {
+          connected: boolean;
+          connectionKey?: string;
+        }
+      > = {
+        [ConnectorDataType.GoogleDrive]: { connected: false },
+        [ConnectorDataType.Gmail]: { connected: false },
+        [ConnectorDataType.GoogleCalendar]: { connected: false },
+        [ConnectorDataType.Notion]: { connected: false },
+        [ConnectorDataType.Slack]: { connected: false },
+        [ConnectorDataType.Discord]: { connected: false },
+        [ConnectorDataType.Condition]: { connected: false },
+        [ConnectorDataType.TimeDelay]: { connected: false },
+        [ConnectorDataType.None]: { connected: false },
       };
 
-      const googleConnection = await db.googleCredential.findFirst({
-        where: {
-          userId,
-        },
-      });
-      if (googleConnection) {
-        connectorsMap[ConnectorDataType.GoogleDrive] = true;
-        connectorsMap[ConnectorDataType.GoogleCalendar] = true;
-        connectorsMap[ConnectorDataType.Gmail] = true;
+      const connection = await getConnection();
+      if (connection?.googleCredentialId) {
+        connectorsMap[ConnectorDataType.GoogleDrive].connected = true;
+        connectorsMap[ConnectorDataType.GoogleCalendar].connected = true;
+        connectorsMap[ConnectorDataType.Gmail].connected = true;
+      }
+      if (connection?.slackCredentialId) {
+        connectorsMap[ConnectorDataType.Slack].connected = true;
+        const slackCredential = await db.slackCredential.findFirst({
+          where: {
+            id: connection.slackCredentialId,
+          },
+        });
+        connectorsMap[ConnectorDataType.Slack].connectionKey =
+          slackCredential?.accessToken;
       }
 
       const connectors = await db.workflowConnector.findMany();
@@ -142,7 +155,8 @@ export const getWorkflowConnectors = async (): Promise<
         const parsedConnector = WorkflowConnectorSchema.parse(connector);
         return {
           ...parsedConnector,
-          connected: connectorsMap[parsedConnector.dataType],
+          connected: connectorsMap[parsedConnector.dataType].connected,
+          connectionKey: connectorsMap[parsedConnector.dataType].connectionKey,
         };
       });
     } catch (e) {

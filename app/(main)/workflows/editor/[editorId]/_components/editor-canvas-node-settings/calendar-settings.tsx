@@ -185,7 +185,7 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
             </div>
             <div className="flex gap-3 justify-end mt-10">
               <Button size="sm" variant="secondary" onClick={onCreateTestEvent}>
-                {isPending ? <Loader /> : <>Send test event</>}
+                {isPending ? <Loader /> : <>Create test event</>}
               </Button>
               <Button size="sm" onClick={() => setEdit(true)}>
                 Edit

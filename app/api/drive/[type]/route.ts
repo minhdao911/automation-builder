@@ -39,6 +39,10 @@ export async function GET(_: Request, { params }: DriveGetParams) {
       );
     }
   } catch (e: any) {
-    return NextResponse.json({ status: 500 });
+    console.error(e);
+    return NextResponse.json(
+      { error: "Error fetching drive data" },
+      { status: 500 }
+    );
   }
 }

@@ -5,32 +5,21 @@ import {
   DriveMetadataSchema,
   EmailSchema,
 } from "./google-schemas";
+import { SlackMessageSchema } from "./slack-schemas";
 
 export enum ConnectionType {
-  GoogleDrive = "Google Drive",
+  GoogleDrive = "GoogleDrive",
   Gmail = "Gmail",
-  GoogleCalendar = "Google Calendar",
+  GoogleCalendar = "GoogleCalendar",
   Notion = "Notion",
   Slack = "Slack",
   Discord = "Discord",
 }
 
-export enum ConnectionKey {
-  GoogleDriveNode = "googleDriveNode",
-  GmailNode = "gmailNode",
-  GoogleCalendarNode = "googleCalendarNode",
-  NotionNode = "notionNode",
-  SlackNode = "slackNode",
-  DiscordNode = "discordNode",
-}
-
-export type Connection = {
+export type ConnectionData = {
   type: ConnectionType;
   description: string;
   icon: string;
-  connectionKey: ConnectionKey;
-  accessTokenKey?: string;
-  alwaysTrue?: boolean;
 };
 
 const CreateWorkflowInputsSchema = z.object({
@@ -49,6 +38,7 @@ const WorkflowNodeMetadataSchema = z.object({
   googleDrive: DriveMetadataSchema.optional(),
   gmail: EmailSchema.optional(),
   googleCalendar: CalendarEventSchema.optional(),
+  slack: SlackMessageSchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 
@@ -63,6 +53,7 @@ export type WorkflowConnector = z.infer<typeof WorkflowConnectorSchema>;
 
 export const WorkflowConnectorEnrichedSchema = WorkflowConnectorSchema.extend({
   connected: z.boolean(),
+  connectionKey: z.string().optional(),
 });
 export type WorkflowConnectorEnriched = z.infer<
   typeof WorkflowConnectorEnrichedSchema
@@ -84,3 +75,8 @@ export const WorkflowNodeSchema = z.object({
   positionAbsolute: PostitionSchema.optional(),
 });
 export type WorkflowNode = z.infer<typeof WorkflowNodeSchema>;
+
+export type CResponse<T> = {
+  data?: T;
+  error?: string;
+};

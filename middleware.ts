@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
   "/api/clerk-webhook",
   "/api/drive-activity/notification",
+  "/api/auth-callback(.*)",
 ]);
 
 export default clerkMiddleware((auth, req) => {

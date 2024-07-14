@@ -98,19 +98,6 @@ const GoogleDriveSettings = ({ selectedNode }: GoogleDriveSettingsProps) => {
               <p className="font-semibold">Subscribed events</p>
               <p className="">{driveData.events.join(", ")}</p>
             </div>
-            {/* <div>
-            <div className="flex items-center gap-2">
-              <p className="font-semibold capitalize">{driveData.type}:</p>
-              <p>{driveData.name}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="font-semibold">Expiration date:</p>
-              <p>{dayjs(driveData.expiration).format("DD-MM-YYYY HH:mm:ss")}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="font-semibold">Subscribed events:</p>
-              <p>{driveData.events.join(", ")}</p>
-            </div> */}
             <Button
               size="sm"
               variant="secondary"
