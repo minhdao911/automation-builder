@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useState, useTransition } from "react";
-import { SettingsSection } from "./common";
+import { SettingsSectionWithEdit } from "./common";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -38,7 +38,12 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
   const [edit, setEdit] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const showEdit = edit || !slackData;
+  const savedData = slackData
+    ? [
+        { name: "Slack channel", value: "# " + slackData.channelName },
+        { name: "Slack message", value: slackData.text },
+      ]
+    : undefined;
 
   const getChannelList = () => {
     startTransition(async () => {
@@ -112,92 +117,72 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
 
   return (
     <>
-      <SettingsSection title="Message Details">
-        {showEdit ? (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="channel" className="flex items-center gap-1.5">
-                <span>Slack channel</span>
-                <RefreshCcw
-                  size={14}
-                  className={cn(
-                    "text-neutral-500 hover:text-neutral-400 cursor-pointer",
-                    isPending && "animate-spin cursor-not-allowed"
-                  )}
-                  onClick={async () => {
-                    if (!isPending) getChannelList();
-                  }}
-                />
-              </Label>
-              <Select
-                value={selectedChannel?.id}
-                disabled={!connected || isPending}
-                onValueChange={(value) => {
-                  setSelectedChannel(
-                    channels?.find((item) => item.id === value)
-                  );
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    id="channel"
-                    placeholder={
-                      connected
-                        ? "Select Slack channel"
-                        : "No connection established"
-                    }
-                  />
-                </SelectTrigger>
-                {channels && channels.length > 0 && (
-                  <SelectContent>
-                    {channels.map(({ id, name }) => (
-                      <SelectItem key={id} value={id}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
+      <SettingsSectionWithEdit
+        title="Message Details"
+        actionButton={
+          <Button size="sm" variant="secondary" onClick={onSendMessage}>
+            {isSending ? <Loader /> : <>Send test email</>}
+          </Button>
+        }
+        savedData={savedData}
+        edit={edit}
+        setEdit={setEdit}
+        onSaveClick={onSave}
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="channel" className="flex items-center gap-1.5">
+              <span>Slack channel</span>
+              <RefreshCcw
+                size={14}
+                className={cn(
+                  "text-neutral-500 hover:text-neutral-400 cursor-pointer",
+                  isPending && "animate-spin cursor-not-allowed"
                 )}
-              </Select>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="message">Message</Label>
-              <Textarea
-                id="message"
-                placeholder="Type your message here"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onClick={async () => {
+                  if (!isPending) getChannelList();
+                }}
               />
-            </div>
-            <div className="flex gap-3 justify-end">
-              <Button size="sm" variant="secondary" onClick={onSendMessage}>
-                {isSending ? <Loader /> : <>Send test email</>}
-              </Button>
-              <Button size="sm" onClick={onSave}>
-                Save
-              </Button>
-            </div>
+            </Label>
+            <Select
+              value={selectedChannel?.id}
+              disabled={!connected || isPending}
+              onValueChange={(value) => {
+                setSelectedChannel(channels?.find((item) => item.id === value));
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  id="channel"
+                  placeholder={
+                    connected
+                      ? "Select Slack channel"
+                      : "No connection established"
+                  }
+                />
+              </SelectTrigger>
+              {channels && channels.length > 0 && (
+                <SelectContent>
+                  {channels.map(({ id, name }) => (
+                    <SelectItem key={id} value={id}>
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              )}
+            </Select>
           </div>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">Slack channel</p>
-              <p className=""># {slackData?.channelName}</p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">Slack message</p>
-              <p className="">{slackData?.text}</p>
-            </div>
-            <div className="flex gap-3 justify-end mt-10">
-              <Button size="sm" variant="secondary" onClick={onSendMessage}>
-                {isSending ? <Loader /> : <>Send test message</>}
-              </Button>
-              <Button size="sm" onClick={() => setEdit(true)}>
-                Edit
-              </Button>
-            </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="message">Message</Label>
+            <Textarea
+              id="message"
+              placeholder="Type your message here"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
           </div>
-        )}
-      </SettingsSection>
+        </div>
+      </SettingsSectionWithEdit>
     </>
   );
 };

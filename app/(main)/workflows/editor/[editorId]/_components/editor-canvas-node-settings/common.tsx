@@ -25,6 +25,64 @@ export const SettingsSection = ({
   );
 };
 
+export const SettingsSectionWithEdit = ({
+  title,
+  savedData,
+  children,
+  actionButton,
+  edit,
+  setEdit,
+  onSaveClick,
+}: {
+  title: string | React.ReactNode;
+  savedData?: {
+    name: string;
+    value?: string | null;
+  }[];
+  children?: React.ReactNode;
+  actionButton?: React.ReactNode;
+  edit: boolean;
+  setEdit: (edit: boolean) => void;
+  onSaveClick: () => void;
+}) => {
+  const showEdit = edit || !savedData;
+
+  return (
+    <SettingsSection title={title}>
+      {showEdit ? (
+        <>
+          {children}
+          <div className="flex gap-3 justify-end mt-5">
+            {actionButton}
+            <Button type="submit" size="sm" onClick={onSaveClick}>
+              Save
+            </Button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col gap-3">
+            {savedData?.map(({ name, value }) => (
+              <div className="flex flex-col gap-1">
+                <p className="font-semibold">{name}</p>
+                <p className={`${value ? "" : "italic text-neutral-400"}`}>
+                  {value || `No ${name}`}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-3 justify-end mt-5">
+            {actionButton}
+            <Button size="sm" variant="secondary" onClick={() => setEdit(true)}>
+              Edit
+            </Button>
+          </div>
+        </>
+      )}
+    </SettingsSection>
+  );
+};
+
 export const DetailsSection = ({
   id,
   name,
@@ -40,6 +98,11 @@ export const DetailsSection = ({
   const [nodeDescription, setDescription] = useState(description);
   const [edit, setEdit] = useState(false);
 
+  const savedData = [
+    { name: "Name", value: name },
+    { name: "Description", value: description },
+  ];
+
   useEffect(() => {
     setName(name);
     setDescription(description);
@@ -52,57 +115,32 @@ export const DetailsSection = ({
   };
 
   return (
-    <SettingsSection title="Details">
-      {edit ? (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={nodeName}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="description">Description (optional)</Label>
-            <Input
-              id="description"
-              value={nodeDescription ?? ""}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <Button
-            size="sm"
-            type="submit"
-            variant="secondary"
-            onClick={onSubmit}
-          >
-            Save
-          </Button>
+    <SettingsSectionWithEdit
+      title="Details"
+      savedData={savedData}
+      edit={edit}
+      setEdit={setEdit}
+      onSaveClick={onSubmit}
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            value={nodeName}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col gap-1">
-            <p className="font-semibold w-14">Name</p>
-            <p className="">{name}</p>
-          </div>
-          <div className="flex flex-col gap-1">
-            <p className="font-semibold w-14">Description</p>
-            <p className={`${description ? "" : "italic text-neutral-400"}`}>
-              {description ?? "No description"}
-            </p>
-          </div>
-          <Button
-            size="sm"
-            variant="secondary"
-            className="mt-2"
-            onClick={() => setEdit(true)}
-          >
-            Edit
-          </Button>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="description">Description (optional)</Label>
+          <Input
+            id="description"
+            value={nodeDescription ?? ""}
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </div>
-      )}
-    </SettingsSection>
+      </div>
+    </SettingsSectionWithEdit>
   );
 };
 

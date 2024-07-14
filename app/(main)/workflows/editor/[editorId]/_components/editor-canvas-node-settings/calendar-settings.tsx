@@ -1,5 +1,5 @@
 import { FunctionComponent, useState, useTransition } from "react";
-import { SettingsSection } from "./common";
+import { SettingsSectionWithEdit } from "./common";
 import { Label } from "@/components/ui/label";
 import { WorkflowNodeData } from "@/lib/types";
 import { Node } from "reactflow";
@@ -34,7 +34,14 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
   const [edit, setEdit] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  const showEdit = edit || !calendarData;
+  const savedData = calendarData
+    ? [
+        { name: "Title", value: calendarData.summary },
+        { name: "Start date", value: calendarData.start.dateTime },
+        { name: "End date", value: calendarData.end.dateTime },
+        { name: "Description", value: calendarData.description },
+      ]
+    : undefined;
 
   const { updateNode } = useEditorStore();
   const {
@@ -112,88 +119,56 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
 
   return (
     <>
-      <SettingsSection title="Event Details">
-        {showEdit ? (
-          <form
-            className="flex flex-col gap-3"
-            onSubmit={(e) => e.preventDefault()}
-          >
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="summary">Title</Label>
-              <Input
-                id="summary"
-                className={`${errors.summary ? "border-red-500" : ""}`}
-                {...register("summary", { required: true })}
+      <SettingsSectionWithEdit
+        title="Event Details"
+        actionButton={
+          <Button size="sm" variant="secondary" onClick={onCreateTestEvent}>
+            {isPending ? <Loader /> : <>Create test event</>}
+          </Button>
+        }
+        savedData={savedData}
+        edit={edit}
+        setEdit={setEdit}
+        onSaveClick={handleSubmit(onSubmit)}
+      >
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="summary">Title</Label>
+            <Input
+              id="summary"
+              className={`${errors.summary ? "border-red-500" : ""}`}
+              {...register("summary", { required: true })}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Date</Label>
+            <div className="flex items-center gap-2">
+              <DatePicker
+                className={`${!date ? "border-red-500" : ""}`}
+                value={date}
+                onChange={setDate}
+              />
+              <p>from</p>
+              <TimePickerInput
+                className={`${errors.startTime ? "border-red-500" : ""}`}
+                {...register("startTime", { required: true })}
+              />
+              <p>to</p>
+              <TimePickerInput
+                className={`${errors.endTime ? "border-red-500" : ""}`}
+                {...register("endTime", { required: true })}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label>Date</Label>
-              <div className="flex items-center gap-2">
-                <DatePicker
-                  className={`${!date ? "border-red-500" : ""}`}
-                  value={date}
-                  onChange={setDate}
-                />
-                <p>from</p>
-                <TimePickerInput
-                  className={`${errors.startTime ? "border-red-500" : ""}`}
-                  {...register("startTime", { required: true })}
-                />
-                <p>to</p>
-                <TimePickerInput
-                  className={`${errors.endTime ? "border-red-500" : ""}`}
-                  {...register("endTime", { required: true })}
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea id="description" {...register("description")} />
-            </div>
-            <div className="flex gap-3 justify-end mt-2">
-              <Button size="sm" variant="secondary" onClick={onCreateTestEvent}>
-                {isPending ? <Loader /> : <>Create test event</>}
-              </Button>
-              <Button type="submit" size="sm" onClick={handleSubmit(onSubmit)}>
-                Save
-              </Button>
-            </div>
-          </form>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">Title</p>
-              <p className="">{calendarData.summary}</p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">Start date</p>
-              <p className="">{calendarData.start.dateTime}</p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">End date</p>
-              <p className="">{calendarData.end.dateTime}</p>
-            </div>
-            <div className="flex flex-col gap-1">
-              <p className="font-semibold">Description</p>
-              <p
-                className={`${
-                  calendarData.description ? "" : "italic text-neutral-400"
-                }`}
-              >
-                {calendarData.description || "No description"}
-              </p>
-            </div>
-            <div className="flex gap-3 justify-end mt-10">
-              <Button size="sm" variant="secondary" onClick={onCreateTestEvent}>
-                {isPending ? <Loader /> : <>Create test event</>}
-              </Button>
-              <Button size="sm" onClick={() => setEdit(true)}>
-                Edit
-              </Button>
-            </div>
           </div>
-        )}
-      </SettingsSection>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea id="description" {...register("description")} />
+          </div>
+        </form>
+      </SettingsSectionWithEdit>
     </>
   );
 };
