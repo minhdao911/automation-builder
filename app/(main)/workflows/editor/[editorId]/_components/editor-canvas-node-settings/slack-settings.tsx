@@ -47,14 +47,16 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
 
   const getChannelList = () => {
     startTransition(async () => {
-      const response = await getChannels(connectionKey);
-      if (response.error) {
-        toast({
-          description: response.error,
-          variant: "destructive",
-        });
+      if (connected) {
+        const response = await getChannels(connectionKey);
+        if (response.error) {
+          toast({
+            description: response.error,
+            variant: "destructive",
+          });
+        }
+        setChannels(response.data);
       }
-      setChannels(response.data);
     });
   };
 

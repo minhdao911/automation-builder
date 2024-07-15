@@ -1,10 +1,17 @@
 "use server";
 
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { getOauth2Client } from "./google-auth";
 import { google } from "googleapis";
 import { db } from "./db";
-import { CalendarEvent, Email } from "./google-schemas";
+import {
+  CalendarEvent,
+  DriveData,
+  DriveDataType,
+  DriveResponseSchema,
+  Email,
+} from "./google-schemas";
+import { CResponse } from "./types";
 
 export const authorize = async (userId?: string) => {
   if (userId) {
@@ -29,6 +36,44 @@ export const authorize = async (userId?: string) => {
       id: user.id,
       email: user.emailAddresses[0].emailAddress,
     };
+  }
+};
+
+export const getDriveFiles = async (
+  type: DriveDataType
+): Promise<CResponse<DriveData[]>> => {
+  const { userId } = auth();
+  if (!userId) return { error: "Unauthorized" };
+
+  try {
+    const oauth2Client = await getOauth2Client(userId);
+    const drive = google.drive({ version: "v3", auth: oauth2Client });
+
+    if (type === DriveDataType.Folder) {
+      const response = await drive.files.list({
+        q: "mimeType='application/vnd.google-apps.folder'",
+        fields: "files(id, name, mimeType)",
+      });
+      const data = DriveResponseSchema.parse(response.data);
+      return { data: data.files };
+    } else if (type === DriveDataType.File) {
+      const response = await drive.files.list({
+        q: "mimeType!='application/vnd.google-apps.folder'",
+        fields: "files(id, name, mimeType)",
+      });
+      const data = DriveResponseSchema.parse(response.data);
+      return { data: data.files };
+    } else {
+      return { error: "Invalid requested type" };
+    }
+  } catch (e: any) {
+    console.error(e);
+    if (e.errors?.[0].code === "oauth_missing_refresh_token") {
+      return {
+        error: "Missing refresh token, please sign out and sign in again",
+      };
+    }
+    return { error: "Error fetching drive data" };
   }
 };
 

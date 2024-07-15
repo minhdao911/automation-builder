@@ -1,3 +1,4 @@
+import ConnectButton from "@/components/connect-button";
 import { Button } from "@/components/ui/button";
 import { CustomSheetSectionTitle } from "@/components/ui/custom-sheet";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { mapConnectorDataType } from "@/lib/utils";
 import { useEditorStore } from "@/stores/editor-store";
 import { ConnectorDataType } from "@prisma/client";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export const SettingsSection = ({
@@ -161,7 +163,7 @@ export const ConnectionSections = ({
         {connected ? (
           <div className="text-sm font-semibold text-green-500">Connected</div>
         ) : (
-          <Button size="sm">Connect</Button>
+          <ConnectButton size="sm" dataType={dataType} />
         )}
       </div>
     </SettingsSection>

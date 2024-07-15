@@ -1,9 +1,19 @@
 import { db } from "@/lib/db";
+import { ConnectionType } from "@/lib/types";
 import { parseJwt } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
+  const state = req.nextUrl.searchParams.get("state");
+  const error = req.nextUrl.searchParams.get("error");
+  const redirectUrl = state || `${process.env.APP_URL}/connections`;
+
+  if (error) {
+    return NextResponse.redirect(
+      `${redirectUrl}?dataType=${ConnectionType.Slack}&error=${error}`
+    );
+  }
 
   if (!code) {
     return NextResponse.json({ message: "Missing code" }, { status: 400 });
@@ -49,7 +59,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    return NextResponse.redirect(`${process.env.APP_URL}/connections`);
+    return NextResponse.redirect(redirectUrl);
   } catch (e) {
     console.error(e);
     return NextResponse.json(

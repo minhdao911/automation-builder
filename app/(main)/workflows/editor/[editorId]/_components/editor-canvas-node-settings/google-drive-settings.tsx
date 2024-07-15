@@ -152,7 +152,9 @@ const CreateListenerSettings = ({
 
   if (error || mutationError) {
     toast({
-      description: `Failed to fetch ${driveDataType}s`,
+      description: `Failed to fetch ${driveDataType}s: ${
+        error?.error || mutationError?.error
+      }`,
       variant: "destructive",
     });
   }

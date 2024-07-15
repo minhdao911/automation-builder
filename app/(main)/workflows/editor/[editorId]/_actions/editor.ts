@@ -76,7 +76,8 @@ const generateFlowPaths = (
 ): string[][] => {
   const triggerNodeId = nodes.find(
     (node) => node.type === ConnectorNodeType.Trigger
-  )!.id;
+  )?.id;
+
   const sources = groupBy(edges, "source");
   const flowPaths: string[] = [];
 
@@ -98,6 +99,9 @@ const generateFlowPaths = (
     }
   }
 
-  traverse(triggerNodeId, "");
+  if (triggerNodeId) {
+    traverse(triggerNodeId, "");
+  }
+
   return flowPaths.map((path) => path.split("->"));
 };

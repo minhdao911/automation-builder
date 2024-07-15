@@ -13,7 +13,7 @@ import {
 import { saveWorkflow } from "../_actions/editor";
 import { toast } from "@/components/ui/use-toast";
 import Loader from "@/components/ui/loader";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import {
   WorkflowNode,
@@ -46,6 +46,8 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   const [isDataChanged, setIsDataChanged] = useState(false);
 
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const checkIfDataChanged = useCallback(() => {
     const oldData = {
@@ -95,6 +97,9 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
         variant: isSaved ? undefined : "destructive",
       });
       setIsDataChanged(false);
+      if (searchParams.get("error")) {
+        router.replace(pathname);
+      }
       router.refresh();
     });
   };

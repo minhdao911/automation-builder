@@ -1,12 +1,24 @@
 import { getWorkflow, getWorkflowConnectors } from "../../_actions/workflow";
 import EditorCanvas from "./_components/editor-canvas";
 import EditorNavbar from "./_components/editor-navbar";
+import EditorContainer from "./_components/editor-container";
 
 interface IParams {
   editorId: string;
 }
 
-const Editor = async ({ params }: { params: IParams }) => {
+interface ISearchParams {
+  error?: string;
+  dataType?: string;
+}
+
+const Editor = async ({
+  params,
+  searchParams,
+}: {
+  params: IParams;
+  searchParams: ISearchParams;
+}) => {
   const workflow = await getWorkflow(params.editorId);
   const connectors = await getWorkflowConnectors();
 
@@ -19,10 +31,16 @@ const Editor = async ({ params }: { params: IParams }) => {
   }
 
   return (
-    <div className="w-full h-full">
+    <EditorContainer
+      errorMessage={
+        searchParams.error
+          ? `Fail to connect to ${searchParams.dataType}`
+          : undefined
+      }
+    >
       <EditorNavbar workflow={workflow} />
       <EditorCanvas workflow={workflow} connectors={connectors} />
-    </div>
+    </EditorContainer>
   );
 };
 
