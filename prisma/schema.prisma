@@ -18,10 +18,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  workflows        Workflow[]
-  googleCredential GoogleCredential?
-  slackCredential  SlackCredential?
-  connections      Connection[]
+  Workflows        Workflow[]
+  GoogleCredential GoogleCredential?
+  SlackCredential  SlackCredential?
+  Connections      Connection[]
 }
 
 model GoogleCredential {
@@ -33,7 +33,7 @@ model GoogleCredential {
 
   User        User         @relation(fields: [userId], references: [clerkId])
   userId      String       @unique
-  connections Connection[]
+  Connections Connection[]
 }
 
 model SlackCredential {
@@ -49,7 +49,8 @@ model SlackCredential {
 
   User        User         @relation(fields: [userId], references: [clerkId])
   userId      String       @unique
-  connections Connection[]
+  Connections Connection[]
+  Workflows   Workflow[]
 }
 
 model Connection {
@@ -76,16 +77,20 @@ model Workflow {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  User   User   @relation(fields: [userId], references: [clerkId])
-  userId String
+  User              User             @relation(fields: [userId], references: [clerkId])
+  userId            String
+  SlackCredential   SlackCredential? @relation(fields: [slackCredentialId], references: [id])
+  slackCredentialId String?
+  slackUserId       String?
 }
 
 model WorkflowConnector {
-  id          String            @id @default(uuid())
+  id          String             @id @default(uuid())
   name        String
   description String?
   nodeType    ConnectorNodeType
   dataType    ConnectorDataType
+  eventType   ConnectorEvenType?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -107,4 +112,14 @@ enum ConnectorDataType {
   Condition
   TimeDelay
   None
+}
+
+enum ConnectorEvenType {
+  // Triggers
+  GoogleDrive_FileChanged
+  Slack_MessageReceived
+  // Actions
+  Gmail_SendEmail
+  GoogleCalendar_CreateEvent
+  Slack_SendMessage
 }

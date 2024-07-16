@@ -1,9 +1,5 @@
 import { db } from "@/lib/db";
-import { createCalendarEvent, sendEmail } from "@/lib/google-helpers";
-import { DriveNotificationEventType } from "@/lib/google-schemas";
-import { sendMessage } from "@/lib/slack-helpers";
-import { WorkflowNode } from "@/lib/types";
-import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
+import { runWorkflows } from "@/lib/workflows";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
@@ -18,67 +14,30 @@ export async function POST() {
   console.log("Resource State: ", resourceState);
 
   if (resourceId && resourceState) {
-    const workflow = await db.workflow.findFirst({
+    const workflows = await db.workflow.findMany({
       where: {
         driveResourceId: resourceId,
       },
     });
 
-    if (!workflow) {
-      console.log("Workflow not found");
-      return NextResponse.json({ message: "Workflow not found" });
+    if (workflows.length === 0) {
+      return NextResponse.json({
+        message: `No workflows found for resource id ${resourceId}`,
+      });
     }
 
-    const nodes: WorkflowNode[] = workflow.nodes
-      ? JSON.parse(workflow.nodes)
-      : [];
-    const flowPaths = workflow.flowPaths ? JSON.parse(workflow.flowPaths) : [];
-    const triggerNode = nodes.find((n) => n.type === ConnectorNodeType.Trigger);
-
-    if (!triggerNode) {
-      console.log("Trigger node not found");
-      return NextResponse.json({ message: "Trigger node not found" });
-    }
-
-    const subscribedEvents =
-      triggerNode.data.metadata?.googleDrive?.events ?? [];
-    if (
-      !subscribedEvents.includes(resourceState as DriveNotificationEventType)
-    ) {
-      console.log("Event not subscribed");
-      return NextResponse.json({ message: "Event not subscribed" });
-    }
-
-    for (const path of flowPaths) {
-      for (let i = 1; i < path.length; i++) {
-        const node = nodes.find((n) => n.id === path[i]);
-        switch (node?.data.dataType) {
-          case ConnectorDataType.Gmail:
-            const emailData = node.data.metadata?.gmail;
-            if (!emailData) break;
-            console.log("Sending email");
-            await sendEmail(emailData, workflow.userId);
-            break;
-          case ConnectorDataType.GoogleCalendar:
-            const calendarData = node.data.metadata?.googleCalendar;
-            if (!calendarData) break;
-            console.log("Creating calendar event");
-            await createCalendarEvent(calendarData, workflow.userId);
-            break;
-          case ConnectorDataType.Slack:
-            const slackData = node.data.metadata?.slack;
-            if (!slackData) break;
-            console.log("Sending slack message");
-            await sendMessage(
-              slackData.channelId,
-              slackData.text,
-              node.data.connectionKey
-            );
-            break;
-          default:
-            break;
-        }
+    try {
+      await runWorkflows(workflows, { resourceState });
+    } catch (e) {
+      if (e instanceof Error) {
+        console.error(e.message);
+        return NextResponse.json({ message: e.message });
       }
+      console.error(e);
+      return NextResponse.json(
+        { message: "Error running workflow" },
+        { status: 500 }
+      );
     }
   }
 

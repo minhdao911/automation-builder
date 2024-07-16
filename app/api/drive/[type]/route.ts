@@ -24,14 +24,14 @@ export async function GET(_: Request, { params }: DriveGetParams) {
         fields: "files(id, name, mimeType)",
       });
       const data = DriveResponseSchema.parse(response.data);
-      return NextResponse.json(data.files);
+      return NextResponse.json({ data: data.files });
     } else if (params.type === DriveDataType.File) {
       const response = await drive.files.list({
         q: "mimeType!='application/vnd.google-apps.folder'",
         fields: "files(id, name, mimeType)",
       });
       const data = DriveResponseSchema.parse(response.data);
-      return NextResponse.json(data.files);
+      return NextResponse.json({ data: data.files });
     }
     return NextResponse.json(
       { error: "Invalid requested type" },

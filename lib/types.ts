@@ -1,4 +1,8 @@
-import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
+import {
+  ConnectorDataType,
+  ConnectorEvenType,
+  ConnectorNodeType,
+} from "@prisma/client";
 import { z } from "zod";
 import {
   CalendarEventSchema,
@@ -48,6 +52,7 @@ export const WorkflowConnectorSchema = z.object({
   description: z.string().nullable(),
   nodeType: z.nativeEnum(ConnectorNodeType),
   dataType: z.nativeEnum(ConnectorDataType),
+  eventType: z.nativeEnum(ConnectorEvenType).nullish(),
 });
 export type WorkflowConnector = z.infer<typeof WorkflowConnectorSchema>;
 

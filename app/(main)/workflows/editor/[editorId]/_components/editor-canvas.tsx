@@ -68,6 +68,9 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
   const { setOpen } = useNodeModalStore();
 
   useEffect(() => {
+    // make sure modal is closed when workflow is loaded
+    setOpen(false);
+
     startTransition(async () => {
       const data = await loadWorkflow(workflow.id);
       setEdges(data.edges);

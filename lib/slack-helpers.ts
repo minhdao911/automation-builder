@@ -1,6 +1,6 @@
 "use server";
 
-import { SlackChannel } from "./slack-schemas";
+import { SlackChannel, SlackChannelType } from "./slack-schemas";
 import { CResponse } from "./types";
 
 export const getChannels = async (
@@ -18,9 +18,17 @@ export const getChannels = async (
     const channels: SlackChannel[] = data.channels.map((channel: any) => ({
       id: channel.id,
       name: channel.name,
+      type: SlackChannelType.Channel,
     }));
     return {
-      data: channels,
+      data: [
+        ...channels,
+        {
+          id: "im",
+          name: "Direct message",
+          type: SlackChannelType.Im,
+        },
+      ],
     };
   } catch (e) {
     console.error(e);

@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/clerk-webhook",
   "/api/drive-activity/notification",
   "/api/auth-callback(.*)",
+  "/api/slack-activity",
 ]);
 
 export default clerkMiddleware((auth, req) => {

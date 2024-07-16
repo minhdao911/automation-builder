@@ -4,10 +4,13 @@ import { useNodeModalStore } from "@/stores/node-modal-store";
 import { FunctionComponent } from "react";
 import { ConnectionSections, DetailsSection } from "./common";
 import GoogleDriveSettings from "./google-drive-settings";
-import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
+import { ConnectorEvenType, ConnectorNodeType } from "@prisma/client";
 import GmailSettings from "./gmail-settings";
 import CalendarSettings from "./calendar-settings";
-import SlackSettings from "./slack-settings";
+import {
+  SlackMessageReceivedSettings,
+  SlackSendMessageSettings,
+} from "./slack-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -19,20 +22,22 @@ const EditorCanvasNodeSettings: FunctionComponent<
 
   if (!selectedNode) return null;
 
-  const { name, description, dataType, nodeType, connected } =
+  const { name, description, dataType, nodeType, eventType, connected } =
     selectedNode.data;
   const showConnectionSettings = nodeType !== ConnectorNodeType.Logical;
 
-  const getSettingsBasedOnType = (type: ConnectorDataType) => {
+  const getSettingsBasedOnEventType = (type?: ConnectorEvenType | null) => {
     switch (type) {
-      case ConnectorDataType.GoogleDrive:
+      case ConnectorEvenType.GoogleDrive_FileChanged:
         return <GoogleDriveSettings selectedNode={selectedNode} />;
-      case ConnectorDataType.Gmail:
+      case ConnectorEvenType.Gmail_SendEmail:
         return <GmailSettings selectedNode={selectedNode} />;
-      case ConnectorDataType.GoogleCalendar:
+      case ConnectorEvenType.GoogleCalendar_CreateEvent:
         return <CalendarSettings selectedNode={selectedNode} />;
-      case ConnectorDataType.Slack:
-        return <SlackSettings selectedNode={selectedNode} />;
+      case ConnectorEvenType.Slack_SendMessage:
+        return <SlackSendMessageSettings selectedNode={selectedNode} />;
+      case ConnectorEvenType.Slack_MessageReceived:
+        return <SlackMessageReceivedSettings selectedNode={selectedNode} />;
       default:
         return null;
     }
@@ -56,7 +61,7 @@ const EditorCanvasNodeSettings: FunctionComponent<
         {showConnectionSettings && (
           <ConnectionSections connected={connected} dataType={dataType} />
         )}
-        {getSettingsBasedOnType(dataType)}
+        {getSettingsBasedOnEventType(eventType)}
       </div>
     </CustomSheet>
   );

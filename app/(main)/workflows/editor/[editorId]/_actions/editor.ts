@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { WorkflowNode } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
-import { ConnectorNodeType } from "@prisma/client";
+import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { groupBy } from "lodash";
 import { Edge } from "reactflow";
 
@@ -44,6 +44,16 @@ export const saveWorkflow = async (
       (m) => !!m?.googleDrive
     )?.googleDrive;
 
+    let slackCredentialId: string | null = null;
+    let slackUserId: string | null = null;
+    if (hasSlackNode(data.nodes)) {
+      const slackCredential = await getSlackCredential(userId);
+      if (slackCredential) {
+        slackCredentialId = slackCredential.id;
+        slackUserId = slackCredential.slackUserId;
+      }
+    }
+
     const workflow = await db.workflow.findFirst({
       where: {
         id: workflowId,
@@ -59,6 +69,8 @@ export const saveWorkflow = async (
           edges: JSON.stringify(data.edges),
           flowPaths: JSON.stringify(flowPaths),
           driveResourceId: googleDriveMetadata?.resourceId,
+          slackCredentialId,
+          slackUserId,
         },
       });
       return true;
@@ -104,4 +116,21 @@ const generateFlowPaths = (
   }
 
   return flowPaths.map((path) => path.split("->"));
+};
+
+const hasSlackNode = (nodes: WorkflowNode[]) => {
+  return nodes.some((node) => node.data.dataType === ConnectorDataType.Slack);
+};
+
+const getSlackCredential = async (userId: string) => {
+  try {
+    return await db.slackCredential.findFirst({
+      where: {
+        userId,
+      },
+    });
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 };

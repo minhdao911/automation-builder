@@ -4,10 +4,9 @@ import { CustomSheetSectionTitle } from "@/components/ui/custom-sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
-import { mapConnectorDataType } from "@/lib/utils";
+import { cn, mapConnectorDataType } from "@/lib/utils";
 import { useEditorStore } from "@/stores/editor-store";
 import { ConnectorDataType } from "@prisma/client";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export const SettingsSection = ({
@@ -32,6 +31,7 @@ export const SettingsSectionWithEdit = ({
   savedData,
   children,
   actionButton,
+  mainButton,
   edit,
   setEdit,
   onSaveClick,
@@ -43,9 +43,10 @@ export const SettingsSectionWithEdit = ({
   }[];
   children?: React.ReactNode;
   actionButton?: React.ReactNode;
+  mainButton?: React.ReactNode;
   edit: boolean;
   setEdit: (edit: boolean) => void;
-  onSaveClick: () => void;
+  onSaveClick?: () => void;
 }) => {
   const showEdit = edit || !savedData;
 
@@ -54,11 +55,18 @@ export const SettingsSectionWithEdit = ({
       {showEdit ? (
         <>
           {children}
-          <div className="flex gap-3 justify-end mt-5">
+          <div
+            className={cn(
+              "flex gap-3 mt-5",
+              actionButton ? "justify-end" : "w-full"
+            )}
+          >
             {actionButton}
-            <Button type="submit" size="sm" onClick={onSaveClick}>
-              Save
-            </Button>
+            {mainButton ?? (
+              <Button size="sm" onClick={onSaveClick}>
+                Save
+              </Button>
+            )}
           </div>
         </>
       ) : (
@@ -73,11 +81,22 @@ export const SettingsSectionWithEdit = ({
               </div>
             ))}
           </div>
-          <div className="flex gap-3 justify-end mt-5">
+          <div
+            className={cn(
+              "flex gap-3 mt-5",
+              actionButton ? "justify-end" : "w-full"
+            )}
+          >
             {actionButton}
-            <Button size="sm" variant="secondary" onClick={() => setEdit(true)}>
-              Edit
-            </Button>
+            {mainButton ?? (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => setEdit(true)}
+              >
+                Edit
+              </Button>
+            )}
           </div>
         </>
       )}

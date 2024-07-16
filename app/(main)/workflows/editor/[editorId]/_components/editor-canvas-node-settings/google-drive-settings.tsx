@@ -5,7 +5,7 @@ import {
   DriveDataType,
   DriveNotificationEventType,
 } from "@/lib/google-schemas";
-import { WorkflowNodeData } from "@/lib/types";
+import { CResponse, WorkflowNodeData } from "@/lib/types";
 import { useEffect, useState, useTransition } from "react";
 import { SettingsSection } from "./common";
 import {
@@ -141,26 +141,26 @@ const CreateListenerSettings = ({
   const { updateNode } = useEditorStore();
 
   const url = `/api/drive/${driveDataType}`;
-
-  const { data, error, isLoading } = useSWRImmutable<DriveData[]>(url, fetcher);
-  const {
-    error: mutationError,
-    isMutating,
-    trigger,
-  } = useSWRMutation<DriveData[]>(url, fetcherMutation);
+  const { data, isLoading } = useSWRImmutable<CResponse<DriveData[]>>(
+    url,
+    fetcher
+  );
+  const { isMutating, trigger } = useSWRMutation<CResponse<DriveData[]>>(
+    url,
+    fetcherMutation
+  );
   const isPending = isLoading || isMutating;
-
-  if (error || mutationError) {
-    toast({
-      description: `Failed to fetch ${driveDataType}s: ${
-        error?.error || mutationError?.error
-      }`,
-      variant: "destructive",
-    });
-  }
+  const driveFiles = data?.data || [];
 
   useEffect(() => {
     setSelectedItem(undefined);
+
+    if (data?.error) {
+      toast({
+        description: `Failed to fetch ${driveDataType}s: ${data.error}`,
+        variant: "destructive",
+      });
+    }
   }, [data]);
 
   const handleCreateListener = () => {
@@ -192,7 +192,6 @@ const CreateListenerSettings = ({
           description: "Listener created successfully",
         });
         const listener = await response.json();
-        console.log("listener", listener);
         updateNode(selectedNode.id, {
           metadata: {
             ...selectedNode.data.metadata,
@@ -251,7 +250,7 @@ const CreateListenerSettings = ({
             value={selectedItem?.id}
             disabled={!connected || isPending}
             onValueChange={(value) => {
-              setSelectedItem(data?.find((item) => item.id === value));
+              setSelectedItem(driveFiles.find((item) => item.id === value));
             }}
           >
             <SelectTrigger>
@@ -263,9 +262,9 @@ const CreateListenerSettings = ({
                 }
               />
             </SelectTrigger>
-            {data && data.length > 0 && (
+            {driveFiles.length > 0 && (
               <SelectContent>
-                {data.map(({ id, name }) => (
+                {driveFiles.map(({ id, name }) => (
                   <SelectItem key={id} value={id}>
                     {name}
                   </SelectItem>

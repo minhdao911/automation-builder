@@ -1,4 +1,10 @@
-import { FunctionComponent, useEffect, useState, useTransition } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { SettingsSectionWithEdit } from "./common";
 import { Label } from "@/components/ui/label";
 import {
@@ -10,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SlackChannel } from "@/lib/slack-schemas";
+import { SlackChannel, SlackChannelType } from "@/lib/slack-schemas";
 import { Node } from "reactflow";
 import { WorkflowNodeData } from "@/lib/types";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,23 +30,28 @@ interface SlackSettingsProps {
   selectedNode: Node<WorkflowNodeData>;
 }
 
-const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
-  selectedNode,
-}) => {
+export const SlackSendMessageSettings: FunctionComponent<
+  SlackSettingsProps
+> = ({ selectedNode }) => {
   const { connected, connectionKey, metadata } = selectedNode.data;
   const slackData = metadata?.slack;
   const { updateNode } = useEditorStore();
 
   const [channels, setChannels] = useState<SlackChannel[]>();
   const [selectedChannel, setSelectedChannel] = useState<SlackChannel>();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(slackData?.text || "");
   const [isSending, setIsSending] = useState(false);
   const [edit, setEdit] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const savedData = slackData
     ? [
-        { name: "Slack channel", value: "# " + slackData.channelName },
+        {
+          name: "Slack channel",
+          value: `${getChannelSign(slackData.channelType)} ${
+            slackData.channelName
+          }`,
+        },
         { name: "Slack message", value: slackData.text },
       ]
     : undefined;
@@ -109,6 +120,7 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
         slack: {
           channelId: selectedChannel!.id,
           channelName: selectedChannel!.name,
+          channelType: selectedChannel!.type,
           text: message,
         },
       };
@@ -122,7 +134,15 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
       <SettingsSectionWithEdit
         title="Message Details"
         actionButton={
-          <Button size="sm" variant="secondary" onClick={onSendMessage}>
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={
+              slackData?.channelType === SlackChannelType.Im ||
+              selectedChannel?.type === SlackChannelType.Im
+            }
+            onClick={onSendMessage}
+          >
             {isSending ? <Loader /> : <>Send test email</>}
           </Button>
         }
@@ -165,9 +185,9 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
               </SelectTrigger>
               {channels && channels.length > 0 && (
                 <SelectContent>
-                  {channels.map(({ id, name }) => (
+                  {channels.map(({ id, name, type }) => (
                     <SelectItem key={id} value={id}>
-                      {name}
+                      {getChannelSign(type)} {name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -189,4 +209,138 @@ const SlackSettings: FunctionComponent<SlackSettingsProps> = ({
   );
 };
 
-export default SlackSettings;
+export const SlackMessageReceivedSettings: FunctionComponent<
+  SlackSettingsProps
+> = ({ selectedNode }) => {
+  const { connected, connectionKey, metadata } = selectedNode.data;
+  const slackData = metadata?.slack;
+  const { updateNode } = useEditorStore();
+
+  const [channels, setChannels] = useState<SlackChannel[]>();
+  const [selectedChannel, setSelectedChannel] = useState<SlackChannel>();
+  const [edit, setEdit] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const savedData = slackData
+    ? [
+        {
+          name: "Slack channel",
+          value: `${getChannelSign(slackData.channelType)} ${
+            slackData.channelName
+          }`,
+        },
+      ]
+    : undefined;
+  const showEdit = edit || !savedData;
+
+  const getChannelList = () => {
+    startTransition(async () => {
+      if (connected) {
+        const response = await getChannels(connectionKey);
+        if (response.error) {
+          toast({
+            description: response.error,
+            variant: "destructive",
+          });
+        }
+        setChannels(response.data);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getChannelList();
+  }, []);
+
+  const onCreateListener = () => {
+    if (!selectedChannel) {
+      toast({
+        description: "Please select a channel",
+      });
+      return;
+    }
+    const updatedMetadata = {
+      ...metadata,
+      slack: {
+        channelId: selectedChannel!.id,
+        channelName: selectedChannel!.name,
+        channelType: selectedChannel!.type,
+      },
+    };
+    updateNode(selectedNode.id, { metadata: updatedMetadata });
+    setEdit(false);
+  };
+
+  const onMainButtonClick = useCallback(() => {
+    if (showEdit) {
+      onCreateListener();
+    } else {
+      setEdit(false);
+    }
+  }, [showEdit, selectedChannel]);
+
+  return (
+    <>
+      <SettingsSectionWithEdit
+        title="Listener"
+        savedData={savedData}
+        edit={edit}
+        setEdit={setEdit}
+        mainButton={
+          <Button size="sm" className="w-full" onClick={onMainButtonClick}>
+            {showEdit ? "Create Listener" : "Remove Listener"}
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="channel" className="flex items-center gap-1.5">
+              <span>Slack channel</span>
+              <RefreshCcw
+                size={14}
+                className={cn(
+                  "text-neutral-500 hover:text-neutral-400 cursor-pointer",
+                  isPending && "animate-spin cursor-not-allowed"
+                )}
+                onClick={async () => {
+                  if (!isPending) getChannelList();
+                }}
+              />
+            </Label>
+            <Select
+              value={selectedChannel?.id}
+              disabled={!connected || isPending}
+              onValueChange={(value) => {
+                setSelectedChannel(channels?.find((item) => item.id === value));
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue
+                  id="channel"
+                  placeholder={
+                    connected
+                      ? "Select Slack channel"
+                      : "No connection established"
+                  }
+                />
+              </SelectTrigger>
+              {channels && channels.length > 0 && (
+                <SelectContent>
+                  {channels.map(({ id, name, type }) => (
+                    <SelectItem key={id} value={id}>
+                      {getChannelSign(type)} {name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              )}
+            </Select>
+          </div>
+        </div>
+      </SettingsSectionWithEdit>
+    </>
+  );
+};
+
+const getChannelSign = (type: SlackChannelType) => {
+  return type === SlackChannelType.Channel ? "#" : "@";
+};
