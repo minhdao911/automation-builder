@@ -3,14 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { useEditorStore } from "@/stores/editor-store";
 import { Workflow } from "@prisma/client";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
-import { saveWorkflow } from "../_actions/editor";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { publishWorkflow, saveWorkflow } from "../_actions/editor";
 import { toast } from "@/components/ui/use-toast";
 import Loader from "@/components/ui/loader";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -42,8 +36,10 @@ const WorkflowNodeDataSchemaForComparison = WorkflowNodeDataSchema.omit({
 
 const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   const { nodes, edges } = useEditorStore();
-  const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
   const [isDataChanged, setIsDataChanged] = useState(false);
+  const [isSavePending, setIsSavePending] = useState(false);
+  const [isPublishPending, setIsPublishPending] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -83,25 +79,39 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
     return () => clearInterval(interval);
   }, [checkIfDataChanged]);
 
-  const handleSave = () => {
-    startTransition(async () => {
-      const nodesToSave = nodes.map((node) => WorkflowNodeSchema.parse(node));
-      const isSaved = await saveWorkflow(workflow.id, {
-        nodes: nodesToSave,
-        edges,
-      });
-      toast({
-        description: isSaved
-          ? "Workflow saved successfully"
-          : "Failed to save workflow",
-        variant: isSaved ? undefined : "destructive",
-      });
-      setIsDataChanged(false);
-      if (searchParams.get("error")) {
-        router.replace(pathname);
-      }
-      router.refresh();
+  const handleSave = async () => {
+    const nodesToSave = nodes.map((node) => WorkflowNodeSchema.parse(node));
+    setIsSavePending(true);
+    const isSaved = await saveWorkflow(workflow.id, {
+      nodes: nodesToSave,
+      edges,
     });
+    toast({
+      description: isSaved
+        ? "Workflow saved successfully"
+        : "Failed to save workflow",
+      variant: isSaved ? undefined : "destructive",
+    });
+    setIsDataChanged(false);
+    if (searchParams.get("error")) {
+      router.replace(pathname);
+    }
+    router.refresh();
+    setIsSavePending(false);
+  };
+
+  const handlePublish = async () => {
+    setIsPublishPending(true);
+    const state = !workflow.published;
+    const isDone = await publishWorkflow(workflow.id, state);
+    toast({
+      description: isDone
+        ? `Workflow ${state ? "published" : "is set to draft"} successfully`
+        : `Failed to ${state} ? "publish workflow" : "set to draft"}`,
+      variant: isDone ? undefined : "destructive",
+    });
+    router.refresh();
+    setIsPublishPending(false);
   };
 
   return (
@@ -123,10 +133,16 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
           className="w-[60px]"
           onClick={handleSave}
         >
-          {isPending ? <Loader size={16} /> : "Save"}
+          {isSavePending ? <Loader size={16} /> : "Save"}
         </Button>
-        <Button size="sm" className="w-[75px]">
-          Publish
+        <Button size="sm" onClick={handlePublish}>
+          {isPublishPending ? (
+            <Loader size={16} />
+          ) : workflow.published ? (
+            "Set to draft"
+          ) : (
+            "Publish"
+          )}
         </Button>
       </div>
     </div>

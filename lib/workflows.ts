@@ -11,6 +11,21 @@ import { DriveNotificationEventType } from "./google-schemas";
 
 export const runWorkflows = async (workflows: Workflow[], data?: any) => {
   for (const workflow of workflows) {
+    const log = (
+      message: string,
+      type: "log" | "error" | "info" | "warn" = "log"
+    ) => {
+      console[type](message, {
+        userId: workflow.userId,
+        workflowId: workflow.id,
+      });
+    };
+
+    if (!workflow.published) {
+      log("Workflow not published");
+      continue;
+    }
+
     const nodes: WorkflowNode[] = workflow.nodes
       ? JSON.parse(workflow.nodes)
       : [];
@@ -18,21 +33,14 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
     const triggerNode = nodes.find((n) => n.type === ConnectorNodeType.Trigger);
 
     if (!triggerNode) {
-      console.error("Trigger node not found");
+      log("Trigger node not found", "error");
       continue;
     }
 
     if (!validateEvent(workflow, triggerNode, data)) {
-      console.error("Event not subscribed");
+      log("Event not subscribed", "error");
       continue;
     }
-
-    const logAction = (message: string) => {
-      console.log(message, {
-        userId: workflow.userId,
-        workflowId: workflow.id,
-      });
-    };
 
     for (const path of flowPaths) {
       for (let i = 1; i < path.length; i++) {
@@ -41,19 +49,19 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
           case ConnectorEvenType.Gmail_SendEmail:
             const emailData = node.data.metadata?.gmail;
             if (!emailData) break;
-            logAction("Sending email");
+            log("Sending email");
             await sendEmail(emailData, workflow.userId);
             break;
           case ConnectorEvenType.GoogleCalendar_CreateEvent:
             const calendarData = node.data.metadata?.googleCalendar;
             if (!calendarData) break;
-            logAction("Creating calendar event");
+            log("Creating calendar event");
             await createCalendarEvent(calendarData, workflow.userId);
             break;
           case ConnectorEvenType.Slack_SendMessage:
             const slackData = node.data.metadata?.slack;
             if (!slackData) break;
-            logAction("Sending slack message");
+            log("Sending slack message");
             const channelId =
               data.event.channel_type === "channel"
                 ? slackData.channelId

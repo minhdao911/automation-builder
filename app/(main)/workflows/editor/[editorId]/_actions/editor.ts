@@ -27,6 +27,29 @@ export const loadWorkflow = async (workflowId: string) => {
   }
 };
 
+export const publishWorkflow = async (
+  workflowId: string,
+  state: boolean = true
+) => {
+  const { userId } = auth();
+  if (!userId) return false;
+
+  try {
+    await db.workflow.update({
+      where: {
+        id: workflowId,
+      },
+      data: {
+        published: state,
+      },
+    });
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+};
+
 export const saveWorkflow = async (
   workflowId: string,
   data: {
