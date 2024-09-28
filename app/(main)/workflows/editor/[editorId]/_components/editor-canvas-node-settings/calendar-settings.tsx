@@ -15,6 +15,7 @@ import { useEditorStore } from "@/stores/editor-store";
 import Loader from "@/components/ui/loader";
 import { createCalendarEvent } from "@/lib/google-helpers";
 import { toast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CalendarSettingsProps {
   selectedNode: Node<WorkflowNodeData>;
@@ -33,6 +34,7 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
   const [date, setDate] = useState(currentDate);
   const [edit, setEdit] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [allDay, setAllDay] = useState(false);
 
   const savedData = calendarData
     ? [
@@ -60,13 +62,15 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
 
   const getCalendarEvent = (data: CalendarEventForm): CalendarEvent => {
     const { startTime, endTime, summary, description } = data;
+    const finalStartTime = allDay ? "00:00" : startTime;
+    const finalEndTime = allDay ? "23:59" : endTime;
     const startDate = dayjs(date)
-      .set("hour", parseInt(startTime.split(":")[0]))
-      .set("minute", parseInt(startTime.split(":")[1]))
+      .set("hour", parseInt(finalStartTime.split(":")[0]))
+      .set("minute", parseInt(finalStartTime.split(":")[1]))
       .format();
     const endDate = dayjs(date)
-      .set("hour", parseInt(endTime.split(":")[0]))
-      .set("minute", parseInt(endTime.split(":")[1]))
+      .set("hour", parseInt(finalEndTime.split(":")[0]))
+      .set("minute", parseInt(finalEndTime.split(":")[1]))
       .format();
     return {
       start: {
@@ -132,7 +136,7 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
         onSaveClick={handleSubmit(onSubmit)}
       >
         <form
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-4"
           onSubmit={(e) => e.preventDefault()}
         >
           <div className="flex flex-col gap-2">
@@ -151,16 +155,31 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
                 value={date}
                 onChange={setDate}
               />
-              <p>from</p>
-              <TimePickerInput
-                className={`${errors.startTime ? "border-red-500" : ""}`}
-                {...register("startTime", { required: true })}
-              />
-              <p>to</p>
-              <TimePickerInput
-                className={`${errors.endTime ? "border-red-500" : ""}`}
-                {...register("endTime", { required: true })}
-              />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <p>from</p>
+                <TimePickerInput
+                  className={`${errors.startTime ? "border-red-500" : ""}`}
+                  disabled={allDay}
+                  {...register("startTime", { required: true })}
+                />
+                <p>to</p>
+                <TimePickerInput
+                  className={`${errors.endTime ? "border-red-500" : ""}`}
+                  disabled={allDay}
+                  {...register("endTime", { required: true })}
+                />
+              </div>
+              <div className="border-r h-8 border-input" />
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="allDay"
+                  checked={allDay}
+                  onCheckedChange={(checked: boolean) => setAllDay(checked)}
+                />
+                <label htmlFor="allDay">All day</label>
+              </div>
             </div>
           </div>
           <div className="flex flex-col gap-2">

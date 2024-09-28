@@ -20,13 +20,13 @@ const DatePicker = forwardRef(
           <Button
             variant={"outline"}
             className={cn(
-              "justify-start text-left font-normal",
+              "w-full justify-between text-left font-normal",
               !value && "text-muted-foreground",
               className
             )}
           >
             {value ? (
-              dayjs(value).format("MMM D, YYYY")
+              dayjs(value).format("MMMM DD, YYYY")
             ) : (
               <span>Pick a date</span>
             )}
