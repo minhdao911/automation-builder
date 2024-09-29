@@ -21,6 +21,7 @@ model User {
   Workflows        Workflow[]
   GoogleCredential GoogleCredential?
   SlackCredential  SlackCredential?
+  NotionCredential NotionCredential?
   Connections      Connection[]
 }
 
@@ -53,15 +54,33 @@ model SlackCredential {
   Workflows   Workflow[]
 }
 
+model NotionCredential {
+  id            String @id @default(uuid())
+  accessToken   String @unique
+  botId         String @unique
+  workspaceName String
+  workspaceId   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User       User        @relation(fields: [userId], references: [clerkId])
+  userId     String      @unique
+  Workflow   Workflow[]
+  Connection Connection?
+}
+
 model Connection {
   id String @id @default(uuid())
 
-  User               User             @relation(fields: [userId], references: [clerkId])
-  userId             String           @unique
-  GoogleCredential   GoogleCredential @relation(fields: [googleCredentialId], references: [id])
-  googleCredentialId String           @unique
-  SlackCredential    SlackCredential? @relation(fields: [slackCredentialId], references: [id])
-  slackCredentialId  String?          @unique
+  User               User              @relation(fields: [userId], references: [clerkId])
+  userId             String            @unique
+  GoogleCredential   GoogleCredential  @relation(fields: [googleCredentialId], references: [id])
+  googleCredentialId String            @unique
+  SlackCredential    SlackCredential?  @relation(fields: [slackCredentialId], references: [id])
+  slackCredentialId  String?           @unique
+  NotionCredential   NotionCredential? @relation(fields: [notionCredentialId], references: [id])
+  notionCredentialId String?           @unique
 }
 
 model Workflow {
@@ -77,11 +96,13 @@ model Workflow {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  User              User             @relation(fields: [userId], references: [clerkId])
-  userId            String
-  SlackCredential   SlackCredential? @relation(fields: [slackCredentialId], references: [id])
-  slackCredentialId String?
-  slackUserId       String?
+  User               User              @relation(fields: [userId], references: [clerkId])
+  userId             String
+  SlackCredential    SlackCredential?  @relation(fields: [slackCredentialId], references: [id])
+  slackCredentialId  String?
+  NotionCredential   NotionCredential? @relation(fields: [notionCredentialId], references: [id])
+  notionCredentialId String?
+  slackUserId        String?
 }
 
 model WorkflowConnector {

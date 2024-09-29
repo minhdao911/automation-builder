@@ -1,5 +1,6 @@
+import { createConnection } from "@/lib/connections";
 import { db } from "@/lib/db";
-import { ConnectionType, WorkflowNode } from "@/lib/types";
+import { ConnectionType } from "@/lib/types";
 import { parseJwt } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -50,40 +51,7 @@ export async function GET(req: NextRequest) {
         userId: userData.nonce,
       },
     });
-    await db.connection.update({
-      where: {
-        userId: userData.nonce,
-      },
-      data: {
-        slackCredentialId: slackCredential.id,
-      },
-    });
-    const workflows = await db.workflow.findMany({
-      where: {
-        userId: userData.nonce,
-      },
-    });
-    Promise.all(
-      workflows.map(async (workflow) => {
-        const nodes = workflow.nodes ? JSON.parse(workflow.nodes) : [];
-        nodes.forEach((node: WorkflowNode, index: number) => {
-          if (node.data.dataType === ConnectionType.Slack) {
-            nodes[index].data.connected = true;
-            nodes[index].data.connectionKey = slackCredential.accessToken;
-          }
-        });
-        return await db.workflow.update({
-          where: {
-            id: workflow.id,
-          },
-          data: {
-            nodes: JSON.stringify(nodes),
-            slackCredentialId: slackCredential.id,
-            slackUserId: slackCredential.slackUserId,
-          },
-        });
-      })
-    );
+    await createConnection(userData.nonce, { slack: slackCredential });
 
     return NextResponse.redirect(redirectUrl);
   } catch (e) {

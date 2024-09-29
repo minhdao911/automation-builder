@@ -8,6 +8,7 @@ interface PageContainerProps {
   children: React.ReactNode;
   headerButton?: React.ReactNode;
   errorMessage?: string;
+  successMessage?: string;
 }
 
 const PageContainer: FunctionComponent<PageContainerProps> = ({
@@ -15,12 +16,12 @@ const PageContainer: FunctionComponent<PageContainerProps> = ({
   children,
   headerButton,
   errorMessage,
+  successMessage,
 }) => {
-  console.log(errorMessage);
-  if (errorMessage) {
+  if (errorMessage || successMessage) {
     toast({
-      description: errorMessage,
-      variant: "destructive",
+      description: errorMessage || successMessage,
+      variant: errorMessage ? "destructive" : undefined,
     });
   }
 

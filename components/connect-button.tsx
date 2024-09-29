@@ -26,6 +26,8 @@ const ConnectButton: FunctionComponent<ConnectButtonProps & ButtonProps> = ({
       case ConnectionType.Slack:
         return `${process.env
           .NEXT_PUBLIC_SLACK_SIGN_IN_URL!}&nonce=${userId}&state=${`${process.env.NEXT_PUBLIC_APP_URL}${pathname}`}`;
+      case ConnectorDataType.Notion:
+        return process.env.NEXT_PUBLIC_NOTION_SIGN_IN_URL!;
       default:
         return "#";
     }

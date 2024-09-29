@@ -58,5 +58,8 @@ export const mapConnectionType = (connection: Connection) => {
   if (connection.slackCredentialId) {
     connections[ConnectorDataType.Slack] = true;
   }
+  if (connection.notionCredentialId) {
+    connections[ConnectorDataType.Notion] = true;
+  }
   return connections;
 };
