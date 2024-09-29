@@ -1,4 +1,4 @@
-import { WorkflowNodeData } from "@/lib/types";
+import { WorkflowNodeData } from "@/model/types";
 import {
   Connection,
   Edge,

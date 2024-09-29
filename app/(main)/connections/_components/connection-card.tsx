@@ -4,7 +4,7 @@ import { CircleCheck } from "lucide-react";
 import Image from "next/image";
 import { Connection } from "@prisma/client";
 import { mapConnectionType } from "@/lib/utils";
-import { ConnectionType } from "@/lib/types";
+import { ConnectionType } from "@/model/types";
 import ConnectButton from "@/components/connect-button";
 
 interface ConnectionCardProps {

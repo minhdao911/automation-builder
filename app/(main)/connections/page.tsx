@@ -2,7 +2,7 @@ import PageContainer from "@/components/page-container";
 import { CONNECTIONS } from "@/lib/constants";
 import ConnectionCard from "./_components/connection-card";
 import { createNotionConnection, getConnection } from "./_actions/connection";
-import { ConnectionType } from "@/lib/types";
+import { ConnectionType } from "@/model/types";
 
 interface IParams {
   error?: string;

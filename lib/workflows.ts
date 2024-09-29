@@ -4,10 +4,10 @@ import {
   ConnectorNodeType,
   Workflow,
 } from "@prisma/client";
-import { WorkflowNode } from "./types";
+import { WorkflowNode } from "../model/types";
 import { createCalendarEvent, sendEmail } from "./google-helpers";
 import { sendMessage } from "./slack-helpers";
-import { DriveNotificationEventType } from "./google-schemas";
+import { DriveNotificationEventType } from "../model/google-schemas";
 
 export const runWorkflows = async (workflows: Workflow[], data?: any) => {
   for (const workflow of workflows) {

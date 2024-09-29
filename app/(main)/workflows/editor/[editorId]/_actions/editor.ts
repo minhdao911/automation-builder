@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { WorkflowNode } from "@/lib/types";
+import { WorkflowNode } from "@/model/types";
 import { auth } from "@clerk/nextjs/server";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { groupBy } from "lodash";

@@ -1,6 +1,6 @@
 import { NotionCredential, SlackCredential } from "@prisma/client";
 import { db } from "./db";
-import { ConnectionType, WorkflowNode } from "./types";
+import { ConnectionType, WorkflowNode } from "../model/types";
 
 export const createConnection = async (
   userId: string,

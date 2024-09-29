@@ -1,6 +1,6 @@
 import Category from "@/components/icons/category";
 import Workflows from "@/components/icons/workflows";
-import { ConnectionData, ConnectionType } from "./types";
+import { ConnectionData, ConnectionType } from "../model/types";
 
 export const INTEGRATIONS = [
   "gmail",

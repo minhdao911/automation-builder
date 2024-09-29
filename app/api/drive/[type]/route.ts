@@ -3,7 +3,7 @@ import {
   DriveDataType,
   DriveGetParams,
   DriveResponseSchema,
-} from "@/lib/google-schemas";
+} from "@/model/google-schemas";
 import { auth } from "@clerk/nextjs/server";
 import { google } from "googleapis";
 import { NextResponse } from "next/server";

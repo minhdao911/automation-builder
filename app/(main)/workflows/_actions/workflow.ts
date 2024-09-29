@@ -6,7 +6,7 @@ import {
   UpdateWorkFlowInputs,
   WorkflowConnectorEnriched,
   WorkflowConnectorSchema,
-} from "@/lib/types";
+} from "@/model/types";
 import { auth } from "@clerk/nextjs/server";
 import { ConnectorDataType, Workflow } from "@prisma/client";
 import { getConnection } from "../../connections/_actions/connection";

@@ -17,7 +17,7 @@ import ReactFlow, {
   ReactFlowInstance,
 } from "reactflow";
 import EditorCanvasNode from "./editor-canvas-node";
-import { WorkflowConnectorEnriched, WorkflowNodeData } from "@/lib/types";
+import { WorkflowConnectorEnriched, WorkflowNodeData } from "@/model/types";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import { ConnectorNodeType, Workflow } from "@prisma/client";
 import { v4 } from "uuid";

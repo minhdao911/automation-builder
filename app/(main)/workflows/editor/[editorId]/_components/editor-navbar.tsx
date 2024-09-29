@@ -13,7 +13,7 @@ import {
   WorkflowNode,
   WorkflowNodeDataSchema,
   WorkflowNodeSchema,
-} from "@/lib/types";
+} from "@/model/types";
 import { identity, pickBy } from "lodash";
 import {
   AlertDialog,

@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/select";
 import { RefreshCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SlackChannel, SlackChannelType } from "@/lib/slack-schemas";
+import { SlackChannel, SlackChannelType } from "@/model/slack-schemas";
 import { Node } from "reactflow";
-import { WorkflowNodeData } from "@/lib/types";
+import { WorkflowNodeData } from "@/model/types";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";

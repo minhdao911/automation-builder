@@ -1,6 +1,6 @@
 import { createConnection } from "@/lib/connections";
 import { db } from "@/lib/db";
-import { ConnectionType } from "@/lib/types";
+import { ConnectionType } from "@/model/types";
 import { parseJwt } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 

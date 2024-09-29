@@ -1,11 +1,11 @@
-import { WorkflowNodeData } from "@/lib/types";
+import { WorkflowNodeData } from "@/model/types";
 import { Node } from "reactflow";
 import { SettingsSection } from "./common";
 import { Button } from "@/components/ui/button";
 import { sendEmail } from "@/lib/google-helpers";
 import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
-import { Email } from "@/lib/google-schemas";
+import { Email } from "@/model/google-schemas";
 import { Label } from "@/components/ui/label";
 import { useUser } from "@clerk/nextjs";
 import { Textarea } from "@/components/ui/textarea";

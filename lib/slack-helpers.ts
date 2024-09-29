@@ -1,7 +1,7 @@
 "use server";
 
-import { SlackChannel, SlackChannelType } from "./slack-schemas";
-import { CResponse } from "./types";
+import { SlackChannel, SlackChannelType } from "../model/slack-schemas";
+import { CResponse } from "../model/types";
 
 export const getChannels = async (
   token?: string

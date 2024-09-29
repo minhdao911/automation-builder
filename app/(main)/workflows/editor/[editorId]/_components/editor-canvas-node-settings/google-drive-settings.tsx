@@ -4,8 +4,8 @@ import {
   DriveData,
   DriveDataType,
   DriveNotificationEventType,
-} from "@/lib/google-schemas";
-import { CResponse, WorkflowNodeData } from "@/lib/types";
+} from "@/model/google-schemas";
+import { CResponse, WorkflowNodeData } from "@/model/types";
 import { useEffect, useState, useTransition } from "react";
 import { SettingsSection } from "./common";
 import {

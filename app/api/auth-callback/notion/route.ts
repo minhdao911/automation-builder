@@ -1,4 +1,4 @@
-import { ConnectionType } from "@/lib/types";
+import { ConnectionType } from "@/model/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {

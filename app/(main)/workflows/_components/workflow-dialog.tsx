@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { SubmitHandler } from "react-hook-form";
-import { CreateWorkFlowInputs } from "@/lib/types";
+import { CreateWorkFlowInputs } from "@/model/types";
 import { createWorkflow, updateWorkflowDetails } from "../_actions/workflow";
 import WorkflowForm from "./workflow-form";
 import { useToast } from "@/components/ui/use-toast";

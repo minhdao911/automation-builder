@@ -10,8 +10,8 @@ import {
   DriveDataType,
   DriveResponseSchema,
   Email,
-} from "./google-schemas";
-import { CResponse } from "./types";
+} from "../model/google-schemas";
+import { CResponse } from "../model/types";
 
 export const authorize = async (userId?: string) => {
   if (userId) {

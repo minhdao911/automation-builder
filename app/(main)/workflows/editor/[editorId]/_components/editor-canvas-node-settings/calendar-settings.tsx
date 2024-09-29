@@ -1,14 +1,14 @@
 import { FunctionComponent, useState, useTransition } from "react";
 import { SettingsSectionWithEdit } from "./common";
 import { Label } from "@/components/ui/label";
-import { WorkflowNodeData } from "@/lib/types";
+import { WorkflowNodeData } from "@/model/types";
 import { Node } from "reactflow";
 import DatePicker from "@/components/ui/date-picker";
 import TimePickerInput from "@/components/ui/time-picker-input";
 import dayjs from "dayjs";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { CalendarEvent, CalendarEventForm } from "@/lib/google-schemas";
+import { CalendarEvent, CalendarEventForm } from "@/model/google-schemas";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useEditorStore } from "@/stores/editor-store";

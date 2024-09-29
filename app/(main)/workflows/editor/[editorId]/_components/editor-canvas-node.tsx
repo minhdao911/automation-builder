@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { WorkflowNodeData } from "@/lib/types";
+import { WorkflowNodeData } from "@/model/types";
 import { FunctionComponent } from "react";
 import { NodeProps, Position, useNodeId } from "reactflow";
 import CustomHandle from "./custom-handle";

@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectionType } from "@/lib/types";
+import { ConnectionType } from "@/model/types";
 import { useAuth } from "@clerk/nextjs";
 import { ConnectorDataType } from "@prisma/client";
 import Link from "next/link";
