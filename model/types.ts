@@ -10,6 +10,7 @@ import {
   EmailSchema,
 } from "./google-schemas";
 import { SlackMessageSchema } from "./slack-schemas";
+import { NotionMetadataSchema } from "./notion-schemas";
 
 export enum ConnectionType {
   GoogleDrive = "GoogleDrive",
@@ -43,6 +44,7 @@ const WorkflowNodeMetadataSchema = z.object({
   gmail: EmailSchema.optional(),
   googleCalendar: CalendarEventSchema.optional(),
   slack: SlackMessageSchema.optional(),
+  notion: NotionMetadataSchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 

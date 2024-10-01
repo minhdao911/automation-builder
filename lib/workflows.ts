@@ -8,6 +8,7 @@ import { WorkflowNode } from "../model/types";
 import { createCalendarEvent, sendEmail } from "./google-helpers";
 import { sendMessage } from "./slack-helpers";
 import { DriveNotificationEventType } from "../model/google-schemas";
+import { createPage } from "./notion-helpers";
 
 export const runWorkflows = async (workflows: Workflow[], data?: any) => {
   for (const workflow of workflows) {
@@ -46,6 +47,7 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
       for (let i = 1; i < path.length; i++) {
         const node = nodes.find((n) => n.id === path[i]);
         switch (node?.data.eventType) {
+          // Google
           case ConnectorEvenType.Gmail_SendEmail:
             const emailData = node.data.metadata?.gmail;
             if (!emailData) break;
@@ -58,6 +60,7 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
             log("Creating calendar event");
             await createCalendarEvent(calendarData, workflow.userId);
             break;
+          // Slack
           case ConnectorEvenType.Slack_SendMessage:
             const slackData = node.data.metadata?.slack;
             if (!slackData) break;
@@ -71,6 +74,13 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
               slackData.text!,
               node.data.connectionKey
             );
+            break;
+          // Notion
+          case ConnectorEvenType.Notion_CreatePage:
+            const notionData = node.data.metadata?.notion;
+            if (!notionData) break;
+            await createPage(notionData, node.data.connectionKey);
+            log("Creating notion page");
             break;
           default:
             break;

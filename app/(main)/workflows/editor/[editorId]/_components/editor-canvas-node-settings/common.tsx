@@ -4,22 +4,36 @@ import { CustomSheetSectionTitle } from "@/components/ui/custom-sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
-import { cn, mapConnectorDataType } from "@/lib/utils";
+import { mapConnectorDataType } from "@/lib/utils";
 import { useEditorStore } from "@/stores/editor-store";
 import { ConnectorDataType } from "@prisma/client";
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 
 export const SettingsSection = ({
   title,
+  editable,
   children,
+  onEditClick,
 }: {
   title: string | React.ReactNode;
+  editable?: boolean;
   children?: React.ReactNode;
+  onEditClick?: (isEdit: boolean) => void;
 }) => {
   return (
     <section className="p-4 bg-background border rounded-lg">
       <CustomSheetSectionTitle className="mb-3">
-        {title}
+        <div className="flex items-center justify-between">
+          <p>{title}</p>
+          {editable && (
+            <Pencil
+              size={16}
+              className="text-muted-foreground hover:text-white cursor-pointer"
+              onClick={onEditClick?.bind(this, true)}
+            />
+          )}
+        </div>
       </CustomSheetSectionTitle>
       {children}
     </section>
@@ -33,6 +47,7 @@ export const SettingsSectionWithEdit = ({
   actionButton,
   mainButton,
   edit,
+  savedComponent,
   setEdit,
   onSaveClick,
 }: {
@@ -45,22 +60,18 @@ export const SettingsSectionWithEdit = ({
   actionButton?: React.ReactNode;
   mainButton?: React.ReactNode;
   edit: boolean;
+  savedComponent?: React.ReactNode;
   setEdit: (edit: boolean) => void;
   onSaveClick?: () => void;
 }) => {
-  const showEdit = edit || !savedData;
+  const showEdit = edit || (!savedData && !savedComponent);
 
   return (
-    <SettingsSection title={title}>
+    <SettingsSection title={title} editable={!showEdit} onEditClick={setEdit}>
       {showEdit ? (
         <>
           {children}
-          <div
-            className={cn(
-              "flex gap-3 mt-5",
-              actionButton ? "justify-end" : "w-full"
-            )}
-          >
+          <div className="flex gap-3 mt-5 justify-end">
             {actionButton}
             {mainButton ?? (
               <Button size="sm" onClick={onSaveClick}>
@@ -81,23 +92,7 @@ export const SettingsSectionWithEdit = ({
               </div>
             ))}
           </div>
-          <div
-            className={cn(
-              "flex gap-3 mt-5",
-              actionButton ? "justify-end" : "w-full"
-            )}
-          >
-            {actionButton}
-            {mainButton ?? (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setEdit(true)}
-              >
-                Edit
-              </Button>
-            )}
-          </div>
+          {savedComponent}
         </>
       )}
     </SettingsSection>
@@ -137,7 +132,7 @@ export const DetailsSection = ({
 
   return (
     <SettingsSectionWithEdit
-      title="Details"
+      title="Node Details"
       savedData={savedData}
       edit={edit}
       setEdit={setEdit}

@@ -46,6 +46,9 @@ export async function POST(req: NextRequest) {
       const workflows = await db.workflow.findMany({
         where: {
           slackCredentialId: credential.id,
+          nodes: {
+            contains: `"channelId":"${event.channel}"`,
+          },
         },
       });
       allWorkflows.push(...workflows);

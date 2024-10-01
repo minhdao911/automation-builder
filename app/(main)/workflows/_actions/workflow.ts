@@ -149,6 +149,16 @@ export const getWorkflowConnectors = async (): Promise<
         connectorsMap[ConnectorDataType.Slack].connectionKey =
           slackCredential?.accessToken;
       }
+      if (connection?.notionCredentialId) {
+        connectorsMap[ConnectorDataType.Notion].connected = true;
+        const notionCredential = await db.notionCredential.findFirst({
+          where: {
+            id: connection.notionCredentialId,
+          },
+        });
+        connectorsMap[ConnectorDataType.Notion].connectionKey =
+          notionCredential?.accessToken;
+      }
 
       const connectors = await db.workflowConnector.findMany();
       return connectors.map((connector) => {

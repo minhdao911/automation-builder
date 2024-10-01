@@ -143,4 +143,7 @@ enum ConnectorEvenType {
   Gmail_SendEmail
   GoogleCalendar_CreateEvent
   Slack_SendMessage
+  Notion_CreatePage
+  Notion_UpdatePage
+  Notion_CreateDatabase
 }

@@ -1,9 +1,8 @@
 import { z } from "zod";
 
-enum ParentType {
+export enum NotionParentType {
   Page = "page_id",
   Database = "database_id",
-  Workspace = "workspace_id",
 }
 enum DatabasePropertyType {
   RichText = "rich_text",
@@ -26,17 +25,12 @@ enum DatabasePropertyType {
   // Rollup = "rollup",
   // Formula = "formula",
 }
-export enum NotionParentSearchType {
-  Page = "page",
-  Database = "database",
-  Workspace = "workspace",
-}
 
 const ParentSchema = z.object({
-  type: z.nativeEnum(ParentType),
+  type: z.nativeEnum(NotionParentType),
   database_id: z.string().optional(),
   page_id: z.string().optional(),
-  workspace_id: z.string().optional(),
+  workspace: z.literal(true).optional(),
 });
 const CoverSchema = z.object({
   type: z.literal("external"),
@@ -92,3 +86,12 @@ const NotionParentSchema = z.object({
   title: z.string(),
 });
 export type NotionParent = z.infer<typeof NotionParentSchema>;
+
+export const NotionMetadataSchema = z.object({
+  parentId: z.string(),
+  parentType: z.nativeEnum(NotionParentType),
+  title: z.string(),
+  icon: z.string(),
+  content: z.string().optional(),
+});
+export type NotionMetadata = z.infer<typeof NotionMetadataSchema>;
