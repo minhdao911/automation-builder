@@ -11,7 +11,10 @@ import {
   SlackMessageReceivedSettings,
   SlackSendMessageSettings,
 } from "./slack-settings";
-import NotionCreatePageSettings from "./notion-settings";
+import {
+  NotionCreatePageSettings,
+  NotionCreateDatabaseSettings,
+} from "./notion-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -41,6 +44,8 @@ const EditorCanvasNodeSettings: FunctionComponent<
         return <SlackMessageReceivedSettings selectedNode={selectedNode} />;
       case ConnectorEvenType.Notion_CreatePage:
         return <NotionCreatePageSettings selectedNode={selectedNode} />;
+      case ConnectorEvenType.Notion_CreateDatabase:
+        return <NotionCreateDatabaseSettings selectedNode={selectedNode} />;
       default:
         return null;
     }

@@ -4,11 +4,9 @@ export enum NotionParentType {
   Page = "page_id",
   Database = "database_id",
 }
-enum DatabasePropertyType {
+export enum NotionDatabasePropertyType {
   RichText = "rich_text",
   Number = "number",
-  Select = "select",
-  MultiSelect = "multi_select",
   Date = "date",
   People = "people",
   Files = "files",
@@ -20,11 +18,21 @@ enum DatabasePropertyType {
   CreatedBy = "created_by",
   LastEditedTime = "last_edited_time",
   LastEditedBy = "last_edited_by",
+  // Title = "title",
+  // Select = "select",
+  // MultiSelect = "multi_select",
   // Status = "status",
   // Relation = "relation",
   // Rollup = "rollup",
   // Formula = "formula",
 }
+export enum NotionTitlePropertyType {
+  Title = "title",
+}
+export const EnrichedNotionDatabaseProperties = {
+  ...NotionDatabasePropertyType,
+  ...NotionTitlePropertyType,
+};
 
 const ParentSchema = z.object({
   type: z.nativeEnum(NotionParentType),
@@ -54,6 +62,11 @@ const BlockSchema = z.object({
     rich_text: z.array(RichTextSchema),
   }),
 });
+const DatabasePropertySchema = z.object({
+  name: z.string(),
+  type: z.nativeEnum(EnrichedNotionDatabaseProperties),
+});
+export type NotionDatabaseProperty = z.infer<typeof DatabasePropertySchema>;
 
 const NotionPageSchema = z.object({
   parent: ParentSchema,
@@ -71,13 +84,7 @@ const NotionDatabaseSchema = z.object({
   cover: CoverSchema.optional(),
   icon: IconSchema.optional(),
   title: z.array(RichTextSchema),
-  properties: z.record(
-    z.string(),
-    z.object({
-      name: z.string(),
-      type: z.nativeEnum(DatabasePropertyType),
-    })
-  ),
+  properties: z.record(z.string(), DatabasePropertySchema),
 });
 export type NotionDatabase = z.infer<typeof NotionDatabaseSchema>;
 
@@ -90,8 +97,10 @@ export type NotionParent = z.infer<typeof NotionParentSchema>;
 export const NotionMetadataSchema = z.object({
   parentId: z.string(),
   parentType: z.nativeEnum(NotionParentType),
+  parentName: z.string().optional(),
   title: z.string(),
-  icon: z.string(),
+  icon: z.string().optional(),
   content: z.string().optional(),
+  properties: z.array(DatabasePropertySchema).optional(),
 });
 export type NotionMetadata = z.infer<typeof NotionMetadataSchema>;

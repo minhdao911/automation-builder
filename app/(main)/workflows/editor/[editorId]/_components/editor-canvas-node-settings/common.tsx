@@ -23,7 +23,7 @@ export const SettingsSection = ({
 }) => {
   return (
     <section className="p-4 bg-background border rounded-lg">
-      <CustomSheetSectionTitle className="mb-3">
+      <CustomSheetSectionTitle className="mb-4">
         <div className="flex items-center justify-between">
           <p>{title}</p>
           {editable && (
@@ -82,13 +82,17 @@ export const SettingsSectionWithEdit = ({
         </>
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {savedData?.map(({ name, value }) => (
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1.5">
                 <p className="font-semibold">{name}</p>
-                <p className={`${value ? "" : "italic text-neutral-400"}`}>
+                <pre
+                  className={`text-sm ${
+                    value ? "" : "italic text-neutral-400"
+                  }`}
+                >
                   {value || `No ${name}`}
-                </p>
+                </pre>
               </div>
             ))}
           </div>

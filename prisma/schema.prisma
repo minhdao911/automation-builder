@@ -144,6 +144,6 @@ enum ConnectorEvenType {
   GoogleCalendar_CreateEvent
   Slack_SendMessage
   Notion_CreatePage
-  Notion_UpdatePage
+  Notion_DeletePageFromDatabase
   Notion_CreateDatabase
 }

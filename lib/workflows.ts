@@ -8,7 +8,7 @@ import { WorkflowNode } from "../model/types";
 import { createCalendarEvent, sendEmail } from "./google-helpers";
 import { sendMessage } from "./slack-helpers";
 import { DriveNotificationEventType } from "../model/google-schemas";
-import { createPage } from "./notion-helpers";
+import { createDatabase, createPage } from "./notion-helpers";
 
 export const runWorkflows = async (workflows: Workflow[], data?: any) => {
   for (const workflow of workflows) {
@@ -22,70 +22,84 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
       });
     };
 
-    if (!workflow.published) {
-      log("Workflow not published");
-      continue;
-    }
+    try {
+      if (!workflow.published) {
+        log("Workflow not published");
+        continue;
+      }
 
-    const nodes: WorkflowNode[] = workflow.nodes
-      ? JSON.parse(workflow.nodes)
-      : [];
-    const flowPaths = workflow.flowPaths ? JSON.parse(workflow.flowPaths) : [];
-    const triggerNode = nodes.find((n) => n.type === ConnectorNodeType.Trigger);
+      const nodes: WorkflowNode[] = workflow.nodes
+        ? JSON.parse(workflow.nodes)
+        : [];
+      const flowPaths = workflow.flowPaths
+        ? JSON.parse(workflow.flowPaths)
+        : [];
+      const triggerNode = nodes.find(
+        (n) => n.type === ConnectorNodeType.Trigger
+      );
 
-    if (!triggerNode) {
-      log("Trigger node not found", "error");
-      continue;
-    }
+      if (!triggerNode) {
+        log("Trigger node not found", "error");
+        continue;
+      }
 
-    if (!validateEvent(workflow, triggerNode, data)) {
-      log("Event not subscribed", "error");
-      continue;
-    }
+      if (!validateEvent(workflow, triggerNode, data)) {
+        log("Event not subscribed", "error");
+        continue;
+      }
 
-    for (const path of flowPaths) {
-      for (let i = 1; i < path.length; i++) {
-        const node = nodes.find((n) => n.id === path[i]);
-        switch (node?.data.eventType) {
-          // Google
-          case ConnectorEvenType.Gmail_SendEmail:
-            const emailData = node.data.metadata?.gmail;
-            if (!emailData) break;
-            log("Sending email");
-            await sendEmail(emailData, workflow.userId);
-            break;
-          case ConnectorEvenType.GoogleCalendar_CreateEvent:
-            const calendarData = node.data.metadata?.googleCalendar;
-            if (!calendarData) break;
-            log("Creating calendar event");
-            await createCalendarEvent(calendarData, workflow.userId);
-            break;
-          // Slack
-          case ConnectorEvenType.Slack_SendMessage:
-            const slackData = node.data.metadata?.slack;
-            if (!slackData) break;
-            log("Sending slack message");
-            const channelId =
-              data.event.channel_type === "channel"
-                ? slackData.channelId
-                : data.event.channel;
-            await sendMessage(
-              channelId,
-              slackData.text!,
-              node.data.connectionKey
-            );
-            break;
-          // Notion
-          case ConnectorEvenType.Notion_CreatePage:
-            const notionData = node.data.metadata?.notion;
-            if (!notionData) break;
-            await createPage(notionData, node.data.connectionKey);
-            log("Creating notion page");
-            break;
-          default:
-            break;
+      for (const path of flowPaths) {
+        for (let i = 1; i < path.length; i++) {
+          const node = nodes.find((n) => n.id === path[i]);
+          switch (node?.data.eventType) {
+            // Google
+            case ConnectorEvenType.Gmail_SendEmail:
+              const emailData = node.data.metadata?.gmail;
+              if (!emailData) break;
+              log("Sending email");
+              await sendEmail(emailData, workflow.userId);
+              break;
+            case ConnectorEvenType.GoogleCalendar_CreateEvent:
+              const calendarData = node.data.metadata?.googleCalendar;
+              if (!calendarData) break;
+              log("Creating calendar event");
+              await createCalendarEvent(calendarData, workflow.userId);
+              break;
+            // Slack
+            case ConnectorEvenType.Slack_SendMessage:
+              const slackData = node.data.metadata?.slack;
+              if (!slackData) break;
+              log("Sending slack message");
+              const channelId =
+                data.event.channel_type === "channel"
+                  ? slackData.channelId
+                  : data.event.channel;
+              await sendMessage(
+                channelId,
+                slackData.text!,
+                node.data.connectionKey
+              );
+              break;
+            // Notion
+            case ConnectorEvenType.Notion_CreatePage:
+              const notionData = node.data.metadata?.notion;
+              if (!notionData) break;
+              log("Creating notion page");
+              await createPage(notionData, node.data.connectionKey);
+              break;
+            case ConnectorEvenType.Notion_CreateDatabase:
+              const notionDatabaseData = node.data.metadata?.notion;
+              if (!notionDatabaseData) break;
+              log("Creating notion database");
+              await createDatabase(notionDatabaseData, node.data.connectionKey);
+              break;
+            default:
+              break;
+          }
         }
       }
+    } catch (e) {
+      log(JSON.stringify(e), "error");
     }
   }
 };

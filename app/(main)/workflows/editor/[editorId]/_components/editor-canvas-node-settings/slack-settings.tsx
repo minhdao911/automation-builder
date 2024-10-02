@@ -151,7 +151,7 @@ export const SlackSendMessageSettings: FunctionComponent<
         setEdit={setEdit}
         onSaveClick={onSave}
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="channel" className="flex items-center gap-1.5">
               <span>Slack channel</span>
@@ -292,7 +292,7 @@ export const SlackMessageReceivedSettings: FunctionComponent<
           </Button>
         }
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="channel" className="flex items-center gap-1.5">
               <span>Slack channel</span>
