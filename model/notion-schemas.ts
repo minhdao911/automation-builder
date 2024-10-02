@@ -88,11 +88,13 @@ const NotionDatabaseSchema = z.object({
 });
 export type NotionDatabase = z.infer<typeof NotionDatabaseSchema>;
 
-const NotionParentSchema = z.object({
+const NotionSearchResultSchema = z.object({
   id: z.string(),
   title: z.string(),
+  icon: z.string().optional(),
+  parent: ParentSchema,
 });
-export type NotionParent = z.infer<typeof NotionParentSchema>;
+export type NotionSearchResult = z.infer<typeof NotionSearchResultSchema>;
 
 export const NotionMetadataSchema = z.object({
   parentId: z.string(),
@@ -102,5 +104,6 @@ export const NotionMetadataSchema = z.object({
   icon: z.string().optional(),
   content: z.string().optional(),
   properties: z.array(DatabasePropertySchema).optional(),
+  pageId: z.string().optional(),
 });
 export type NotionMetadata = z.infer<typeof NotionMetadataSchema>;

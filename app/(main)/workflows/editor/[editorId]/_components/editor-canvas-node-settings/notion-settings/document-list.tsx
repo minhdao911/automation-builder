@@ -9,7 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   NotionMetadata,
-  NotionParent,
+  NotionSearchResult,
   NotionParentType,
 } from "@/model/notion-schemas";
 import { RefreshCcw } from "lucide-react";
@@ -19,18 +19,18 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 
-const ParentListOptions = ({
-  parentList,
-  parentId,
-  parentType = NotionParentType.Page,
+const DocumentList = ({
+  docList,
+  docId,
+  docType = NotionParentType.Page,
   isPending,
   formProps,
   onRefresh,
   onValueChange,
 }: {
-  parentList?: NotionParent[];
-  parentId: string;
-  parentType?: NotionParentType;
+  docList?: NotionSearchResult[];
+  docId: string;
+  docType?: NotionParentType;
   isPending: boolean;
   formProps?: {
     register: UseFormRegister<NotionMetadata>;
@@ -44,7 +44,7 @@ const ParentListOptions = ({
     <div className="flex flex-col gap-2">
       <Label htmlFor="parent" className="flex items-center gap-1.5">
         <p>
-          <span className="capitalize">{getCreateOption(parentType)}</span> list
+          <span className="capitalize">{getCreateOption(docType)}</span> list
         </p>
         <RefreshCcw
           size={14}
@@ -58,7 +58,7 @@ const ParentListOptions = ({
         />
       </Label>
       <Select
-        value={parentId}
+        value={docId}
         disabled={isPending}
         onValueChange={(value) => {
           onValueChange(value);
@@ -72,15 +72,15 @@ const ParentListOptions = ({
           <SelectValue
             id="parent"
             placeholder={
-              parentList && parentList.length > 0
-                ? `Select parent ${getCreateOption(parentType)}`
-                : `No ${getCreateOption(parentType)} found`
+              docList && docList.length > 0
+                ? `Select ${getCreateOption(docType)}`
+                : `No ${getCreateOption(docType)} found`
             }
           />
         </SelectTrigger>
-        {parentList && parentList.length > 0 && (
+        {docList && docList.length > 0 && (
           <SelectContent>
-            {parentList.map(({ id, title }) => (
+            {docList.map(({ id, title }) => (
               <SelectItem key={id} value={id}>
                 {title}
               </SelectItem>
@@ -92,7 +92,7 @@ const ParentListOptions = ({
   );
 };
 
-export default ParentListOptions;
+export default DocumentList;
 
 export const getCreateOption = (type: NotionParentType) => {
   return type === NotionParentType.Page ? "page" : "database";

@@ -14,6 +14,7 @@ import {
 import {
   NotionCreatePageSettings,
   NotionCreateDatabaseSettings,
+  NotionDeletePageSettings,
 } from "./notion-settings";
 
 interface EditorCanvasNodeSettingsProps {}
@@ -46,6 +47,8 @@ const EditorCanvasNodeSettings: FunctionComponent<
         return <NotionCreatePageSettings selectedNode={selectedNode} />;
       case ConnectorEvenType.Notion_CreateDatabase:
         return <NotionCreateDatabaseSettings selectedNode={selectedNode} />;
+      case ConnectorEvenType.Notion_DeletePageFromDatabase:
+        return <NotionDeletePageSettings selectedNode={selectedNode} />;
       default:
         return null;
     }

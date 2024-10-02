@@ -3,7 +3,13 @@ import { SettingsSectionWithEdit } from "../common";
 import { WorkflowNodeData } from "@/model/types";
 import { FunctionComponent, useEffect, useState, useTransition } from "react";
 import { Label } from "@/components/ui/label";
-import { searchPagesAndDatabases } from "@/lib/notion-helpers";
+import {
+  deletePage,
+  getTitle,
+  retrieveDatabase,
+  searchPagesAndDatabases,
+  searchPagesWithParentDatabase,
+} from "@/lib/notion-helpers";
 import {
   Select,
   SelectContent,
@@ -14,7 +20,7 @@ import {
 import {
   NotionDatabaseProperty,
   NotionMetadata,
-  NotionParent,
+  NotionSearchResult,
   NotionParentType,
   EnrichedNotionDatabaseProperties,
 } from "@/model/notion-schemas";
@@ -24,7 +30,7 @@ import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { useEditorStore } from "@/stores/editor-store";
 import { toast } from "@/components/ui/use-toast";
-import ParentListOptions, { getCreateOption } from "./parent-list-options";
+import DocumentList, { getCreateOption } from "./document-list";
 import PropertiesTable from "./properties-table";
 
 interface NotionSettingsProps {
@@ -48,7 +54,7 @@ export const NotionCreatePageSettings: FunctionComponent<
 
   const [edit, setEdit] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [parentList, setParentList] = useState<NotionParent[]>();
+  const [parentList, setParentList] = useState<NotionSearchResult[]>();
 
   const savedData = notionData
     ? [
@@ -99,7 +105,7 @@ export const NotionCreatePageSettings: FunctionComponent<
     if (parentType) getParentList();
   }, [parentType]);
 
-  const onSubmit = async (data: NotionMetadata) => {
+  const onSubmit = (data: NotionMetadata) => {
     const updatedMetadata = {
       ...metadata,
       notion: {
@@ -162,10 +168,10 @@ export const NotionCreatePageSettings: FunctionComponent<
           </div>
           {parentType && (
             <>
-              <ParentListOptions
-                parentList={parentList}
-                parentId={parentId}
-                parentType={parentType}
+              <DocumentList
+                docList={parentList}
+                docId={parentId}
+                docType={parentType}
                 isPending={isPending}
                 formProps={{ register, errors, clearErrors }}
                 onRefresh={getParentList}
@@ -220,7 +226,7 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
   const [properties, setProperties] = useState<NotionDatabaseProperty[]>(
     notionData?.properties ?? defaultProperties
   );
-  const [parentList, setParentList] = useState<NotionParent[]>();
+  const [parentList, setParentList] = useState<NotionSearchResult[]>();
   const [isPending, startTransition] = useTransition();
 
   const savedData = notionData
@@ -271,7 +277,7 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
     getParentList();
   }, []);
 
-  const onSubmit = async (data: NotionMetadata) => {
+  const onSubmit = (data: NotionMetadata) => {
     const hasValidProperties = properties.every(
       (prop) => prop.name && prop.type
     );
@@ -312,9 +318,9 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
         setEdit={setEdit}
         onSaveClick={handleSubmit(onSubmit)}
       >
-        <ParentListOptions
-          parentList={parentList}
-          parentId={parentId}
+        <DocumentList
+          docList={parentList}
+          docId={parentId}
           isPending={isPending}
           formProps={{ register, errors, clearErrors }}
           onRefresh={getParentList}
@@ -353,6 +359,98 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
             />
           </div>
         )}
+      </SettingsSectionWithEdit>
+    </>
+  );
+};
+
+export const NotionDeletePageSettings: FunctionComponent<
+  NotionSettingsProps
+> = ({ selectedNode }) => {
+  const { connected, connectionKey, metadata } = selectedNode.data;
+  const notionData = metadata?.notion;
+  const { updateNode } = useEditorStore();
+
+  const [edit, setEdit] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [pageList, setPageList] = useState<NotionSearchResult[]>();
+  const [pageId, setPageId] = useState<string>("");
+
+  const savedData = notionData
+    ? [
+        {
+          name: "Parent database",
+          value: notionData.parentName ?? "Untitled",
+        },
+        {
+          name: "Page to delete",
+          value: notionData.icon
+            ? `${notionData.icon} ${notionData.title}`
+            : notionData.title,
+        },
+      ]
+    : undefined;
+
+  const getPageList = () => {
+    startTransition(async () => {
+      if (connected) {
+        const list = await searchPagesWithParentDatabase(connectionKey);
+        setPageList(list);
+      }
+    });
+  };
+
+  useEffect(() => {
+    getPageList();
+  }, []);
+
+  const onSubmit = async () => {
+    const page = pageList?.find((p) => p.id === pageId);
+    if (!page?.parent) return;
+
+    const parent = await retrieveDatabase(
+      page.parent.database_id,
+      connectionKey
+    );
+    if (!parent) return;
+
+    // const response = await deletePage(pageId, connectionKey);
+    // console.log(response);
+
+    const updatedMetadata = {
+      ...metadata,
+      notion: {
+        pageId,
+        parentId: page.parent.database_id!,
+        parentType: NotionParentType.Database,
+        parentName: await getTitle(NotionParentType.Database, parent),
+        title: page.title,
+        icon: page.icon,
+      },
+    };
+    updateNode(selectedNode.id, { metadata: updatedMetadata });
+    setEdit(false);
+  };
+
+  return (
+    <>
+      <SettingsSectionWithEdit
+        title="Page Details"
+        savedData={savedData}
+        edit={edit}
+        setEdit={setEdit}
+        disabled={!pageId}
+        onSaveClick={onSubmit}
+      >
+        <DocumentList
+          docList={pageList}
+          docId={pageId}
+          isPending={isPending}
+          onRefresh={getPageList}
+          onValueChange={(value) => {
+            setPageId(value);
+          }}
+        />
       </SettingsSectionWithEdit>
     </>
   );

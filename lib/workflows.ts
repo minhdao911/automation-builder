@@ -8,7 +8,7 @@ import { WorkflowNode } from "../model/types";
 import { createCalendarEvent, sendEmail } from "./google-helpers";
 import { sendMessage } from "./slack-helpers";
 import { DriveNotificationEventType } from "../model/google-schemas";
-import { createDatabase, createPage } from "./notion-helpers";
+import { createDatabase, createPage, deletePage } from "./notion-helpers";
 
 export const runWorkflows = async (workflows: Workflow[], data?: any) => {
   for (const workflow of workflows) {
@@ -53,20 +53,22 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
           const node = nodes.find((n) => n.id === path[i]);
           switch (node?.data.eventType) {
             // Google
-            case ConnectorEvenType.Gmail_SendEmail:
+            case ConnectorEvenType.Gmail_SendEmail: {
               const emailData = node.data.metadata?.gmail;
               if (!emailData) break;
               log("Sending email");
               await sendEmail(emailData, workflow.userId);
               break;
-            case ConnectorEvenType.GoogleCalendar_CreateEvent:
+            }
+            case ConnectorEvenType.GoogleCalendar_CreateEvent: {
               const calendarData = node.data.metadata?.googleCalendar;
               if (!calendarData) break;
               log("Creating calendar event");
               await createCalendarEvent(calendarData, workflow.userId);
               break;
+            }
             // Slack
-            case ConnectorEvenType.Slack_SendMessage:
+            case ConnectorEvenType.Slack_SendMessage: {
               const slackData = node.data.metadata?.slack;
               if (!slackData) break;
               log("Sending slack message");
@@ -80,19 +82,29 @@ export const runWorkflows = async (workflows: Workflow[], data?: any) => {
                 node.data.connectionKey
               );
               break;
+            }
             // Notion
-            case ConnectorEvenType.Notion_CreatePage:
+            case ConnectorEvenType.Notion_CreatePage: {
               const notionData = node.data.metadata?.notion;
               if (!notionData) break;
               log("Creating notion page");
               await createPage(notionData, node.data.connectionKey);
               break;
-            case ConnectorEvenType.Notion_CreateDatabase:
+            }
+            case ConnectorEvenType.Notion_CreateDatabase: {
               const notionDatabaseData = node.data.metadata?.notion;
               if (!notionDatabaseData) break;
               log("Creating notion database");
               await createDatabase(notionDatabaseData, node.data.connectionKey);
               break;
+            }
+            case ConnectorEvenType.Notion_DeletePageFromDatabase: {
+              const notionData = node.data.metadata?.notion;
+              if (!notionData) break;
+              log("Deleting notion page");
+              await deletePage(notionData.pageId, node.data.connectionKey);
+              break;
+            }
             default:
               break;
           }
@@ -130,12 +142,6 @@ const validateEvent = (
       if (
         data.event.channel_type === "channel" &&
         slackData?.channelId !== data.event.channel
-      ) {
-        return false;
-      }
-      if (
-        data.event.channel_type === "channel" &&
-        workflow.slackUserId === data.event.user
       ) {
         return false;
       }

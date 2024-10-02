@@ -42,16 +42,18 @@ export const SettingsSection = ({
 
 export const SettingsSectionWithEdit = ({
   title,
+  edit,
   savedData,
   children,
   actionButton,
   mainButton,
-  edit,
+  disabled,
   savedComponent,
   setEdit,
   onSaveClick,
 }: {
   title: string | React.ReactNode;
+  edit: boolean;
   savedData?: {
     name: string;
     value?: string | null;
@@ -59,7 +61,7 @@ export const SettingsSectionWithEdit = ({
   children?: React.ReactNode;
   actionButton?: React.ReactNode;
   mainButton?: React.ReactNode;
-  edit: boolean;
+  disabled?: boolean;
   savedComponent?: React.ReactNode;
   setEdit: (edit: boolean) => void;
   onSaveClick?: () => void;
@@ -74,7 +76,7 @@ export const SettingsSectionWithEdit = ({
           <div className="flex gap-3 mt-5 justify-end">
             {actionButton}
             {mainButton ?? (
-              <Button size="sm" onClick={onSaveClick}>
+              <Button size="sm" disabled={disabled} onClick={onSaveClick}>
                 Save
               </Button>
             )}
