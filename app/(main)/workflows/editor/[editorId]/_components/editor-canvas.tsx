@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/resizable";
 import { useNodeModalStore } from "@/stores/node-modal-store";
 import EditorCanvasNodeSettings from "./editor-canvas-node-settings";
+import CustomEdge from "./custom-edge";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -44,6 +45,10 @@ const nodeTypes = {
   [ConnectorNodeType.Action]: EditorCanvasNode,
   [ConnectorNodeType.Trigger]: EditorCanvasNode,
   [ConnectorNodeType.Logical]: EditorCanvasNode,
+};
+
+const edgeTypes = {
+  customEdge: CustomEdge,
 };
 
 const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
@@ -175,6 +180,7 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
                 nodes={nodes}
                 edges={edges}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onInit={onInit}

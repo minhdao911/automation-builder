@@ -30,6 +30,7 @@ type EditorAction = {
   deselectNodes: () => void;
   updateNode: (nodeId: string, data: Partial<WorkflowNodeData>) => void;
   removeNode: (nodeId: string) => void;
+  removeEdge: (edgeId: string) => void;
 };
 
 export const useEditorStore = create<EditorState & EditorAction>(
@@ -48,8 +49,9 @@ export const useEditorStore = create<EditorState & EditorAction>(
       });
     },
     onConnect: (connection: Connection) => {
+      const edge = { ...connection, type: "customEdge" };
       set({
-        edges: addEdge(connection, get().edges),
+        edges: addEdge(edge, get().edges),
       });
     },
     setNodes: (nodes: Node<WorkflowNodeData>[]) => {
@@ -127,6 +129,10 @@ export const useEditorStore = create<EditorState & EditorAction>(
       set({
         nodes: applyNodeChanges([], nodes),
       });
+      set({ edges });
+    },
+    removeEdge: (edgeId) => {
+      const edges = get().edges.filter((edge) => edge.id !== edgeId);
       set({ edges });
     },
   })
