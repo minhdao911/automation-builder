@@ -89,7 +89,7 @@ export const ConditionRowConnector = ({
   const items = Object.values(LogicalConnectionOperator).map((value) => ({
     value,
   }));
-  const Line = memo(() => <div className="border-l h-6 ml-[51px]" />);
+
   return (
     <div className="flex flex-col">
       <Line />
@@ -103,6 +103,8 @@ export const ConditionRowConnector = ({
     </div>
   );
 };
+
+const Line = () => <div className="border-l h-6 ml-[51px]" />;
 
 export const AddConditionButton = ({ onClick }: { onClick: () => void }) => {
   return (

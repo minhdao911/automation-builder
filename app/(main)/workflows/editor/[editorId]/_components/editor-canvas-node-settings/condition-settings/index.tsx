@@ -60,6 +60,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         setVariables(VARIABLE_TYPES[triggerNode.data.dataType]);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [edges, nodes]);
 
   const addCondition = () => {

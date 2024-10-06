@@ -73,6 +73,7 @@ export const SlackSendMessageSettings: FunctionComponent<
 
   useEffect(() => {
     getChannelList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const validateSlackData = () => {
@@ -250,6 +251,7 @@ export const SlackMessageReceivedSettings: FunctionComponent<
 
   useEffect(() => {
     getChannelList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onCreateListener = () => {
@@ -277,6 +279,7 @@ export const SlackMessageReceivedSettings: FunctionComponent<
     } else {
       setEdit(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showEdit, selectedChannel]);
 
   return (

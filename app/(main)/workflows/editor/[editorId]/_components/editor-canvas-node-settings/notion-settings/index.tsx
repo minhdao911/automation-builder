@@ -103,6 +103,7 @@ export const NotionCreatePageSettings: FunctionComponent<
 
   useEffect(() => {
     if (parentType) getParentList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parentType]);
 
   const onSubmit = (data: NotionMetadata) => {
@@ -275,6 +276,7 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
 
   useEffect(() => {
     getParentList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = (data: NotionMetadata) => {
@@ -402,6 +404,7 @@ export const NotionDeletePageSettings: FunctionComponent<
 
   useEffect(() => {
     getPageList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async () => {
