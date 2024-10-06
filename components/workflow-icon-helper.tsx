@@ -23,30 +23,42 @@ const WorkflowIconHelper: FunctionComponent<WorkflowIconHelperProps> = ({
   if (size === "sm") {
     sizes = [24, 16];
   }
+  const styles = {
+    logo: "dark:shadow-lg",
+    icon: "flex-shrink-0",
+  };
 
   switch (type) {
     case ConnectorDataType.Gmail:
-      return <Gmail className="shadow-lg" size={sizes[0]} bgColor={bgColor} />;
+      return (
+        <Gmail className={styles.logo} size={sizes[0]} bgColor={bgColor} />
+      );
     case ConnectorDataType.GoogleDrive:
-      return <Drive className="shadow-lg" size={sizes[0]} bgColor={bgColor} />;
+      return (
+        <Drive className={styles.logo} size={sizes[0]} bgColor={bgColor} />
+      );
     case ConnectorDataType.GoogleCalendar:
       return (
-        <Calendar className="shadow-lg" size={sizes[0]} bgColor={bgColor} />
+        <Calendar className={styles.logo} size={sizes[0]} bgColor={bgColor} />
       );
     case ConnectorDataType.Condition:
-      return <GitBranch className="flex-shrink-0" size={sizes[1]} />;
+      return <GitBranch className={styles.icon} size={sizes[1]} />;
     case ConnectorDataType.Slack:
-      return <Slack className="shadow-lg" size={sizes[0]} bgColor={bgColor} />;
+      return (
+        <Slack className={styles.logo} size={sizes[0]} bgColor={bgColor} />
+      );
     case ConnectorDataType.Notion:
-      return <Notion className="shadow-lg" size={sizes[0]} bgColor={bgColor} />;
+      return (
+        <Notion className={styles.logo} size={sizes[0]} bgColor={bgColor} />
+      );
     case ConnectorDataType.Discord:
       return (
-        <Discord className="shadow-lg" size={sizes[0]} bgColor={bgColor} />
+        <Discord className={styles.logo} size={sizes[0]} bgColor={bgColor} />
       );
     case ConnectorDataType.TimeDelay:
-      return <Timer className="flex-shrink-0" size={sizes[1]} />;
+      return <Timer className={styles.icon} size={sizes[1]} />;
     default:
-      return <Zap className="flex-shrink-0" size={sizes[1]} />;
+      return <Zap className={styles.icon} size={sizes[1]} />;
   }
 };
 

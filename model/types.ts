@@ -48,7 +48,6 @@ export enum TimeUnit {
 export type ConnectionData = {
   type: ConnectionType;
   description: string;
-  icon: string;
 };
 
 const RuleSchema = z.object({

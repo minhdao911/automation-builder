@@ -17,7 +17,10 @@ const WorkflowsPage: FunctionComponent<WorkflowsPageProps> = async () => {
       headerButton={
         <WorkflowDialog
           trigger={
-            <Button size="sm" className="h-8 w-8 p-1.5">
+            <Button
+              size="sm"
+              className="h-8 w-8 p-1.5 bg-[#7540A9] hover:bg-[#8057a9] dark:bg-primary"
+            >
               <Plus size={24} />
             </Button>
           }

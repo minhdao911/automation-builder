@@ -67,12 +67,12 @@ export const SavedConditionRow = ({
   const { icon, label } = getConditionVariable(variable!);
   return (
     <div className="flex flex-wrap items-center gap-3 bg-background">
-      <div className="flex items-center gap-1 h-7 pl-1 pr-2 border rounded-lg bg-neutral-800">
+      <div className="flex items-center gap-1 h-7 pl-1 pr-2 border rounded-lg bg-neutral-100 dark:bg-neutral-800">
         {icon}
         <code className="text-xs">{label}</code>
       </div>
       <p className="text-sm lowercase">{operator}</p>
-      <code className="flex items-center justify-center text-xs h-7 px-2 border rounded-lg bg-neutral-800">
+      <code className="flex items-center justify-center text-xs h-7 px-2 border rounded-lg bg-neutral-100 dark:bg-neutral-800">
         {input}
       </code>
     </div>
@@ -94,7 +94,7 @@ export const ConditionRowConnector = ({
     <div className="flex flex-col">
       <Line />
       <SimpleSelect
-        className="w-[62px] ml-5 text-xs px-2 h-8 bg-neutral-900"
+        className="w-[62px] ml-5 text-xs px-2 h-8 bg-neutral-100 dark:bg-neutral-900"
         value={connector}
         items={items}
         onValueChange={onChange}

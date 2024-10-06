@@ -115,7 +115,7 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   };
 
   return (
-    <div className="flex items-center justify-between dark:bg-black px-4 py-4 w-full">
+    <div className="flex items-center justify-between bg-neutral-200 dark:bg-black px-4 py-4 w-full">
       <div className="flex items-center gap-4">
         <GoBackButton checkIfDataChanged={checkIfDataChanged} />
         <div>

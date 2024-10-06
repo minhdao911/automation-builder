@@ -79,7 +79,7 @@ const EditorCanvasNodeSettings: FunctionComponent<
       open={open}
       onClose={() => setOpen(false)}
     >
-      <div className="p-6 border-b border-neutral-800 shadow">
+      <div className="p-6 border-b border-neutral-300 dark:border-neutral-800 shadow">
         <CustomSheetTitle>{name}</CustomSheetTitle>
       </div>
       <div

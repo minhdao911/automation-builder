@@ -78,7 +78,7 @@ const EditorCanvasSidebarCard = ({
 }: EditorCanvasSidebarCardProps) => (
   <Card
     draggable
-    className="w-full cursor-grab border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900 mb-4"
+    className="w-full cursor-grab border-neutral-200 shadow-sm dark:border-black dark:border-neutral-700 dark:bg-neutral-900 mb-4"
     onDragStart={(event) => {
       event.dataTransfer.setData("nodeDataId", id);
       event.dataTransfer.setData("nodeType", nodeType);

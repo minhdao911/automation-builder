@@ -17,8 +17,9 @@ function Calendar({ size = 24, bgColor, className }: Props) {
       className={className}
     >
       <path
+        className="fill-neutral-100 dark:fill-[#303030]"
         d="M49 0H15C6.71573 0 0 6.71573 0 15V49C0 57.2843 6.71573 64 15 64H49C57.2843 64 64 57.2843 64 49V15C64 6.71573 57.2843 0 49 0Z"
-        fill={bgColor ?? "#303030"}
+        style={{ fill: bgColor }}
       />
       <path
         d="M43.0522 20.9474H20.9473V43.0524H43.0522V20.9474Z"
