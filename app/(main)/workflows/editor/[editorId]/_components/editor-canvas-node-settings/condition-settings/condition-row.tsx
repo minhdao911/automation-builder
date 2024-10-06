@@ -4,13 +4,7 @@ import {
   VariableType,
 } from "@/model/types";
 import { CirclePlus, Trash2 } from "lucide-react";
-import {
-  Select as UISelect,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SimpleSelectProps, SimpleSelect } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { ConnectorDataType } from "@prisma/client";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
@@ -51,7 +45,7 @@ export const ConditionRow = ({
             />
             <Input
               value={input}
-              onChange={(e) => onChange("input", e.target.value)}
+              onChange={(e) => onChange("input", e.target.value.toLowerCase())}
             />
           </div>
         </div>
@@ -99,7 +93,7 @@ export const ConditionRowConnector = ({
   return (
     <div className="flex flex-col">
       <Line />
-      <Select
+      <SimpleSelect
         className="w-[62px] ml-5 text-xs px-2 h-8 bg-neutral-900"
         value={connector}
         items={items}
@@ -124,60 +118,25 @@ export const AddConditionButton = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
-interface SelectProps {
-  value?: string;
-  onValueChange: (value: string) => void;
-}
-
 const VariableSelect = ({
   list,
   value,
   onValueChange,
-}: SelectProps & {
+}: SimpleSelectProps & {
   list: VariableType[];
 }) => {
   const items = list.map(getConditionVariable);
-  return <Select value={value} items={items} onValueChange={onValueChange} />;
+  return (
+    <SimpleSelect value={value} items={items} onValueChange={onValueChange} />
+  );
 };
 
-const ConditionSelect = ({ value, onValueChange }: SelectProps) => {
+const ConditionSelect = ({ value, onValueChange }: SimpleSelectProps) => {
   const items = Object.values(LogicalComparisionOperator).map((value) => ({
     value,
   }));
-  return <Select value={value} items={items} onValueChange={onValueChange} />;
-};
-
-const Select = ({
-  items,
-  value,
-  className,
-  onValueChange,
-}: SelectProps & {
-  className?: string;
-  items: {
-    value: string;
-    label?: string;
-    icon?: React.ReactNode;
-  }[];
-}) => {
   return (
-    <UISelect value={value} onValueChange={onValueChange}>
-      <SelectTrigger className={className}>
-        <SelectValue placeholder="Select value" />
-      </SelectTrigger>
-      <SelectContent>
-        {items.map((item, index) => {
-          return (
-            <SelectItem key={index} value={item.value}>
-              <div className="flex items-center gap-2">
-                {item.icon}
-                <p>{item.label ?? item.value}</p>
-              </div>
-            </SelectItem>
-          );
-        })}
-      </SelectContent>
-    </UISelect>
+    <SimpleSelect value={value} items={items} onValueChange={onValueChange} />
   );
 };
 

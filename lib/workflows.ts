@@ -199,13 +199,13 @@ const processLogical = async (
 const applyRule = (rule: Rule, variable: any) => {
   switch (rule.operator) {
     case LogicalComparisionOperator.Equal: {
-      return variable === rule.input;
+      return variable.toLowerCase() === rule.input;
     }
     case LogicalComparisionOperator.NotEqual: {
-      return variable !== rule.input;
+      return variable.toLowerCase() !== rule.input;
     }
     case LogicalComparisionOperator.Contains: {
-      return variable.includes(rule.input);
+      return variable.toLowerCase().includes(rule.input);
     }
     default:
       return false;
