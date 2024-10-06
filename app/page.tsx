@@ -1,5 +1,4 @@
 import { BackgroundBeams } from "@/components/background-beams";
-import { ContainerScroll } from "@/components/container-scroll-animation";
 import { InfiniteMovingCards } from "@/components/infinite-moving-cards";
 import { LampComponent } from "@/components/lamp";
 import LandingNavBar from "@/components/landing-navbar";
@@ -36,45 +35,38 @@ export default function Home() {
   return (
     <main>
       <LandingNavBar />
-      <section className="h-[800px] md:h-screen w-full bg-neutral-950 rounded-md !overflow-visible relative flex flex-col items-center antialiased">
-        <div className="absolute inset-0 h-[90%] w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_35%,#223_100%)]"></div>
-        <div className="flex flex-col">
-          <ContainerScroll
-            titleComponent={
-              <div className="flex flex-col items-center gap-3">
-                <h1 className="text-4xl font-semibold text-black dark:text-white">
-                  Unleash the power of automation with <br />
-                  <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
-                    AutoMateX
-                  </span>
-                </h1>
-                <Button
-                  size={"lg"}
-                  className="p-6 md:p-8 mb-0 text-xl md:text-2xl w-fit border-t-2 rounded-full border-[#4D4D4D] bg-[#1F1F1F] hover:bg-white group transition-all flex items-center justify-center gap-4 hover:shadow-xl hover:shadow-neutral-500 duration-500"
-                >
-                  <Link
-                    className="bg-clip-text text-transparent bg-gradient-to-r from-neutral-200 to-neutral-300  md:text-center font-sans group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-black"
-                    href="/workflows"
-                  >
-                    Try it out!
-                  </Link>
-                </Button>
-              </div>
-            }
-          >
+      <section className="relative h-[800px] md:h-screen w-full bg-neutral-950">
+        <div className="absolute inset-0 h-full w-full flex flex-col items-center justify-end gap-10 [background:radial-gradient(125%_125%_at_50%_10%,#000_35%,#223_100%)]">
+          <div className="flex flex-col items-center gap-5">
+            <h1 className="text-4xl text-center font-semibold text-black dark:text-white">
+              Unleash the power of automation with <br />
+              <span className="text-4xl md:text-[6rem] font-bold mt-1 leading-none">
+                AutoMateX
+              </span>
+            </h1>
+            <Button className="p-4 md:p-6 text-lg md:text-xl w-fit border-t-2 rounded-full border-[#4D4D4D] bg-[#1F1F1F] hover:bg-white group transition-all hover:shadow-xl hover:shadow-neutral-500 duration-500">
+              <Link
+                className="bg-clip-text text-transparent bg-gradient-to-r from-neutral-200 to-neutral-300  md:text-center font-sans group-hover:bg-gradient-to-r group-hover:from-black group-hover:to-black"
+                href="/workflows"
+              >
+                Get Started
+              </Link>
+            </Button>
+          </div>
+          <div className="h-[65%] mx-auto rounded-t-2xl bg-background p-5 pb-0">
             <Image
               src="/banner.png"
               alt="Banner"
-              height={720}
+              height={400}
               width={1400}
-              className="mx-auto rounded-2xl object-cover h-full object-left-top"
+              className="h-full rounded-t-xl object-cover object-left-top"
               draggable={false}
             />
-          </ContainerScroll>
+          </div>
         </div>
       </section>
       <InfiniteMovingCards
-        className="md:mt-[260px] 3xl:mt-[100px]"
+        className="mt-10"
         items={INTEGRATIONS}
         direction="right"
         speed="slow"
