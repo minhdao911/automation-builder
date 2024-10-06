@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
   const timestamp = headerPayload.get("x-slack-request-timestamp");
 
   if (dayjs().add(5, "minute").isBefore(dayjs(timestamp))) {
+    console.error("Request expired");
     return Response.json({ error: "Request expired" }, { status: 400 });
   }
 
@@ -29,12 +30,22 @@ export async function POST(req: NextRequest) {
   const signature = `v0=${hmac.update(signatureBaseString).digest("hex")}`;
 
   if (signature !== slackSigningSecret) {
+    console.error("Invalid signature");
     return Response.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   // Handle the Slack event
-  const { team_id, event, authorizations } = body;
+  const { team_id, event, event_time, authorizations } = body;
   console.log("Slack event received", body);
+
+  const currentTime = dayjs().unix();
+  const eventLag = currentTime - event_time;
+  console.log("Event lag:", eventLag);
+  if (eventLag > 2) {
+    console.log("Duplicate event");
+    return Response.json({ message: "Duplicate event" });
+  }
+
   if (team_id) {
     const slackCredentials = await db.slackCredential.findMany({
       where: {
