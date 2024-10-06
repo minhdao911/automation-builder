@@ -17,6 +17,20 @@ export const createWorkflow = async (
   const { userId } = auth();
 
   if (userId) {
+    const isAdmin = await checkAdmin();
+    const workflows = await db.workflow.findMany({
+      where: {
+        userId,
+      },
+    });
+
+    if (workflows.length >= 1 && !isAdmin) {
+      return {
+        message: "You have reached the maximum number of workflows",
+        error: true,
+      };
+    }
+
     try {
       await db.workflow.create({
         data: {
@@ -174,4 +188,9 @@ export const getWorkflowConnectors = async (): Promise<
       return undefined;
     }
   }
+};
+
+export const checkAdmin = async () => {
+  const { sessionClaims } = auth();
+  return sessionClaims?.metadata.role === "admin";
 };
