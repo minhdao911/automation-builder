@@ -21,11 +21,41 @@ export enum ConnectionType {
   Discord = "Discord",
 }
 
+export enum VariableType {
+  GoogleDrive_Event = "GoogleDrive:Event",
+  Slack_IncomingMessage = "Slack:Incoming message",
+  Slack_SenderId = "Slack:Sender ID",
+}
+
+export enum LogicalComparisionOperator {
+  Equal = "Equals",
+  NotEqual = "Does not equal",
+  Contains = "Contains",
+}
+
+export enum LogicalConnectionOperator {
+  And = "And",
+  Or = "Or",
+}
+
 export type ConnectionData = {
   type: ConnectionType;
   description: string;
   icon: string;
 };
+
+const RuleSchema = z.object({
+  variable: z.nativeEnum(VariableType).optional(),
+  operator: z.nativeEnum(LogicalComparisionOperator),
+  input: z.string(),
+});
+export type Rule = z.infer<typeof RuleSchema>;
+
+const ConditionSchema = z.object({
+  connector: z.nativeEnum(LogicalConnectionOperator).optional(),
+  rules: z.array(RuleSchema),
+});
+export type Condition = z.infer<typeof ConditionSchema>;
 
 const CreateWorkflowInputsSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -45,6 +75,7 @@ const WorkflowNodeMetadataSchema = z.object({
   googleCalendar: CalendarEventSchema.optional(),
   slack: SlackMessageSchema.optional(),
   notion: NotionMetadataSchema.optional(),
+  condition: ConditionSchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 

@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { PickerProps, Theme } from "emoji-picker-react";
 import { Button } from "./button";
-import { Ban, CircleX, X } from "lucide-react";
+import { Ban, X } from "lucide-react";
 
 const Picker = dynamic(
   () => {

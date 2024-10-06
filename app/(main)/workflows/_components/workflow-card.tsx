@@ -10,10 +10,10 @@ import Link from "next/link";
 import StatusDot from "@/components/ui/status-dot";
 import { ConnectorDataType, Workflow } from "@prisma/client";
 import { Node } from "reactflow";
-import { WorkflowNodeData } from "@/lib/types";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { Minus } from "lucide-react";
 import WorkflowOptions from "./workflow-options";
+import { WorkflowNodeData } from "@/model/types";
 
 type Props = {
   workflow: Workflow;

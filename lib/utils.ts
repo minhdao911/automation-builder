@@ -1,7 +1,7 @@
 import { Connection, ConnectorDataType } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { ConnectionType } from "../model/types";
+import { ConnectionType, VariableType } from "../model/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

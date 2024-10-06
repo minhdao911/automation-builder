@@ -99,7 +99,7 @@ const EditRows = ({
         </TableCell>
       </TableRow>
       {properties.slice(1).map(({ name, type }, index) => (
-        <TableRow>
+        <TableRow key={index}>
           <InputCell
             index={index + 1}
             value={name}

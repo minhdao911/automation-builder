@@ -4,7 +4,11 @@ import { useNodeModalStore } from "@/stores/node-modal-store";
 import { FunctionComponent } from "react";
 import { ConnectionSections, DetailsSection } from "./common";
 import GoogleDriveSettings from "./google-drive-settings";
-import { ConnectorEvenType, ConnectorNodeType } from "@prisma/client";
+import {
+  ConnectorDataType,
+  ConnectorEvenType,
+  ConnectorNodeType,
+} from "@prisma/client";
 import GmailSettings from "./gmail-settings";
 import CalendarSettings from "./calendar-settings";
 import {
@@ -16,6 +20,7 @@ import {
   NotionCreateDatabaseSettings,
   NotionDeletePageSettings,
 } from "./notion-settings";
+import ConditionSettings from "./condition-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -26,6 +31,8 @@ const EditorCanvasNodeSettings: FunctionComponent<
   const { selectedNode } = useEditorStore();
 
   if (!selectedNode) return null;
+
+  const contentHeight = window.innerHeight - 80 - 77;
 
   const { name, description, dataType, nodeType, eventType, connected } =
     selectedNode.data;
@@ -54,6 +61,15 @@ const EditorCanvasNodeSettings: FunctionComponent<
     }
   };
 
+  const getSettingsBasedOnDataType = (type?: ConnectorDataType | null) => {
+    switch (type) {
+      case ConnectorDataType.Condition:
+        return <ConditionSettings selectedNode={selectedNode} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <CustomSheet
       className="top-[80px]"
@@ -63,7 +79,10 @@ const EditorCanvasNodeSettings: FunctionComponent<
       <div className="p-6 border-b border-neutral-800 shadow">
         <CustomSheetTitle>{name}</CustomSheetTitle>
       </div>
-      <div className="p-3 flex flex-col gap-3">
+      <div
+        style={{ height: contentHeight }}
+        className={`overflow-auto p-3 flex flex-col gap-3`}
+      >
         <DetailsSection
           id={selectedNode.id}
           name={name}
@@ -73,6 +92,7 @@ const EditorCanvasNodeSettings: FunctionComponent<
           <ConnectionSections connected={connected} dataType={dataType} />
         )}
         {getSettingsBasedOnEventType(eventType)}
+        {getSettingsBasedOnDataType(dataType)}
       </div>
     </CustomSheet>
   );

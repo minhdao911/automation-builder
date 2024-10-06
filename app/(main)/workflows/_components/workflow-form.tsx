@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreateWorkFlowInputs } from "@/lib/types";
+import { CreateWorkFlowInputs } from "@/model/types";
 import { FunctionComponent } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 

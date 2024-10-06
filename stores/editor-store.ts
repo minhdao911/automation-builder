@@ -1,4 +1,5 @@
 import { WorkflowNodeData } from "@/model/types";
+import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import {
   Connection,
   Edge,
@@ -49,6 +50,17 @@ export const useEditorStore = create<EditorState & EditorAction>(
       });
     },
     onConnect: (connection: Connection) => {
+      // make sure condition node is only connected to trigger node
+      const isTargetConditionNode =
+        get().nodes.find((node) => node.id === connection.target)?.data
+          .dataType === ConnectorDataType.Condition;
+      if (isTargetConditionNode) {
+        const sourceNode = get().nodes.find(
+          (node) => node.id === connection.source
+        );
+        if (sourceNode?.data.nodeType !== ConnectorNodeType.Trigger) return;
+      }
+
       const edge = { ...connection, type: "customEdge" };
       set({
         edges: addEdge(edge, get().edges),

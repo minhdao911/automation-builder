@@ -85,7 +85,7 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
 
   return (
     <>
-      <SettingsSection title="Email">
+      <SettingsSection title="Email" editable={!showEdit} onEditClick={setEdit}>
         {showEdit ? (
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="grid gap-4 py-4">
@@ -148,14 +148,6 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
             <p className="my-3 font-semibold">{gmailData?.subject}</p>
             <Separator />
             <p className="mt-3">{gmailData?.html}</p>
-            <div className="flex gap-3 justify-end mt-10">
-              <Button size="sm" variant="secondary" onClick={onSendTestEmail}>
-                {isPending ? <Loader /> : <>Send test email</>}
-              </Button>
-              <Button size="sm" onClick={() => setEdit(true)}>
-                Edit
-              </Button>
-            </div>
           </div>
         )}
       </SettingsSection>

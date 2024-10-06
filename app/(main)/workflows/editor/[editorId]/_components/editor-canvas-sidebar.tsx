@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FunctionComponent } from "react";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
-import { WorkflowConnectorEnriched } from "@/lib/types";
+import { WorkflowConnectorEnriched } from "@/model/types";
 import { mapConnectorDataType } from "@/lib/utils";
 
 interface EditorCanvasSidebarProps {

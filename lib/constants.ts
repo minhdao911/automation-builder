@@ -1,6 +1,7 @@
 import Category from "@/components/icons/category";
 import Workflows from "@/components/icons/workflows";
-import { ConnectionData, ConnectionType } from "../model/types";
+import { ConnectionData, ConnectionType, VariableType } from "../model/types";
+import { ConnectorDataType } from "@prisma/client";
 
 export const INTEGRATIONS = [
   "gmail",
@@ -10,6 +11,21 @@ export const INTEGRATIONS = [
   "notion",
   "discord",
 ];
+
+export const VARIABLE_TYPES = {
+  [ConnectorDataType.GoogleDrive]: [VariableType.GoogleDrive_Event],
+  [ConnectorDataType.Slack]: [
+    VariableType.Slack_IncomingMessage,
+    VariableType.Slack_SenderId,
+  ],
+  [ConnectorDataType.GoogleCalendar]: [],
+  [ConnectorDataType.Gmail]: [],
+  [ConnectorDataType.Notion]: [],
+  [ConnectorDataType.Discord]: [],
+  [ConnectorDataType.TimeDelay]: [],
+  [ConnectorDataType.Condition]: [],
+  [ConnectorDataType.None]: [],
+};
 
 export const MENU_OPTIONS = [
   { name: "Workflows", Component: Workflows, href: "/workflows" },

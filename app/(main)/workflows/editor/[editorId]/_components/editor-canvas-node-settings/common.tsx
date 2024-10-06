@@ -85,8 +85,8 @@ export const SettingsSectionWithEdit = ({
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            {savedData?.map(({ name, value }) => (
-              <div className="flex flex-col gap-1.5">
+            {savedData?.map(({ name, value }, index) => (
+              <div key={index} className="flex flex-col gap-1.5">
                 <p className="font-semibold">{name}</p>
                 <pre
                   className={`text-sm ${

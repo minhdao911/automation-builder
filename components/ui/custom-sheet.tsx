@@ -49,8 +49,10 @@ const CustomSheet: FunctionComponent<CustomSheetProps> = ({
         className
       )}
     >
-      <CustomSheetClose onClick={onClose} />
-      {children}
+      <div className="relative">
+        <CustomSheetClose onClick={onClose} />
+        {children}
+      </div>
     </div>
   );
 };
@@ -122,6 +124,8 @@ export const CustomSheetSectionTitle = ({
   children,
 }: CustomSheetSectionTitleProps) => {
   return (
-    <p className={cn("font-semibold text-foreground", className)}>{children}</p>
+    <div className={cn("font-semibold text-foreground", className)}>
+      {children}
+    </div>
   );
 };
