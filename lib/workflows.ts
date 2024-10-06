@@ -8,6 +8,7 @@ import {
   LogicalComparisionOperator,
   LogicalConnectionOperator,
   Rule,
+  TimeUnit,
   VariableType,
   WorkflowNode,
 } from "../model/types";
@@ -193,6 +194,20 @@ const processLogical = async (
           return false;
       }
     }
+    case ConnectorDataType.TimeDelay: {
+      const timeDelayData = node.data.metadata?.timeDelay;
+      if (!timeDelayData) break;
+
+      const delay = timeDelayData.value;
+      const unit = timeDelayData.unit;
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, delay * getDelayMultiplier(unit));
+      });
+      return true;
+    }
+    default:
+      return true;
   }
 };
 
@@ -271,4 +286,19 @@ const validateEvent = (
       break;
   }
   return true;
+};
+
+const getDelayMultiplier = (unit: TimeUnit): number => {
+  switch (unit) {
+    case TimeUnit.Second:
+      return 1000;
+    case TimeUnit.Minute:
+      return 1000 * 60;
+    case TimeUnit.Hour:
+      return 1000 * 60 * 60;
+    case TimeUnit.Day:
+      return 1000 * 60 * 60 * 24;
+    default:
+      throw new Error("Invalid time unit");
+  }
 };

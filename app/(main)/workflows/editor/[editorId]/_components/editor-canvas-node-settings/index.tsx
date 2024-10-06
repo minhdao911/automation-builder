@@ -21,6 +21,7 @@ import {
   NotionDeletePageSettings,
 } from "./notion-settings";
 import ConditionSettings from "./condition-settings";
+import TimeDelaySettings from "./time-delay-settings";
 
 interface EditorCanvasNodeSettingsProps {}
 
@@ -65,6 +66,8 @@ const EditorCanvasNodeSettings: FunctionComponent<
     switch (type) {
       case ConnectorDataType.Condition:
         return <ConditionSettings selectedNode={selectedNode} />;
+      case ConnectorDataType.TimeDelay:
+        return <TimeDelaySettings selectedNode={selectedNode} />;
       default:
         return null;
     }

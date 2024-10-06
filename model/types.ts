@@ -38,6 +38,13 @@ export enum LogicalConnectionOperator {
   Or = "Or",
 }
 
+export enum TimeUnit {
+  Second = "Second",
+  Minute = "Minute",
+  Hour = "Hour",
+  Day = "Day",
+}
+
 export type ConnectionData = {
   type: ConnectionType;
   description: string;
@@ -56,6 +63,12 @@ const ConditionSchema = z.object({
   rules: z.array(RuleSchema),
 });
 export type Condition = z.infer<typeof ConditionSchema>;
+
+const TimeDelaySchema = z.object({
+  value: z.number(),
+  unit: z.nativeEnum(TimeUnit),
+});
+export type TimeDelay = z.infer<typeof TimeDelaySchema>;
 
 const CreateWorkflowInputsSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -76,6 +89,7 @@ const WorkflowNodeMetadataSchema = z.object({
   slack: SlackMessageSchema.optional(),
   notion: NotionMetadataSchema.optional(),
   condition: ConditionSchema.optional(),
+  timeDelay: TimeDelaySchema.optional(),
 });
 export type WorkflowNodeMetadata = z.infer<typeof WorkflowNodeMetadataSchema>;
 
