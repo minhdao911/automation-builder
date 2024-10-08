@@ -7,7 +7,7 @@ const APP_URL =
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const error = req.nextUrl.searchParams.get("error");
-  const redirectUrl = `${APP_URL}/connections`;
+  const redirectUrl = `https://${APP_URL}/connections`;
 
   if (error) {
     return NextResponse.redirect(
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       body: JSON.stringify({
         code,
         grant_type: "authorization_code",
-        redirect_uri: `${APP_URL}/api/auth-callback/notion`,
+        redirect_uri: `https://${APP_URL}/api/auth-callback/notion`,
       }),
     });
 

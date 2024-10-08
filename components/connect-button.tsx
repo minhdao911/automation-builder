@@ -5,22 +5,20 @@ import { useAuth } from "@clerk/nextjs";
 import { ConnectorDataType } from "@prisma/client";
 import Link from "next/link";
 import { FunctionComponent } from "react";
-import { Button, ButtonProps } from "../../../../components/ui/button";
+import { Button, ButtonProps } from "./ui/button";
 import { usePathname } from "next/navigation";
 
 interface ConnectButtonProps {
   dataType: ConnectionType | ConnectorDataType;
-  host: string;
 }
 
 const ConnectButton: FunctionComponent<ConnectButtonProps & ButtonProps> = ({
   dataType,
-  host,
   ...props
 }) => {
   const { userId } = useAuth();
   const pathname = usePathname();
-  const callbackUrl = `https://${host}/api/auth-callback`;
+  const callbackUrl = `https://${process.env.NEXT_PUBLIC_APP_URL}/api/auth-callback`;
 
   const getConnectionUrl = () => {
     if (!userId) return "#";

@@ -3,7 +3,6 @@ import { CONNECTIONS } from "@/lib/constants";
 import ConnectionCard from "./_components/connection-card";
 import { createNotionConnection, getConnection } from "./_actions/connection";
 import { ConnectionType } from "@/model/types";
-import { headers } from "next/headers";
 
 interface IParams {
   error?: string;
@@ -17,8 +16,6 @@ interface IParams {
 const Connections = async ({ searchParams }: { searchParams: IParams }) => {
   const { error, dataType, accessToken, botId, workspaceId, workspaceName } =
     searchParams;
-
-  const host = headers().get("host") ?? process.env.NEXT_PUBLIC_APP_URL!;
 
   let errorMessage = error ? `Fail to connect to ${dataType}` : undefined;
   let successMessage;
@@ -54,12 +51,7 @@ const Connections = async ({ searchParams }: { searchParams: IParams }) => {
           Connect all your apps directly from here. You may need to connect
           these apps regularly to refresh verification
           {CONNECTIONS.map((data, index) => (
-            <ConnectionCard
-              key={index}
-              {...data}
-              host={host}
-              connection={connection}
-            />
+            <ConnectionCard key={index} {...data} connection={connection} />
           ))}
         </section>
       </div>

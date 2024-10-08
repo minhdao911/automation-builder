@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
   const error = req.nextUrl.searchParams.get("error");
-  const redirectUrl = `${APP_URL}${state}` || `${APP_URL}/connections`;
+  const redirectUrl =
+    `https://${APP_URL}${state}` || `https://${APP_URL}/connections`;
 
   if (error) {
     return NextResponse.redirect(

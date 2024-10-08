@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       requestBody: {
         id: channelId,
         type: "web_hook",
-        address: `${APP_URL}/api/drive-activity/notification`,
+        address: `https://${APP_URL}/api/drive-activity/notification`,
         kind: "api#channel",
         expiration,
       },

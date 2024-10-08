@@ -4,19 +4,17 @@ import { CircleCheck } from "lucide-react";
 import { Connection } from "@prisma/client";
 import { mapConnectionType } from "@/lib/utils";
 import { ConnectionType } from "@/model/types";
-import ConnectButton from "./connect-button";
+import ConnectButton from "@/components/connect-button";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 
 interface ConnectionCardProps {
   type: ConnectionType;
-  host: string;
   description: string;
   connection: Connection;
 }
 
 const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({
   type,
-  host,
   description,
   connection,
 }) => {
@@ -38,7 +36,7 @@ const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({
             <CircleCheck size={24} className="ml-2 text-green-500" />
           </div>
         ) : (
-          <ConnectButton dataType={type} host={host} />
+          <ConnectButton dataType={type} />
         )}
       </div>
     </Card>
