@@ -1,10 +1,13 @@
 import { ConnectionType } from "@/model/types";
 import { NextRequest, NextResponse } from "next/server";
 
+const APP_URL =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.APP_URL;
+
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const error = req.nextUrl.searchParams.get("error");
-  const redirectUrl = `${process.env.APP_URL}/connections`;
+  const redirectUrl = `${APP_URL}/connections`;
 
   if (error) {
     return NextResponse.redirect(
@@ -29,7 +32,7 @@ export async function GET(req: NextRequest) {
       body: JSON.stringify({
         code,
         grant_type: "authorization_code",
-        redirect_uri: process.env.NOTION_REDIRECT_URI!,
+        redirect_uri: `${APP_URL}/api/auth-callback/notion`,
       }),
     });
 

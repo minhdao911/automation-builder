@@ -1,4 +1,4 @@
-import ConnectButton from "@/components/connect-button";
+import ConnectButton from "@/app/(main)/connections/_components/connect-button";
 import { Button } from "@/components/ui/button";
 import { CustomSheetSectionTitle } from "@/components/ui/custom-sheet";
 import { Input } from "@/components/ui/input";
