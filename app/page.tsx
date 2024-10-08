@@ -66,12 +66,12 @@ export default function Home() {
         </div>
       </section>
       <InfiniteMovingCards
-        className="mt-10"
+        className="mt-5"
         items={INTEGRATIONS}
         direction="right"
         speed="slow"
       />
-      <section className="w-full mt-10 relative">
+      <section className="w-full mt-5 relative">
         <StickyScroll content={keyFeatures} />
         <BackgroundBeams />
       </section>

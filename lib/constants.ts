@@ -4,12 +4,30 @@ import { ConnectionData, ConnectionType, VariableType } from "../model/types";
 import { ConnectorDataType } from "@prisma/client";
 
 export const INTEGRATIONS = [
-  "gmail",
-  "google-drive",
-  "google-calendar",
-  "slack",
-  "notion",
-  "discord",
+  {
+    name: "Google Drive",
+    type: ConnectorDataType.GoogleDrive,
+  },
+  {
+    name: "Gmail",
+    type: ConnectorDataType.Gmail,
+  },
+  {
+    name: "Google Calendar",
+    type: ConnectorDataType.GoogleCalendar,
+  },
+  {
+    name: "Notion",
+    type: ConnectorDataType.Notion,
+  },
+  {
+    name: "Slack",
+    type: ConnectorDataType.Slack,
+  },
+  // {
+  //   name: "Discord",
+  //   type: ConnectorDataType.Discord,
+  // },
 ];
 
 export const VARIABLE_TYPES = {

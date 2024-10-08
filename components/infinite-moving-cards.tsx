@@ -1,8 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { ConnectorDataType } from "@prisma/client";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import WorkflowIconHelper from "./workflow-icon-helper";
 
 export const InfiniteMovingCards = ({
   items,
@@ -11,7 +13,7 @@ export const InfiniteMovingCards = ({
   pauseOnHover = true,
   className,
 }: {
-  items: string[];
+  items: { name: string; type: ConnectorDataType }[];
   direction?: "left" | "right";
   speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
@@ -88,15 +90,10 @@ export const InfiniteMovingCards = ({
           pauseOnHover && "hover:[animation-play-state:paused]"
         )}
       >
-        {items.map((item, idx) => (
-          <li key={idx}>
-            <Image
-              src={`/${item}.svg`}
-              alt={`${item} logo`}
-              height={20}
-              width={100}
-              className="h-[30px] md:h-[40px] w-auto"
-            />
+        {items.map(({ name, type }, idx) => (
+          <li key={idx} className="flex items-center gap-3">
+            <WorkflowIconHelper type={type} size="xl" bgColor="transparent" />
+            <p className="text-xl">{name}</p>
           </li>
         ))}
       </ul>
