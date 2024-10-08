@@ -18,7 +18,7 @@ const ConnectButton: FunctionComponent<ConnectButtonProps & ButtonProps> = ({
 }) => {
   const { userId } = useAuth();
   const pathname = usePathname();
-  const callbackUrl = `https://${process.env.NEXT_PUBLIC_APP_URL}/api/auth-callback`;
+  const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth-callback`;
 
   const getConnectionUrl = () => {
     if (!userId) return "#";

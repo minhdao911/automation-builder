@@ -4,15 +4,12 @@ import { ConnectionType } from "@/model/types";
 import { parseJwt } from "@/lib/utils";
 import { NextRequest, NextResponse } from "next/server";
 
-const APP_URL =
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.APP_URL;
-
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
   const error = req.nextUrl.searchParams.get("error");
   const redirectUrl =
-    `https://${APP_URL}${state}` || `https://${APP_URL}/connections`;
+    `${process.env.APP_URL}${state}` || `${process.env.APP_URL}/connections`;
 
   if (error) {
     return NextResponse.redirect(
@@ -35,7 +32,7 @@ export async function GET(req: NextRequest) {
         client_id: process.env.SLACK_CLIENT_ID!,
         client_secret: process.env.SLACK_CLIENT_SECRET!,
         grant_type: "authorization_code",
-        redirect_uri: `https://${APP_URL}/api/auth-callback/slack`,
+        redirect_uri: `${process.env.APP_URL}/api/auth-callback/slack`,
       }).toString(),
     });
 

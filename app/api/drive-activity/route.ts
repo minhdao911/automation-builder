@@ -4,9 +4,6 @@ import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
-const APP_URL =
-  process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.APP_URL;
-
 export async function POST(req: NextRequest) {
   const { userId } = auth();
   if (!userId) {
@@ -29,7 +26,7 @@ export async function POST(req: NextRequest) {
       requestBody: {
         id: channelId,
         type: "web_hook",
-        address: `https://${APP_URL}/api/drive-activity/notification`,
+        address: `${process.env.APP_URL}/api/drive-activity/notification`,
         kind: "api#channel",
         expiration,
       },
