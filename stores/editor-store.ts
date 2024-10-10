@@ -169,10 +169,15 @@ export const useEditorStore = create<EditorState & EditorAction>(
       set({ variables });
     },
     updateVariables: (variables) => {
-      const validVars = variables
+      const validVars = Object.values(get().variables)
+        .concat(variables)
         .filter((v) => v.name && v.value)
-        .reduce(
-          (acc, { name, value, nodeId, ruleId }) => ({
+        .reduce((acc, { name, value, nodeId, ruleId, removed }) => {
+          if (removed) {
+            delete acc[name];
+            return acc;
+          }
+          return {
             ...acc,
             [name]: {
               name,
@@ -180,10 +185,9 @@ export const useEditorStore = create<EditorState & EditorAction>(
               nodeId,
               ruleId,
             },
-          }),
-          {}
-        );
-      set({ variables: { ...get().variables, ...validVars } });
+          };
+        }, {} as any);
+      set({ variables: validVars });
     },
   })
 );

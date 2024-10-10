@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { ConnectorDataType } from "@prisma/client";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { Button } from "@/components/ui/button";
-import { v4 as uuidv4 } from "uuid";
 
 interface ConditionRowProps {
   variable?: VariableType;
@@ -20,6 +19,7 @@ interface ConditionRowProps {
 }
 
 export const ConditionRow = ({
+  ruleId,
   nodeId,
   variable,
   operator,
@@ -30,6 +30,7 @@ export const ConditionRow = ({
   removeCondition,
   setWfVariables,
 }: ConditionRowProps & {
+  ruleId: string;
   nodeId: string;
   variableList: VariableType[];
   onChange: (type: "variable" | "operator" | "input", value: string) => void;
@@ -65,27 +66,29 @@ export const ConditionRow = ({
             onClick={() => {
               setWfVariables([
                 ...wfVariables,
-                { name: "", value: "", ruleId: uuidv4(), nodeId },
+                { name: "", value: "", ruleId, nodeId },
               ]);
             }}
           />
-          {wfVariables.map(({ name, value }, index) => (
-            <WorkflowVariableRow
-              key={index}
-              name={name}
-              value={value ?? ""}
-              onChange={(type, value) => {
-                const newVars = [...wfVariables];
-                newVars[index][type] = value;
-                setWfVariables(newVars);
-              }}
-              onDelete={() => {
-                const newVars = [...wfVariables];
-                newVars.splice(index, 1);
-                setWfVariables(newVars);
-              }}
-            />
-          ))}
+          {wfVariables
+            .filter((v) => !v.removed)
+            .map(({ name, value }, index) => (
+              <WorkflowVariableRow
+                key={index}
+                name={name}
+                value={value ?? ""}
+                onChange={(type, value) => {
+                  const newVars = [...wfVariables];
+                  newVars[index][type] = value;
+                  setWfVariables(newVars);
+                }}
+                onDelete={() => {
+                  const newVars = [...wfVariables];
+                  newVars[index].removed = true;
+                  setWfVariables(newVars);
+                }}
+              />
+            ))}
         </div>
       )}
     </div>

@@ -137,6 +137,7 @@ const WorkflowVariableSchema = z.object({
   value: z.string(),
   nodeId: z.string().optional(),
   ruleId: z.string().optional(),
+  removed: z.boolean().optional(),
 });
 export type WorkflowVariable = z.infer<typeof WorkflowVariableSchema>;
 

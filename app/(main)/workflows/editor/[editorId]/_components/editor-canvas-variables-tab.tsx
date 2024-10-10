@@ -122,36 +122,38 @@ const EditRows = ({
 }) => {
   return (
     <>
-      {variables.map(({ name, value }, index) => (
-        <TableRow key={index}>
-          <InputCell
-            value={name}
-            onChange={(value) => {
-              setVariables((prev) => {
-                prev[index].name = value;
-                return [...prev];
-              });
-            }}
-          />
-          <InputCell
-            value={value}
-            onChange={(value) => {
-              setVariables((prev) => {
-                prev[index].value = value;
-                return [...prev];
-              });
-            }}
-          />
-          <DeleteButtonCell
-            onClick={() => {
-              setVariables((prev) => {
-                prev.splice(index, 1);
-                return [...prev];
-              });
-            }}
-          />
-        </TableRow>
-      ))}
+      {variables
+        .filter((v) => !v.removed)
+        .map(({ name, value }, index) => (
+          <TableRow key={index}>
+            <InputCell
+              value={name}
+              onChange={(value) => {
+                setVariables((prev) => {
+                  prev[index].name = value;
+                  return [...prev];
+                });
+              }}
+            />
+            <InputCell
+              value={value}
+              onChange={(value) => {
+                setVariables((prev) => {
+                  prev[index].value = value;
+                  return [...prev];
+                });
+              }}
+            />
+            <DeleteButtonCell
+              onClick={() => {
+                setVariables((prev) => {
+                  prev[index].removed = true;
+                  return [...prev];
+                });
+              }}
+            />
+          </TableRow>
+        ))}
     </>
   );
 };
