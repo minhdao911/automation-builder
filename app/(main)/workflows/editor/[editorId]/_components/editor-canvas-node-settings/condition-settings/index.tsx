@@ -15,7 +15,7 @@ import {
   ConditionRowConnector,
   SavedConditionRow,
 } from "./condition-row";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { cloneDeep } from "lodash";
 import { useEditorStore } from "@/stores/editor-store";
 import { VARIABLE_TYPES } from "@/lib/constants";
@@ -182,32 +182,35 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         {showEdit ? (
           <div className="grid gap-4">
             <div className="swapy-container">
-              {condition.rules.map(({ variable, operator, input }, index) => (
-                <>
-                  <ConditionRow
-                    nodeId={selectedNode.id}
-                    variable={variable}
-                    operator={operator}
-                    input={input}
-                    variableList={variables}
-                    wfVariables={wfVariables}
-                    onChange={(type, value) =>
-                      handleConditionChange(type, value, index)
-                    }
-                    removeCondition={() => removeCondition(index)}
-                    setWfVariables={setWfVariables}
-                  />
-                  {condition.connector &&
-                    index !== condition.rules.length - 1 && (
-                      <ConditionRowConnector
-                        connector={condition.connector}
-                        onChange={(value) =>
-                          handleConditionChange("connector", value, index)
-                        }
-                      />
-                    )}
-                </>
-              ))}
+              {condition.rules.map(
+                ({ id, variable, operator, input }, index) => (
+                  <>
+                    <ConditionRow
+                      ruleId={id}
+                      nodeId={selectedNode.id}
+                      variable={variable}
+                      operator={operator}
+                      input={input}
+                      variableList={variables}
+                      wfVariables={wfVariables}
+                      onChange={(type, value) =>
+                        handleConditionChange(type, value, index)
+                      }
+                      removeCondition={() => removeCondition(index)}
+                      setWfVariables={setWfVariables}
+                    />
+                    {condition.connector &&
+                      index !== condition.rules.length - 1 && (
+                        <ConditionRowConnector
+                          connector={condition.connector}
+                          onChange={(value) =>
+                            handleConditionChange("connector", value, index)
+                          }
+                        />
+                      )}
+                  </>
+                )
+              )}
             </div>
             <div className="flex items-center justify-between">
               <AddButton label="Add condition" onClick={addCondition} />
@@ -219,9 +222,8 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         ) : (
           <div>
             {savedData!.rules.map(({ variable, operator, input }, index) => (
-              <>
+              <Fragment key={index}>
                 <SavedConditionRow
-                  key={index}
                   variable={variable}
                   operator={operator}
                   input={input}
@@ -233,7 +235,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
                       {savedData.connector}
                     </p>
                   )}
-              </>
+              </Fragment>
             ))}
           </div>
         )}

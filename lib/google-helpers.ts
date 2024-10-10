@@ -5,13 +5,14 @@ import { getOauth2Client } from "./google-auth";
 import { google } from "googleapis";
 import { db } from "./db";
 import {
-  CalendarEvent,
+  CalendarMetadata,
   DriveData,
   DriveDataType,
   DriveResponseSchema,
   Email,
 } from "../model/google-schemas";
 import { CResponse } from "../model/types";
+import dayjs from "dayjs";
 
 export const authorize = async (userId?: string) => {
   if (userId) {
@@ -107,7 +108,7 @@ export const sendEmail = async (email: Email, userId?: string) => {
 };
 
 export const createCalendarEvent = async (
-  event: CalendarEvent,
+  data: CalendarMetadata,
   userId?: string
 ) => {
   try {
@@ -116,7 +117,22 @@ export const createCalendarEvent = async (
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
     const response = await calendar.events.insert({
       calendarId: "primary",
-      requestBody: event,
+      requestBody: {
+        summary: data.summary,
+        description: data.description,
+        start: {
+          dateTime: dayjs(data.date)
+            .set("hour", parseInt(data.startTime.split(":")[0]))
+            .set("minute", parseInt(data.startTime.split(":")[1]))
+            .format(),
+        },
+        end: {
+          dateTime: dayjs(data.date)
+            .set("hour", parseInt(data.endTime.split(":")[0]))
+            .set("minute", parseInt(data.endTime.split(":")[1]))
+            .format(),
+        },
+      },
     });
     if (response.status === 200) {
       return true;

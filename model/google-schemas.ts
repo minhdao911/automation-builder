@@ -61,11 +61,12 @@ export const CalendarEventSchema = z.object({
 });
 export type CalendarEvent = z.infer<typeof CalendarEventSchema>;
 
-export const CalendarEventFormSchema = CalendarEventSchema.pick({
+export const CalendarMetadataSchema = CalendarEventSchema.pick({
   summary: true,
   description: true,
 }).extend({
-  startTime: z.string().time(),
-  endTime: z.string().time(),
+  date: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
 });
-export type CalendarEventForm = z.infer<typeof CalendarEventFormSchema>;
+export type CalendarMetadata = z.infer<typeof CalendarMetadataSchema>;

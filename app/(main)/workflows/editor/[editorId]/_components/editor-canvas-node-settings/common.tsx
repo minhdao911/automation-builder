@@ -4,11 +4,16 @@ import { CustomSheetSectionTitle } from "@/components/ui/custom-sheet";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
-import { mapConnectorDataType } from "@/lib/utils";
+import {
+  doesContainVariable,
+  splitValueByVariables,
+  mapConnectorDataType,
+} from "@/lib/utils";
 import { useEditorStore } from "@/stores/editor-store";
 import { ConnectorDataType } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Pencil } from "lucide-react";
+import { Variable } from "@/components/variables";
 
 export const SettingsSection = ({
   title,
@@ -85,18 +90,14 @@ export const SettingsSectionWithEdit = ({
       ) : (
         <>
           <div className="flex flex-col gap-4">
-            {savedData?.map(({ name, value }, index) => (
-              <div key={index} className="flex flex-col gap-1.5">
-                <p className="font-semibold">{name}</p>
-                <pre
-                  className={`text-sm ${
-                    value ? "" : "italic text-neutral-400"
-                  }`}
-                >
-                  {value || `No ${name}`}
-                </pre>
-              </div>
-            ))}
+            {savedData?.map(({ name, value }, index) => {
+              return (
+                <div key={index} className="flex flex-col gap-1.5">
+                  <p className="font-semibold">{name}</p>
+                  <TextWithVariables name={name} value={value ?? ""} />
+                </div>
+              );
+            })}
           </div>
           {savedComponent}
         </>
@@ -187,5 +188,40 @@ export const ConnectionSections = ({
         )}
       </div>
     </SettingsSection>
+  );
+};
+
+export const TextWithVariables = ({
+  name,
+  value,
+}: {
+  name?: string;
+  value: string;
+}) => {
+  const texts = splitValueByVariables(value);
+  return (
+    <div className="font-mono text-sm">
+      {texts.length > 0 ? (
+        texts.map((text, index) => {
+          if (doesContainVariable(text)) {
+            return (
+              <Variable key={index} className="text-amber-500" value={text} />
+            );
+          }
+          return (
+            <span key={index}>
+              {text.split("\n").map((line, i) => (
+                <Fragment key={i}>
+                  {line}
+                  {i < text.split("\n").length - 1 && <br />}
+                </Fragment>
+              ))}
+            </span>
+          );
+        })
+      ) : (
+        <p className="text-sm italic text-neutral-400">No {name}</p>
+      )}
+    </div>
   );
 };

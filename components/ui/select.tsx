@@ -148,12 +148,14 @@ SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
 export type SimpleSelectProps = {
   value?: string;
+  disabled?: boolean;
   onValueChange: (value: string) => void;
 };
 
 const SimpleSelect = ({
   items,
   value,
+  disabled,
   className,
   onValueChange,
 }: SimpleSelectProps & {
@@ -165,7 +167,7 @@ const SimpleSelect = ({
   }[];
 }) => {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value} disabled={disabled} onValueChange={onValueChange}>
       <SelectTrigger className={className}>
         <SelectValue placeholder="Select value" />
       </SelectTrigger>

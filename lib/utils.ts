@@ -63,3 +63,12 @@ export const mapConnectionType = (connection: Connection) => {
   }
   return connections;
 };
+
+export const doesContainVariable = (value: any) => {
+  return RegExp(/.*{{.*}}.*/g).test(value);
+};
+
+export const splitValueByVariables = (value: string) => {
+  const regex = /({{.*?}})/;
+  return value.split(regex).filter(Boolean);
+};

@@ -6,6 +6,7 @@ import {
 import { z } from "zod";
 import {
   CalendarEventSchema,
+  CalendarMetadataSchema,
   DriveMetadataSchema,
   EmailSchema,
 } from "./google-schemas";
@@ -88,7 +89,7 @@ const PostitionSchema = z.object({
 const WorkflowNodeMetadataSchema = z.object({
   googleDrive: DriveMetadataSchema.optional(),
   gmail: EmailSchema.optional(),
-  googleCalendar: CalendarEventSchema.optional(),
+  googleCalendar: CalendarMetadataSchema.optional(),
   slack: SlackMessageSchema.optional(),
   notion: NotionMetadataSchema.optional(),
   condition: ConditionSchema.optional(),

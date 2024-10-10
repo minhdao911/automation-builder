@@ -38,7 +38,7 @@ export const SimpleTooltip = ({
 }) => (
   <TooltipProvider>
     <Tooltip>
-      <TooltipTrigger asChild>{triggerComp}</TooltipTrigger>
+      <TooltipTrigger>{triggerComp}</TooltipTrigger>
       <TooltipContent side={side}>{contentComp}</TooltipContent>
     </Tooltip>
   </TooltipProvider>

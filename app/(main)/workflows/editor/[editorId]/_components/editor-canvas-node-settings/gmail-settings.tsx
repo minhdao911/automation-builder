@@ -1,6 +1,6 @@
 import { WorkflowNodeData } from "@/model/types";
 import { Node } from "reactflow";
-import { SettingsSection } from "./common";
+import { SettingsSection, TextWithVariables } from "./common";
 import { Button } from "@/components/ui/button";
 import { sendEmail } from "@/lib/google-helpers";
 import { useForm } from "react-hook-form";
@@ -142,12 +142,16 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
             </div>
             <div className="flex items-center mt-1 mb-3">
               <p className="font-semibold w-14">To:</p>
-              <p className="text-sm">{gmailData?.to}</p>
+              <TextWithVariables value={gmailData?.to} />
             </div>
             <Separator />
-            <p className="my-3 font-semibold">{gmailData?.subject}</p>
+            <div className="my-3 font-semibold">
+              <TextWithVariables value={gmailData?.subject} />
+            </div>
             <Separator />
-            <p className="mt-3">{gmailData?.html}</p>
+            <div className="mt-3">
+              <TextWithVariables value={gmailData?.html} />
+            </div>
           </div>
         )}
       </SettingsSection>
