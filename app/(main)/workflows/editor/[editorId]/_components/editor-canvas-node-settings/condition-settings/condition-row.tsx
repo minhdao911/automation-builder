@@ -2,32 +2,39 @@ import {
   LogicalComparisionOperator,
   LogicalConnectionOperator,
   VariableType,
+  WorkflowVariable,
 } from "@/model/types";
 import { CirclePlus, Trash2 } from "lucide-react";
 import { SimpleSelectProps, SimpleSelect } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { ConnectorDataType } from "@prisma/client";
 import WorkflowIconHelper from "@/components/workflow-icon-helper";
-import { memo } from "react";
 import { Button } from "@/components/ui/button";
+import { v4 as uuidv4 } from "uuid";
 
 interface ConditionRowProps {
   variable?: VariableType;
   operator: LogicalComparisionOperator;
   input: string;
+  wfVariables: WorkflowVariable[];
 }
 
 export const ConditionRow = ({
+  nodeId,
   variable,
   operator,
   input,
+  wfVariables,
   variableList,
   onChange,
   removeCondition,
+  setWfVariables,
 }: ConditionRowProps & {
+  nodeId: string;
   variableList: VariableType[];
   onChange: (type: "variable" | "operator" | "input", value: string) => void;
   removeCondition: () => void;
+  setWfVariables: (vars: WorkflowVariable[]) => void;
 }) => {
   return (
     <div className="flex flex-col p-3 gap-3 bg-background border rounded-lg">
@@ -49,12 +56,38 @@ export const ConditionRow = ({
             />
           </div>
         </div>
-        <Trash2
-          size={16}
-          className="cursor-pointer"
-          onClick={removeCondition}
-        />
+        <DeleteButton onClick={removeCondition} />
       </div>
+      {operator === LogicalComparisionOperator.MatchPattern && (
+        <div>
+          <AddButton
+            label="Add variable"
+            onClick={() => {
+              setWfVariables([
+                ...wfVariables,
+                { name: "", value: "", ruleId: uuidv4(), nodeId },
+              ]);
+            }}
+          />
+          {wfVariables.map(({ name, value }, index) => (
+            <WorkflowVariableRow
+              key={index}
+              name={name}
+              value={value ?? ""}
+              onChange={(type, value) => {
+                const newVars = [...wfVariables];
+                newVars[index][type] = value;
+                setWfVariables(newVars);
+              }}
+              onDelete={() => {
+                const newVars = [...wfVariables];
+                newVars.splice(index, 1);
+                setWfVariables(newVars);
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -106,7 +139,13 @@ export const ConditionRowConnector = ({
 
 const Line = () => <div className="border-l h-6 ml-[51px]" />;
 
-export const AddConditionButton = ({ onClick }: { onClick: () => void }) => {
+export const AddButton = ({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) => {
   return (
     <Button
       size="sm"
@@ -115,7 +154,19 @@ export const AddConditionButton = ({ onClick }: { onClick: () => void }) => {
       onClick={onClick}
     >
       <CirclePlus size={16} />
-      Add condition
+      {label}
+    </Button>
+  );
+};
+
+const DeleteButton = ({ onClick }: { onClick: () => void }) => {
+  return (
+    <Button
+      variant="ghost"
+      className="p-0 hover:bg-transparent text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300"
+      onClick={onClick}
+    >
+      <Trash2 size={16} />
     </Button>
   );
 };
@@ -139,6 +190,34 @@ const ConditionSelect = ({ value, onValueChange }: SimpleSelectProps) => {
   }));
   return (
     <SimpleSelect value={value} items={items} onValueChange={onValueChange} />
+  );
+};
+
+const WorkflowVariableRow = ({
+  name,
+  value,
+  onChange,
+  onDelete,
+}: {
+  name: string;
+  value: string;
+  onChange: (type: "name" | "value", value: string) => void;
+  onDelete: () => void;
+}) => {
+  return (
+    <div className="flex items-center gap-3 mt-3">
+      <Input
+        value={name}
+        placeholder="Variable name"
+        onChange={(e) => onChange("name", e.target.value)}
+      />
+      <Input
+        value={value}
+        placeholder="Value"
+        onChange={(e) => onChange("value", e.target.value)}
+      />
+      <DeleteButton onClick={onDelete} />
+    </div>
   );
 };
 

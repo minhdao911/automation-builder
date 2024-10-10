@@ -1,31 +1,11 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { WorkflowNode } from "@/model/types";
+import { WorkflowNode, WorkflowVariables } from "@/model/types";
 import { auth } from "@clerk/nextjs/server";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { groupBy } from "lodash";
 import { Edge } from "reactflow";
-
-export const loadWorkflow = async (workflowId: string) => {
-  const emptyState = { nodes: [], edges: [] };
-  try {
-    const workflow = await db.workflow.findFirst({
-      where: {
-        id: workflowId,
-      },
-    });
-    if (workflow) {
-      return {
-        nodes: workflow.nodes ? JSON.parse(workflow.nodes) : [],
-        edges: workflow.edges ? JSON.parse(workflow.edges) : [],
-      };
-    }
-    return emptyState;
-  } catch (e) {
-    return emptyState;
-  }
-};
 
 export const publishWorkflow = async (
   workflowId: string,
@@ -55,13 +35,15 @@ export const saveWorkflow = async (
   data: {
     nodes: WorkflowNode[];
     edges: Edge[];
+    variables: WorkflowVariables;
+    triggerNodeId?: string;
   }
 ) => {
   const { userId } = auth();
   if (!userId) return false;
 
   try {
-    const flowPaths = generateFlowPaths(data.nodes, data.edges);
+    const flowPaths = generateFlowPaths(data.edges, data.triggerNodeId);
     const metadata = data.nodes.map((node) => node.data.metadata);
     const googleDriveMetadata = metadata.find(
       (m) => !!m?.googleDrive
@@ -96,6 +78,7 @@ export const saveWorkflow = async (
           slackUserId,
         },
       });
+      await saveWorkflowVariables(workflowId, data.variables);
       return true;
     }
     return false;
@@ -106,13 +89,9 @@ export const saveWorkflow = async (
 };
 
 const generateFlowPaths = (
-  nodes: WorkflowNode[],
-  edges: Edge[]
+  edges: Edge[],
+  triggerNodeId?: string
 ): string[][] => {
-  const triggerNodeId = nodes.find(
-    (node) => node.type === ConnectorNodeType.Trigger
-  )?.id;
-
   const sources = groupBy(edges, "source");
   const flowPaths: string[] = [];
 
@@ -156,4 +135,35 @@ const getSlackCredential = async (userId: string) => {
     console.error(e);
     return null;
   }
+};
+
+export const getWorkflowVariables = async (workflowId: string) => {
+  return await db.workflowVariables.findUnique({
+    where: {
+      workflowId,
+    },
+  });
+};
+
+const saveWorkflowVariables = async (
+  workflowId: string,
+  variables: WorkflowVariables
+) => {
+  const savedVars = await getWorkflowVariables(workflowId);
+  if (savedVars) {
+    return await db.workflowVariables.update({
+      where: {
+        id: savedVars.id,
+      },
+      data: {
+        data: JSON.stringify(variables),
+      },
+    });
+  }
+  return await db.workflowVariables.create({
+    data: {
+      workflowId,
+      data: JSON.stringify(variables),
+    },
+  });
 };

@@ -10,6 +10,7 @@ import WorkflowIconHelper from "@/components/workflow-icon-helper";
 import { ConnectorDataType, ConnectorNodeType } from "@prisma/client";
 import { WorkflowConnectorEnriched } from "@/model/types";
 import { mapConnectorDataType } from "@/lib/utils";
+import EditorCanvasVariablesTab from "./editor-canvas-variables-tab";
 
 interface EditorCanvasSidebarProps {
   connectors: WorkflowConnectorEnriched[];
@@ -38,6 +39,7 @@ const EditorCanvasSidebar: FunctionComponent<EditorCanvasSidebarProps> = ({
           <TabsTrigger value={ConnectorNodeType.Trigger}>Triggers</TabsTrigger>
           <TabsTrigger value={ConnectorNodeType.Action}>Actions</TabsTrigger>
           <TabsTrigger value={ConnectorNodeType.Logical}>Logicals</TabsTrigger>
+          <TabsTrigger value="Variable">Variables</TabsTrigger>
         </TabsList>
         <div className="p-4">
           <TabsContent value={ConnectorNodeType.Trigger}>
@@ -54,6 +56,9 @@ const EditorCanvasSidebar: FunctionComponent<EditorCanvasSidebarProps> = ({
             {logicals.map((data, index) => (
               <EditorCanvasSidebarCard key={index} {...data} />
             ))}
+          </TabsContent>
+          <TabsContent value="Variable">
+            <EditorCanvasVariablesTab />
           </TabsContent>
         </div>
       </Tabs>

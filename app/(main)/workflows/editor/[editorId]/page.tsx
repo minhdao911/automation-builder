@@ -1,4 +1,4 @@
-import { getWorkflow, getWorkflowConnectors } from "../../_actions/workflow";
+import { getWorkflowConnectors, loadWorkflow } from "../../_actions/workflow";
 import EditorCanvas from "./_components/editor-canvas";
 import EditorNavbar from "./_components/editor-navbar";
 import EditorContainer from "./_components/editor-container";
@@ -19,7 +19,7 @@ const Editor = async ({
   params: IParams;
   searchParams: ISearchParams;
 }) => {
-  const workflow = await getWorkflow(params.editorId);
+  const workflow = await loadWorkflow(params.editorId);
   const connectors = await getWorkflowConnectors();
 
   if (!workflow) {

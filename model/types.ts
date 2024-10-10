@@ -11,6 +11,7 @@ import {
 } from "./google-schemas";
 import { SlackMessageSchema } from "./slack-schemas";
 import { NotionMetadataSchema } from "./notion-schemas";
+import { Edge, Node } from "reactflow";
 
 export enum ConnectionType {
   GoogleDrive = "GoogleDrive",
@@ -31,6 +32,8 @@ export enum LogicalComparisionOperator {
   Equal = "Equals",
   NotEqual = "Does not equal",
   Contains = "Contains",
+  NotContains = "Does not contain",
+  MatchPattern = "Matches pattern",
 }
 
 export enum LogicalConnectionOperator {
@@ -51,6 +54,7 @@ export type ConnectionData = {
 };
 
 const RuleSchema = z.object({
+  id: z.string(),
   variable: z.nativeEnum(VariableType).optional(),
   operator: z.nativeEnum(LogicalComparisionOperator),
   input: z.string(),
@@ -126,6 +130,27 @@ export const WorkflowNodeSchema = z.object({
   positionAbsolute: PostitionSchema.optional(),
 });
 export type WorkflowNode = z.infer<typeof WorkflowNodeSchema>;
+
+const WorkflowVariableSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+  nodeId: z.string().optional(),
+  ruleId: z.string().optional(),
+});
+export type WorkflowVariable = z.infer<typeof WorkflowVariableSchema>;
+
+const WorkflowVariablesSchema = z.record(WorkflowVariableSchema);
+export type WorkflowVariables = z.infer<typeof WorkflowVariablesSchema>;
+
+export type Workflow = {
+  id: string;
+  name: string;
+  published: boolean;
+  nodes: Node<WorkflowNodeData>[];
+  edges: Edge[];
+  variables: WorkflowVariables;
+  triggerNode: Node<WorkflowNodeData> | null;
+};
 
 export type CResponse<T> = {
   data?: T;

@@ -4,29 +4,36 @@ import {
   LogicalConnectionOperator,
   VariableType,
   WorkflowNodeData,
+  WorkflowVariable,
 } from "@/model/types";
-import { Node } from "reactflow";
+import { Edge, Node } from "reactflow";
 import { SettingsSection } from "../common";
 import { Button } from "@/components/ui/button";
 import {
   ConditionRow,
-  AddConditionButton,
+  AddButton,
   ConditionRowConnector,
   SavedConditionRow,
 } from "./condition-row";
 import { useEffect, useState } from "react";
 import { cloneDeep } from "lodash";
 import { useEditorStore } from "@/stores/editor-store";
-import { ConnectorNodeType } from "@prisma/client";
 import { VARIABLE_TYPES } from "@/lib/constants";
 import { toast } from "@/components/ui/use-toast";
+import { v4 as uuidv4 } from "uuid";
 
 interface ConditionSettingsProps {
   selectedNode: Node<WorkflowNodeData>;
 }
 
 const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
-  const { nodes, edges, updateNode } = useEditorStore();
+  const {
+    edges,
+    triggerNode,
+    variables: wfVars,
+    updateNode,
+    updateVariables,
+  } = useEditorStore();
   const { metadata } = selectedNode.data;
   const savedData = metadata?.condition;
 
@@ -35,6 +42,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
       connector: undefined,
       rules: [
         {
+          id: uuidv4(),
           variable: undefined,
           operator: LogicalComparisionOperator.Equal,
           input: "",
@@ -44,24 +52,24 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
   );
   const [edit, setEdit] = useState(false);
   const [variables, setVariables] = useState<VariableType[]>([]);
+  const [wfVariables, setWfVariables] = useState<WorkflowVariable[]>(
+    Object.values(wfVars).filter((v) => v.nodeId === selectedNode.id)
+  );
 
   const showEdit = edit || !savedData;
 
   useEffect(() => {
-    const triggerNode = nodes.find(
-      (node) => node.type === ConnectorNodeType.Trigger
-    );
     if (triggerNode) {
-      const isConnectedToTriggerNode = edges.some(
-        (edge) =>
-          edge.target === selectedNode.id && edge.source === triggerNode.id
+      const isConnectedToTriggerNode = checkIfConnectedToTriggerNode(
+        selectedNode,
+        triggerNode,
+        edges
       );
       if (isConnectedToTriggerNode) {
         setVariables(VARIABLE_TYPES[triggerNode.data.dataType]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [edges, nodes]);
+  }, [triggerNode, edges]);
 
   const addCondition = () => {
     setCondition((prev) => {
@@ -71,6 +79,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         newConnector = LogicalConnectionOperator.And;
       }
       newRules.push({
+        id: uuidv4(),
         variable: undefined,
         operator: LogicalComparisionOperator.Equal,
         input: "",
@@ -146,6 +155,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         condition,
       },
     });
+    updateVariables(wfVariables);
     setEdit(false);
   };
 
@@ -175,14 +185,17 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
               {condition.rules.map(({ variable, operator, input }, index) => (
                 <>
                   <ConditionRow
+                    nodeId={selectedNode.id}
                     variable={variable}
                     operator={operator}
                     input={input}
                     variableList={variables}
+                    wfVariables={wfVariables}
                     onChange={(type, value) =>
                       handleConditionChange(type, value, index)
                     }
                     removeCondition={() => removeCondition(index)}
+                    setWfVariables={setWfVariables}
                   />
                   {condition.connector &&
                     index !== condition.rules.length - 1 && (
@@ -197,7 +210,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
               ))}
             </div>
             <div className="flex items-center justify-between">
-              <AddConditionButton onClick={addCondition} />
+              <AddButton label="Add condition" onClick={addCondition} />
               <Button size="sm" type="submit" onClick={handleSave}>
                 Save
               </Button>
@@ -212,6 +225,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
                   variable={variable}
                   operator={operator}
                   input={input}
+                  wfVariables={wfVariables}
                 />
                 {savedData.connector &&
                   index !== savedData.rules.length - 1 && (
@@ -229,3 +243,18 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
 };
 
 export default ConditionSettings;
+
+const checkIfConnectedToTriggerNode = (
+  selectedNode: Node<WorkflowNodeData>,
+  triggerNode: Node<WorkflowNodeData>,
+  edges: Edge[]
+) => {
+  let source = edges.find((e) => e.target === selectedNode.id)?.source;
+  while (source) {
+    if (source === triggerNode.id) {
+      return true;
+    }
+    source = edges.find((e) => e.target === source)?.source;
+  }
+  return false;
+};

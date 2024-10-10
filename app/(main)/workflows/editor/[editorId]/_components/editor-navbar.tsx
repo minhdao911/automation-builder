@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useEditorStore } from "@/stores/editor-store";
-import { Workflow } from "@prisma/client";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { publishWorkflow, saveWorkflow } from "../_actions/editor";
 import { toast } from "@/components/ui/use-toast";
@@ -10,7 +9,7 @@ import Loader from "@/components/ui/loader";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import {
-  WorkflowNode,
+  Workflow,
   WorkflowNodeDataSchema,
   WorkflowNodeSchema,
 } from "@/model/types";
@@ -35,8 +34,7 @@ const WorkflowNodeDataSchemaForComparison = WorkflowNodeDataSchema.omit({
 });
 
 const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
-  const { nodes, edges } = useEditorStore();
-  // const [isPending, startTransition] = useTransition();
+  const { nodes, edges, triggerNode, variables } = useEditorStore();
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [isSavePending, setIsSavePending] = useState(false);
   const [isPublishPending, setIsPublishPending] = useState(false);
@@ -47,25 +45,21 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
 
   const checkIfDataChanged = useCallback(() => {
     const oldData = {
-      nodes: workflow.nodes ? JSON.parse(workflow.nodes) : null,
-      edges: workflow.edges ? JSON.parse(workflow.edges) : null,
+      nodes: workflow.nodes,
+      edges: workflow.edges,
+      variables: workflow.variables,
     };
     if (oldData.nodes) {
-      oldData.nodes = oldData.nodes.map((node: WorkflowNode) =>
+      oldData.nodes = oldData.nodes.map((node) =>
         pickBy(WorkflowNodeDataSchemaForComparison.parse(node.data), identity)
-      );
+      ) as any;
     }
     const currentData = {
-      nodes:
-        nodes.length > 0
-          ? nodes.map((node) =>
-              pickBy(
-                WorkflowNodeDataSchemaForComparison.parse(node.data),
-                identity
-              )
-            )
-          : null,
-      edges: edges.length > 0 ? edges : null,
+      nodes: nodes.map((node) =>
+        pickBy(WorkflowNodeDataSchemaForComparison.parse(node.data), identity)
+      ),
+      edges,
+      variables,
     };
     return JSON.stringify(oldData) !== JSON.stringify(currentData);
   }, [nodes, edges, workflow]);
@@ -85,6 +79,8 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
     const isSaved = await saveWorkflow(workflow.id, {
       nodes: nodesToSave,
       edges,
+      variables,
+      triggerNodeId: triggerNode?.id,
     });
     toast({
       description: isSaved

@@ -17,15 +17,18 @@ import ReactFlow, {
   ReactFlowInstance,
 } from "reactflow";
 import EditorCanvasNode from "./editor-canvas-node";
-import { WorkflowConnectorEnriched, WorkflowNodeData } from "@/model/types";
+import {
+  Workflow,
+  WorkflowConnectorEnriched,
+  WorkflowNodeData,
+} from "@/model/types";
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
-import { ConnectorNodeType, Workflow } from "@prisma/client";
+import { ConnectorNodeType } from "@prisma/client";
 import { v4 } from "uuid";
 
 import "reactflow/dist/style.css";
 import { useToast } from "@/components/ui/use-toast";
 import { useEditorStore } from "@/stores/editor-store";
-import { loadWorkflow } from "../_actions/editor";
 import Loader from "@/components/ui/loader";
 import {
   ResizableHandle,
@@ -65,6 +68,8 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
     edges,
     setNodes,
     setEdges,
+    setTriggerNode,
+    setVariables,
     onNodesChange,
     onEdgesChange,
     onConnect,
@@ -77,9 +82,11 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
     setOpen(false);
 
     startTransition(async () => {
-      const data = await loadWorkflow(workflow.id);
-      setEdges(data.edges);
-      setNodes(data.nodes);
+      const { nodes, edges, variables, triggerNode } = workflow;
+      setEdges(edges);
+      setNodes(nodes);
+      setVariables(variables);
+      setTriggerNode(triggerNode);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -133,6 +140,9 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
       };
 
       setNodes([...nodes, newNode]);
+      if (isTriggerNode) {
+        setTriggerNode(newNode);
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [reactFlowInstance, nodes]

@@ -4,12 +4,18 @@ import { db } from "@/lib/db";
 import {
   CreateWorkFlowInputs,
   UpdateWorkFlowInputs,
+  Workflow,
   WorkflowConnectorEnriched,
   WorkflowConnectorSchema,
 } from "@/model/types";
 import { auth } from "@clerk/nextjs/server";
-import { ConnectorDataType, Workflow } from "@prisma/client";
+import {
+  ConnectorDataType,
+  ConnectorNodeType,
+  Workflow as DbWorkflow,
+} from "@prisma/client";
 import { getConnection } from "../../connections/_actions/connection";
+import { getWorkflowVariables } from "../editor/[editorId]/_actions/editor";
 
 export const createWorkflow = async (
   input: CreateWorkFlowInputs
@@ -92,7 +98,7 @@ export const deleteWorkflow = async (
   }
 };
 
-export const getWorkflows = async (): Promise<Workflow[] | undefined> => {
+export const getWorkflows = async (): Promise<DbWorkflow[] | undefined> => {
   const { userId } = auth();
 
   if (userId) {
@@ -109,7 +115,7 @@ export const getWorkflows = async (): Promise<Workflow[] | undefined> => {
 
 export const getWorkflow = async (
   id: string
-): Promise<Workflow | null | undefined> => {
+): Promise<DbWorkflow | null | undefined> => {
   const { userId } = auth();
 
   if (userId) {
@@ -119,6 +125,52 @@ export const getWorkflow = async (
         id,
       },
     });
+  }
+};
+
+export const loadWorkflow = async (id: string) => {
+  const { userId } = auth();
+
+  if (userId) {
+    const result: Workflow = {
+      id: "",
+      name: "",
+      published: false,
+      nodes: [],
+      edges: [],
+      triggerNode: null,
+      variables: {},
+    };
+    try {
+      const workflow = await db.workflow.findFirst({
+        where: {
+          userId,
+          id,
+        },
+      });
+
+      if (workflow) {
+        result.id = workflow.id;
+        result.name = workflow.name;
+        result.published = workflow.published;
+        result.nodes = workflow.nodes ? JSON.parse(workflow.nodes) : [];
+        result.edges = workflow.edges ? JSON.parse(workflow.edges) : [];
+        result.triggerNode =
+          result.nodes.find(
+            (node) => node.data.nodeType === ConnectorNodeType.Trigger
+          ) ?? null;
+
+        const variables = await getWorkflowVariables(workflow.id);
+        if (variables?.data) {
+          result.variables = JSON.parse(variables.data);
+        }
+        return result;
+      }
+      return null;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 };
 

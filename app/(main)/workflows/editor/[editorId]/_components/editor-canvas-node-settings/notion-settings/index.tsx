@@ -307,7 +307,12 @@ export const NotionCreateDatabaseSettings: FunctionComponent<
 
   const getSavedTableComp = () => {
     if (!notionData) return null;
-    return <PropertiesTable properties={notionData.properties ?? []} />;
+    return (
+      <PropertiesTable
+        properties={notionData.properties ?? []}
+        isEdit={false}
+      />
+    );
   };
 
   return (
