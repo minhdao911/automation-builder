@@ -43,8 +43,6 @@ To create and apply new migration, run
 bun db-migrate $migrationName
 ```
 
-_Note: Migration is disabled, to enable, set the directUrl in Prisma setup_
-
 To push changes without using migrations, run
 
 ```bash
