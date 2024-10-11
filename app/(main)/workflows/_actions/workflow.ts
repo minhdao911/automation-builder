@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import {
   CreateWorkFlowInputs,
   UpdateWorkFlowInputs,
+  Usage,
   Workflow,
   WorkflowConnectorEnriched,
   WorkflowConnectorSchema,
@@ -23,14 +24,14 @@ export const createWorkflow = async (
   const { userId } = auth();
 
   if (userId) {
-    const isAdmin = await checkAdmin();
+    const usage = await getUsageLimit();
     const workflows = await db.workflow.findMany({
       where: {
         userId,
       },
     });
 
-    if (workflows.length >= 1 && !isAdmin) {
+    if (!usage.unlimited && workflows.length >= usage.workflowLimit) {
       return {
         message: "You have reached the maximum number of workflows",
         error: true,
@@ -140,6 +141,11 @@ export const loadWorkflow = async (id: string) => {
       edges: [],
       triggerNode: null,
       variables: {},
+      usage: {
+        workflowLimit: 0,
+        nodeLimit: 0,
+        unlimited: false,
+      },
     };
     try {
       const workflow = await db.workflow.findFirst({
@@ -164,6 +170,10 @@ export const loadWorkflow = async (id: string) => {
         if (variables?.data) {
           result.variables = JSON.parse(variables.data);
         }
+
+        const usage = await getUsageLimit();
+        result.usage = usage;
+
         return result;
       }
       return null;
@@ -245,4 +255,29 @@ export const getWorkflowConnectors = async (): Promise<
 export const checkAdmin = async () => {
   const { sessionClaims } = auth();
   return sessionClaims?.metadata.role === "admin";
+};
+
+export const getUsageLimit = async (): Promise<Usage> => {
+  const { userId, sessionClaims } = auth();
+
+  if (userId) {
+    const role = sessionClaims?.metadata.role ?? "user";
+    const usage = await db.usageSettings.findUnique({
+      where: {
+        role,
+      },
+    });
+    if (usage) {
+      return {
+        workflowLimit: usage.workflowLimit ?? 0,
+        nodeLimit: usage.nodeLimit ?? 0,
+        unlimited: usage.unlimited,
+      };
+    }
+  }
+  return {
+    workflowLimit: 0,
+    nodeLimit: 0,
+    unlimited: false,
+  };
 };

@@ -38,6 +38,7 @@ import {
 import { useNodeModalStore } from "@/stores/node-modal-store";
 import EditorCanvasNodeSettings from "./editor-canvas-node-settings";
 import CustomEdge from "./custom-edge";
+import { getUsageLimit } from "../../../_actions/workflow";
 
 interface EditorCanvasProps {
   workflow: Workflow;
@@ -110,6 +111,16 @@ const EditorCanvas: FunctionComponent<EditorCanvasProps> = ({
       const id = event.dataTransfer.getData("nodeDataId");
       const type = event.dataTransfer.getData("nodeType");
       if (!id || !type) return;
+
+      if (
+        !workflow.usage.unlimited &&
+        nodes.length === workflow.usage.nodeLimit
+      ) {
+        toast({
+          description: "Maximum number of nodes reached",
+        });
+        return;
+      }
 
       const isTriggerNode = type === ConnectorNodeType.Trigger;
       const isTriggerExisted = nodes.find(

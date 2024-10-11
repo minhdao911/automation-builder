@@ -129,6 +129,17 @@ model WorkflowVariables {
   workflowId String   @unique
 }
 
+model UsageSettings {
+  id            String  @id @default(uuid())
+  role          String  @unique
+  workflowLimit Int?
+  nodeLimit     Int?
+  unlimited     Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 enum ConnectorNodeType {
   Action
   Trigger

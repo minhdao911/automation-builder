@@ -53,6 +53,13 @@ export type ConnectionData = {
   description: string;
 };
 
+const UsageSchema = z.object({
+  workflowLimit: z.number(),
+  nodeLimit: z.number(),
+  unlimited: z.boolean(),
+});
+export type Usage = z.infer<typeof UsageSchema>;
+
 const RuleSchema = z.object({
   id: z.string(),
   variable: z.nativeEnum(VariableType).optional(),
@@ -151,6 +158,7 @@ export type Workflow = {
   edges: Edge[];
   variables: WorkflowVariables;
   triggerNode: Node<WorkflowNodeData> | null;
+  usage: Usage;
 };
 
 export type CResponse<T = undefined> = {
