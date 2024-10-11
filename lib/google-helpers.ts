@@ -1,7 +1,7 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { getOauth2Client } from "./google-auth";
+import { getOauth2ClientWithToken } from "./google-auth";
 import { google } from "googleapis";
 import { db } from "./db";
 import {
@@ -15,28 +15,33 @@ import { CResponse } from "../model/types";
 import dayjs from "dayjs";
 
 export const authorize = async (userId?: string) => {
-  if (userId) {
-    const user = await db.user.findFirst({
-      where: {
-        clerkId: userId,
-      },
-    });
-    if (!user) {
-      throw new Error("User not found");
+  try {
+    if (userId) {
+      const user = await db.user.findFirst({
+        where: {
+          clerkId: userId,
+        },
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return {
+        id: user.clerkId,
+        email: user.email,
+      };
+    } else {
+      const user = await currentUser();
+      if (!user) {
+        throw new Error("Unauthorized");
+      }
+      return {
+        id: user.id,
+        email: user.emailAddresses[0].emailAddress,
+      };
     }
-    return {
-      id: user.clerkId,
-      email: user.email,
-    };
-  } else {
-    const user = await currentUser();
-    if (!user) {
-      throw new Error("Unauthorized");
-    }
-    return {
-      id: user.id,
-      email: user.emailAddresses[0].emailAddress,
-    };
+  } catch (e) {
+    console.error(e);
+    return null;
   }
 };
 
@@ -44,10 +49,10 @@ export const getDriveFiles = async (
   type: DriveDataType
 ): Promise<CResponse<DriveData[]>> => {
   const { userId } = auth();
-  if (!userId) return { error: "Unauthorized" };
+  if (!userId) return { message: "Unauthorized", error: true };
 
   try {
-    const oauth2Client = await getOauth2Client(userId);
+    const oauth2Client = await getOauth2ClientWithToken(userId);
     const drive = google.drive({ version: "v3", auth: oauth2Client });
 
     if (type === DriveDataType.Folder) {
@@ -64,25 +69,27 @@ export const getDriveFiles = async (
       });
       const data = DriveResponseSchema.parse(response.data);
       return { data: data.files };
-    } else {
-      return { error: "Invalid requested type" };
     }
+    return { message: "Invalid requested type", error: true };
   } catch (e: any) {
-    console.error(e);
-    if (e.errors?.[0].code === "oauth_missing_refresh_token") {
-      return {
-        error: "Missing refresh token, please sign out and sign in again",
-      };
-    }
-    return { error: "Error fetching drive data" };
+    return handleError(e, userId, "Error fetching drive data");
   }
 };
 
-export const sendEmail = async (email: Email, userId?: string) => {
+export const sendEmail = async (
+  email: Email,
+  userId?: string
+): Promise<CResponse> => {
   const { to, subject, html } = email;
+
+  const errorMessage = "Error sending email";
+  const successMessage = "Email sent successfully";
+
+  const user = await authorize(userId);
+  if (!user) return { message: errorMessage, error: true };
+
   try {
-    const user = await authorize(userId);
-    const oauth2Client = await getOauth2Client(user.id);
+    const oauth2Client = await getOauth2ClientWithToken(user.id);
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
 
     const emailMessage =
@@ -98,22 +105,26 @@ export const sendEmail = async (email: Email, userId?: string) => {
       },
     });
     if (response.status === 200) {
-      return true;
+      return { message: successMessage };
     }
-    return false;
-  } catch (e) {
-    console.error(e);
-    return false;
+    return { message: errorMessage, error: true };
+  } catch (e: any) {
+    return handleError(e, user.id, errorMessage);
   }
 };
 
 export const createCalendarEvent = async (
   data: CalendarMetadata,
   userId?: string
-) => {
+): Promise<CResponse> => {
+  const errorMessage = "Error creating calendar event";
+  const successMessage = "Calendar event created successfully";
+
+  const user = await authorize(userId);
+  if (!user) return { message: errorMessage, error: true };
+
   try {
-    const user = await authorize(userId);
-    const oauth2Client = await getOauth2Client(user.id);
+    const oauth2Client = await getOauth2ClientWithToken(user.id);
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
     const response = await calendar.events.insert({
       calendarId: "primary",
@@ -135,11 +146,30 @@ export const createCalendarEvent = async (
       },
     });
     if (response.status === 200) {
-      return true;
+      return { message: successMessage };
     }
-    return false;
+    return { message: errorMessage, error: true };
   } catch (e) {
-    console.error(e);
-    return false;
+    return handleError(e, user.id, errorMessage);
   }
+};
+
+export const handleError = async <T>(
+  e: any,
+  userId: string,
+  errorMessage: string
+): Promise<CResponse<T>> => {
+  console.error(e);
+  if (e.response.data.error === "invalid_grant") {
+    await db.googleCredential.delete({
+      where: {
+        userId,
+      },
+    });
+    return {
+      message: "Token is expired, please connect again in connections page",
+      error: true,
+    };
+  }
+  return { message: errorMessage, error: true };
 };

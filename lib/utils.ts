@@ -41,7 +41,7 @@ export const mapConnectorDataType = (type: ConnectorDataType) => {
   }
 };
 
-export const mapConnectionType = (connection: Connection) => {
+export const mapConnectionType = (connection: Connection | null) => {
   const connections: { [key in ConnectionType]: boolean } = {
     GoogleDrive: false,
     Gmail: false,
@@ -50,15 +50,15 @@ export const mapConnectionType = (connection: Connection) => {
     Slack: false,
     Discord: false,
   };
-  if (connection.googleCredentialId) {
+  if (connection?.googleCredentialId) {
     connections[ConnectorDataType.GoogleDrive] = true;
     connections[ConnectorDataType.GoogleCalendar] = true;
     connections[ConnectorDataType.Gmail] = true;
   }
-  if (connection.slackCredentialId) {
+  if (connection?.slackCredentialId) {
     connections[ConnectorDataType.Slack] = true;
   }
-  if (connection.notionCredentialId) {
+  if (connection?.notionCredentialId) {
     connections[ConnectorDataType.Notion] = true;
   }
   return connections;

@@ -26,8 +26,8 @@ model User {
 }
 
 model GoogleCredential {
-  id          String @id @default(uuid())
-  accessToken String @unique
+  id           String @id @default(uuid())
+  refreshToken String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,8 +75,8 @@ model Connection {
 
   User               User              @relation(fields: [userId], references: [clerkId])
   userId             String            @unique
-  GoogleCredential   GoogleCredential  @relation(fields: [googleCredentialId], references: [id])
-  googleCredentialId String            @unique
+  GoogleCredential   GoogleCredential? @relation(fields: [googleCredentialId], references: [id])
+  googleCredentialId String?           @unique
   SlackCredential    SlackCredential?  @relation(fields: [slackCredentialId], references: [id])
   slackCredentialId  String?           @unique
   NotionCredential   NotionCredential? @relation(fields: [notionCredentialId], references: [id])

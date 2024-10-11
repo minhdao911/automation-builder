@@ -5,15 +5,16 @@ export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const error = req.nextUrl.searchParams.get("error");
   const redirectUrl = `${process.env.APP_URL}/connections`;
+  const errorRedirectUrl = `${redirectUrl}?dataType=${ConnectionType.Notion}&error=Failed to authenticate with Notion`;
 
   if (error) {
-    return NextResponse.redirect(
-      `${redirectUrl}?dataType=${ConnectionType.Notion}&error=${error}`
-    );
+    console.error("Error authenticating Notion", error);
+    return NextResponse.redirect(errorRedirectUrl);
   }
 
   if (!code) {
-    return NextResponse.json({ message: "Missing code" }, { status: 400 });
+    console.error("Error authenticating Notion: Missing code");
+    return NextResponse.redirect(errorRedirectUrl);
   }
 
   try {
@@ -34,7 +35,8 @@ export async function GET(req: NextRequest) {
     });
 
     if (response.status !== 200) {
-      return NextResponse.json({ error: response.statusText }, { status: 500 });
+      console.error("Error authenticating Notion", response.statusText);
+      return NextResponse.redirect(errorRedirectUrl);
     }
 
     const data = await response.json();
@@ -47,10 +49,7 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.redirect(`${redirectUrl}?${urlParams.toString()}`);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json(
-      { error: "Error authenticating Notion" },
-      { status: 500 }
-    );
+    console.error("Error authenticating Notion", e);
+    return NextResponse.redirect(errorRedirectUrl);
   }
 }

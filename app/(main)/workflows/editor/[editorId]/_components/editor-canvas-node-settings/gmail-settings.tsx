@@ -65,21 +65,15 @@ const GmailSettings = ({ selectedNode }: GmailSettingsProps) => {
       const to = getValues("to");
       const subject = getValues("subject");
       const html = getValues("html");
-      const success = await sendEmail({
+      const { error, message } = await sendEmail({
         to,
         subject,
         html,
       });
-      if (success) {
-        toast({
-          description: "Email sent successfully",
-        });
-      } else {
-        toast({
-          description: "Failed to send email",
-          variant: "destructive",
-        });
-      }
+      toast({
+        description: message,
+        variant: error ? "destructive" : undefined,
+      });
     });
   };
 

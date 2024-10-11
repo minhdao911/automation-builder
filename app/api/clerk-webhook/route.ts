@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
+import { getAuthUrl, getTokenInfo } from "@/lib/google-auth";
 import { WebhookEvent, clerkClient } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 
@@ -51,6 +53,7 @@ export async function POST(req: Request) {
     const eventType = evt.type;
     if (eventType === "user.created") {
       console.log("User created event received");
+      console.log(evt.data);
       const user = await db.user.create({
         data: {
           clerkId: evt.data.id,
@@ -60,23 +63,38 @@ export async function POST(req: Request) {
         },
       });
 
-      const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
-        evt.data.id,
-        "oauth_google"
-      );
-      const accessToken = clerkResponse.data[0].token;
-      const googleCredential = await db.googleCredential.create({
-        data: {
-          accessToken,
-          userId: user.clerkId,
-        },
-      });
-      await db.connection.create({
-        data: {
-          userId: user.clerkId,
-          googleCredentialId: googleCredential.id,
-        },
-      });
+      // const googleAccount = evt.data.external_accounts.find(
+      //   (account: any) => account.object === "google_account"
+      // );
+      // if (googleAccount) {
+      //   //   console.log("User has Google account");
+      //   //   const scopes = googleAccount.approved_scopes.split(" ");
+      //   //   const authUrl = await getAuthUrl(scopes);
+      //   //   redirect(authUrl);
+      //   const clerkResponse = await clerkClient.users.getUserOauthAccessToken(
+      //     evt.data.id,
+      //     "oauth_google"
+      //   );
+      //   console.log("clerkResponse", clerkResponse);
+      //   const accessToken = clerkResponse.data[0].token;
+      //   const tokenInfo = await getTokenInfo(accessToken);
+      //   console.log("tokenInfo", tokenInfo);
+      //   const googleCredential = await db.googleCredential.create({
+      //     data: {
+      //       accessToken,
+      //       userId: user.clerkId,
+      //       expiryDate: "" + tokenInfo.expiry_date,
+      //       scopes: tokenInfo.scopes,
+      //     },
+      //   });
+      //   await db.connection.create({
+      //     data: {
+      //       userId: user.clerkId,
+      //       googleCredentialId: googleCredential.id,
+      //     },
+      //   });
+      // }
+
       return new NextResponse("User created successfully", { status: 201 });
     }
     return new Response("Event not supported", { status: 200 });

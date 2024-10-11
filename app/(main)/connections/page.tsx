@@ -1,7 +1,11 @@
 import PageContainer from "@/components/page-container";
 import { CONNECTIONS } from "@/lib/constants";
 import ConnectionCard from "./_components/connection-card";
-import { createNotionConnection, getConnection } from "./_actions/connection";
+import {
+  createGoogleConnection,
+  createNotionConnection,
+  getConnection,
+} from "./_actions/connection";
 import { ConnectionType } from "@/model/types";
 
 interface IParams {
@@ -11,13 +15,21 @@ interface IParams {
   botId?: string;
   workspaceId?: string;
   workspaceName?: string;
+  code?: string;
 }
 
 const Connections = async ({ searchParams }: { searchParams: IParams }) => {
-  const { error, dataType, accessToken, botId, workspaceId, workspaceName } =
-    searchParams;
+  const {
+    error,
+    dataType,
+    accessToken,
+    botId,
+    workspaceId,
+    workspaceName,
+    code,
+  } = searchParams;
 
-  let errorMessage = error ? `Fail to connect to ${dataType}` : undefined;
+  let errorMessage = error;
   let successMessage;
 
   const onUserConnection = async () => {
@@ -33,12 +45,17 @@ const Connections = async ({ searchParams }: { searchParams: IParams }) => {
       }
       successMessage = response.message;
     }
+    if (dataType === ConnectionType.Gmail && !error) {
+      const response = await createGoogleConnection(code!);
+      if (response.error) {
+        errorMessage = response.message;
+      }
+      successMessage = response.message;
+    }
     return await getConnection();
   };
 
   const connection = await onUserConnection();
-
-  if (!connection) return null;
 
   return (
     <PageContainer

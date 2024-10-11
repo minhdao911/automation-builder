@@ -1,4 +1,5 @@
-import { getOauth2Client } from "@/lib/google-auth";
+import { getOauth2ClientWithToken } from "@/lib/google-auth";
+import { handleError } from "@/lib/google-helpers";
 import {
   DriveDataType,
   DriveGetParams,
@@ -15,7 +16,7 @@ export async function GET(_: Request, { params }: DriveGetParams) {
   }
 
   try {
-    const oauth2Client = await getOauth2Client(userId);
+    const oauth2Client = await getOauth2ClientWithToken(userId);
     const drive = google.drive({ version: "v3", auth: oauth2Client });
 
     if (params.type === DriveDataType.Folder) {
@@ -38,18 +39,11 @@ export async function GET(_: Request, { params }: DriveGetParams) {
       { status: 400 }
     );
   } catch (e: any) {
-    console.error(e);
-    if (e.errors?.[0].code === "oauth_missing_refresh_token") {
-      return NextResponse.json(
-        {
-          error: "Missing refresh token, please sign out and sign in again",
-        },
-        { status: 500 }
-      );
-    }
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+    const { message } = await handleError(
+      e,
+      userId,
+      "Error fetching drive data"
     );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

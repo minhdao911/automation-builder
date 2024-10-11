@@ -130,17 +130,11 @@ const CalendarSettings: FunctionComponent<CalendarSettingsProps> = ({
         summary,
         description,
       });
-      const success = await createCalendarEvent(event);
-      if (success) {
-        toast({
-          description: "Test event created successfully",
-        });
-      } else {
-        toast({
-          description: "Failed to create test event",
-          variant: "destructive",
-        });
-      }
+      const { message, error } = await createCalendarEvent(event);
+      toast({
+        description: message,
+        variant: error ? "destructive" : undefined,
+      });
     });
   };
 

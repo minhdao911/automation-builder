@@ -5,7 +5,6 @@ import {
 } from "@prisma/client";
 import { z } from "zod";
 import {
-  CalendarEventSchema,
   CalendarMetadataSchema,
   DriveMetadataSchema,
   EmailSchema,
@@ -154,7 +153,8 @@ export type Workflow = {
   triggerNode: Node<WorkflowNodeData> | null;
 };
 
-export type CResponse<T> = {
+export type CResponse<T = undefined> = {
   data?: T;
-  error?: string;
+  error?: boolean;
+  message?: string;
 };

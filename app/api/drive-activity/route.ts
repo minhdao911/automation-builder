@@ -1,4 +1,4 @@
-import { getOauth2Client } from "@/lib/google-auth";
+import { getOauth2ClientWithToken } from "@/lib/google-auth";
 import { auth } from "@clerk/nextjs/server";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const oauth2Client = await getOauth2Client(userId);
+    const oauth2Client = await getOauth2ClientWithToken(userId);
     const drive = google.drive({ version: "v3", auth: oauth2Client });
 
     const channelId = uuidv4();
@@ -63,7 +63,7 @@ export async function DELETE(req: NextRequest) {
     );
   }
   try {
-    const oauth2Client = await getOauth2Client(userId);
+    const oauth2Client = await getOauth2ClientWithToken(userId);
     const drive = google.drive({ version: "v3", auth: oauth2Client });
     const response = await drive.channels.stop({
       requestBody: {

@@ -10,7 +10,7 @@ import WorkflowIconHelper from "@/components/workflow-icon-helper";
 interface ConnectionCardProps {
   type: ConnectionType;
   description: string;
-  connection: Connection;
+  connection: Connection | null;
 }
 
 const ConnectionCard: FunctionComponent<ConnectionCardProps> = ({

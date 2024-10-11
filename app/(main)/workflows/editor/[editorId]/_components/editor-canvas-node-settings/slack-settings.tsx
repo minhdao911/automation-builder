@@ -62,7 +62,7 @@ export const SlackSendMessageSettings: FunctionComponent<
         const response = await getChannels(connectionKey);
         if (response.error) {
           toast({
-            description: response.error,
+            description: response.message,
             variant: "destructive",
           });
         }

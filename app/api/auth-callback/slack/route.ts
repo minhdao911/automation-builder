@@ -10,15 +10,16 @@ export async function GET(req: NextRequest) {
   const error = req.nextUrl.searchParams.get("error");
   const redirectUrl =
     `${process.env.APP_URL}${state}` || `${process.env.APP_URL}/connections`;
+  const errorRedirectUrl = `${redirectUrl}?dataType=${ConnectionType.Slack}&error=Failed to authenticate with Slack`;
 
   if (error) {
-    return NextResponse.redirect(
-      `${redirectUrl}?dataType=${ConnectionType.Slack}&error=${error}`
-    );
+    console.error("Error authenticating Slack", error);
+    return NextResponse.redirect(errorRedirectUrl);
   }
 
   if (!code) {
-    return NextResponse.json({ message: "Missing code" }, { status: 400 });
+    console.error("Error authenticating Slack: Missing code");
+    return NextResponse.redirect(errorRedirectUrl);
   }
 
   try {
@@ -38,7 +39,8 @@ export async function GET(req: NextRequest) {
 
     const data = await response.json();
     if (!data.ok) {
-      return NextResponse.json({ error: data.error }, { status: 500 });
+      console.error("Error authenticating Slack", data.error);
+      return NextResponse.redirect(errorRedirectUrl);
     }
 
     const userData = parseJwt(data.id_token);
@@ -56,10 +58,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.redirect(redirectUrl);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json(
-      { error: "Error authenticating Slack" },
-      { status: 500 }
-    );
+    console.error("Error authenticating Slack", e);
+    return NextResponse.redirect(errorRedirectUrl);
   }
 }

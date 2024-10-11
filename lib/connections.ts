@@ -1,19 +1,31 @@
-import { NotionCredential, SlackCredential } from "@prisma/client";
+import {
+  GoogleCredential,
+  NotionCredential,
+  SlackCredential,
+} from "@prisma/client";
 import { db } from "./db";
 import { ConnectionType, WorkflowNode } from "../model/types";
 
 export const createConnection = async (
   userId: string,
   data: {
+    google?: GoogleCredential;
     slack?: SlackCredential;
     notion?: NotionCredential;
   } = {}
 ) => {
-  await db.connection.update({
+  await db.connection.upsert({
     where: {
       userId,
     },
-    data: {
+    update: {
+      googleCredentialId: data.google?.id,
+      slackCredentialId: data.slack?.id,
+      notionCredentialId: data.notion?.id,
+    },
+    create: {
+      userId,
+      googleCredentialId: data.google?.id,
       slackCredentialId: data.slack?.id,
       notionCredentialId: data.notion?.id,
     },

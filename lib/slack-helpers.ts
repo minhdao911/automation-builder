@@ -6,7 +6,7 @@ import { CResponse } from "../model/types";
 export const getChannels = async (
   token?: string
 ): Promise<CResponse<SlackChannel[]>> => {
-  if (!token) return { error: "Error fetching Slack channels" };
+  if (!token) return { message: "Error fetching Slack channels", error: true };
 
   try {
     const response = await fetch("https://slack.com/api/conversations.list", {
@@ -32,7 +32,7 @@ export const getChannels = async (
     };
   } catch (e) {
     console.error(e);
-    return { error: "Error fetching Slack channels" };
+    return { message: "Error fetching Slack channels", error: true };
   }
 };
 
