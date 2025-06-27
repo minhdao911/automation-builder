@@ -69,7 +69,7 @@ const ConditionSettings = ({ selectedNode }: ConditionSettingsProps) => {
         setVariables(VARIABLE_TYPES[triggerNode.data.dataType]);
       }
     }
-  }, [triggerNode, edges]);
+  }, [selectedNode, triggerNode, edges]);
 
   const addCondition = () => {
     setCondition((prev) => {

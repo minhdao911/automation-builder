@@ -62,7 +62,7 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
       variables,
     };
     return JSON.stringify(oldData) !== JSON.stringify(currentData);
-  }, [nodes, edges, workflow]);
+  }, [nodes, edges, variables, workflow]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setTimeout>;
