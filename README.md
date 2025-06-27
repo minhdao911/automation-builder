@@ -1,15 +1,17 @@
 # Automation Builder
 
-A web application built using [Next 14](https://nextjs.org/), designed to automate tasks with integrations to services like Google, Slack, and Notion. This project was inspired by [webprodigies fuzzie project](https://github.com/webprodigies/fuzzie-production/tree/main), but the code, workflow logic, and UI has been further improved to ensure that every component is usable and users are able to build custom workflows that actually function as desired.
+A web application built using [Next 14](https://nextjs.org/), designed to automate repetitive tasks with integrations to services like Google, Slack, and Notion. Featuring an intuitive drag-and-drop interface, it allows for the creation of complex, multi-step workflows without the need to write any code.
 
 ## Features
 
-- **Google API Integration**: Automate tasks with Google services such as Calendar, Drive, and more.
-- **Slack API Integration**: Connect with Slack to send messages or interact with channels.
-- **Notion API Integration**: Organize your workspace, create pages and databases.
-- **Drag-and-Drop Workflow Builder**: Easily create and manage automation flows using an intuitive interface.
-- **Custom Triggers and Actions**: Set up triggers based on events (e.g., new Google Calendar events) and actions to execute in response (e.g., sending a message in Slack).
-- **User-friendly Interface**: No coding skills are needed to create powerful automations.
+- **Seamless Integrations**: Provides native connections to a variety of services, including:
+  - Google: Automate tasks with Google services such as Calendar, Drive, and more.
+  - Slack: Send messages, and interact with channels.
+  - Notion: Create pages, update databases, and more.
+  - ...and more to come!
+- **No-Code, Drag-and-Drop Builder**: A visual canvas where users can create and manage their workflows. Components are dragged onto the canvas and connected to build the automation logic.
+- **Multi-Step Workflows**: Supports the creation of sophisticated, sequential, and conditional workflows to handle complex processes beyond simple "if this, then that" logic.
+- **Powerful Scheduling**: Workflows can be run on a schedule. Triggers can be set to run every minute, hour, day, or on specific dates.
 
 ## Development
 
@@ -33,7 +35,7 @@ bun dev
 
 4. Make sure integration webhooks have ngrok URL
 
-5. Open [https://localhost:3000](https://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## DB Migrations
 

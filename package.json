@@ -3,19 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --experimental-https",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate",
     "db-migrate": "npx prisma migrate dev --name",
     "db-push": "npx prisma db push",
-    "ngrok": "ngrok http https://localhost:3000"
+    "ngrok": "ngrok http http://localhost:3000"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.0.12",
     "@notionhq/client": "^2.2.15",
-    "@prisma/client": "^5.14.0",
+    "@prisma/client": "^6.10.1",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.1",
@@ -40,6 +40,7 @@
     "lucide-react": "^0.378.0",
     "next": "14.2.3",
     "next-themes": "^0.3.0",
+    "prisma": "^6.10.1",
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
