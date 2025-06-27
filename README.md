@@ -1,6 +1,30 @@
 # Automation Builder
 
-A web application built using [Next 14](https://nextjs.org/), designed to automate repetitive tasks with integrations to services like Google, Slack, and Notion. Featuring an intuitive drag-and-drop interface, it allows for the creation of complex, multi-step workflows without the need to write any code.
+A web application designed to automate repetitive tasks with integrations to services like Google, Slack, and Notion. Featuring an intuitive drag-and-drop interface, it allows for the creation of complex, multi-step workflows without the need to write any code.
+
+## Tech Stack
+
+### Frontend
+
+- **Next.js** - React framework with App Router
+- **React** - UI library
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Animation library
+- **React Flow** - Node-based editor for building workflows
+- **React Hook Form** - Form state management
+- **Lucide React** - Icon library
+
+### Backend & Database
+
+- **PostgreSQL** - Primary database
+- **Prisma** - Database ORM and migrations
+- **Clerk** - Authentication and user management
+
+### UI Components & Styling
+
+- **shadcn/ui** - Component library built on Radix UI
+- **Next Themes** - Theme management (dark/light mode)
 
 ## Features
 

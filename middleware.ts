@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/drive-activity/notification",
   "/api/auth-callback(.*)",
   "/api/slack-activity",
+  "/api/keep-alive",
 ]);
 
 export default clerkMiddleware((auth, req) => {

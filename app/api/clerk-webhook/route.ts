@@ -53,15 +53,14 @@ export async function POST(req: Request) {
     const eventType = evt.type;
     if (eventType === "user.created") {
       console.log("User created event received");
-      console.log(evt.data);
-      // const user = await db.user.create({
-      //   data: {
-      //     clerkId: evt.data.id,
-      //     email: evt.data.email_addresses[0].email_address,
-      //     firstName: evt.data.first_name,
-      //     lastName: evt.data.last_name,
-      //   },
-      // });
+      await db.user.create({
+        data: {
+          clerkId: evt.data.id,
+          email: evt.data.email_addresses[0].email_address,
+          firstName: evt.data.first_name,
+          lastName: evt.data.last_name,
+        },
+      });
 
       // const googleAccount = evt.data.external_accounts.find(
       //   (account: any) => account.object === "google_account"
