@@ -33,7 +33,7 @@ const EditorCanvasSidebar: FunctionComponent<EditorCanvasSidebarProps> = ({
     <aside>
       <Tabs
         defaultValue={ConnectorNodeType.Trigger}
-        className="w-full h-screen overflow-scroll"
+        className="w-full h-screen overflow-scroll bg-background"
       >
         <TabsList className="w-full bg-transparent justify-start py-3 h-fit">
           <TabsTrigger value={ConnectorNodeType.Trigger}>Triggers</TabsTrigger>
@@ -83,7 +83,7 @@ const EditorCanvasSidebarCard = ({
 }: EditorCanvasSidebarCardProps) => (
   <Card
     draggable
-    className="w-full cursor-grab border-neutral-200 shadow-sm dark:border-black dark:border-neutral-700 dark:bg-neutral-900 mb-4"
+    className="w-full cursor-grab border-neutral-200 shadow-sm dark:border-neutral-700 dark:bg-neutral-900 mb-4"
     onDragStart={(event) => {
       event.dataTransfer.setData("nodeDataId", id);
       event.dataTransfer.setData("nodeType", nodeType);

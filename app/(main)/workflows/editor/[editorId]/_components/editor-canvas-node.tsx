@@ -21,7 +21,7 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
   type,
   data,
 }) => {
-  const { name, description, connected, selected, dataType } = data;
+  const { name, description, connected, selected, dataType, nodeType } = data;
   const isLogicalNode = type === ConnectorNodeType.Logical;
   const nodeId = useNodeId();
   const { selectNode, removeNode } = useEditorStore();
@@ -78,7 +78,7 @@ const EditorCanvasNode: FunctionComponent<NodeProps<WorkflowNodeData>> = ({
                 variant="secondary"
                 className="text-neutral-600 dark:text-neutral-400"
               >
-                {mapConnectorDataType(dataType)}
+                {nodeType}
               </Badge>
               <Badge
                 variant="secondary"

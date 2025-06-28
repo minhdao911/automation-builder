@@ -27,7 +27,7 @@ export const SettingsSection = ({
   onEditClick?: (isEdit: boolean) => void;
 }) => {
   return (
-    <section className="p-4 bg-background border rounded-lg">
+    <section className="p-4 bg-white dark:bg-neutral-900 border rounded-lg">
       <CustomSheetSectionTitle className="mb-4">
         <div className="flex items-center justify-between">
           <p>{title}</p>
@@ -139,7 +139,7 @@ export const DetailsSection = ({
 
   return (
     <SettingsSectionWithEdit
-      title="Node Details"
+      title="Details"
       savedData={savedData}
       edit={edit}
       setEdit={setEdit}
@@ -200,7 +200,7 @@ export const TextWithVariables = ({
 }) => {
   const texts = splitValueByVariables(value);
   return (
-    <div className="font-mono text-sm">
+    <div className="text-sm">
       {texts.length > 0 ? (
         texts.map((text, index) => {
           if (doesContainVariable(text)) {
@@ -220,7 +220,7 @@ export const TextWithVariables = ({
           );
         })
       ) : (
-        <p className="text-sm italic text-neutral-400">No {name}</p>
+        <p className="text-sm text-neutral-400">No {name}</p>
       )}
     </div>
   );

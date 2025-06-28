@@ -23,7 +23,7 @@ const Sidebar: FunctionComponent<SidebarProps> = () => {
   const disabled = pathName.includes("/workflows/editor");
 
   return (
-    <nav className="dark:bg-black h-screen overflow-scroll justify-between flex items-center flex-col gap-10 py-6 px-4">
+    <nav className="dark:bg-black bg-neutral-50 h-screen overflow-scroll justify-between flex items-center flex-col gap-10 py-6 px-4">
       {!disabled && (
         <div className="flex items-center justify-center flex-col gap-8">
           <Link className="flex font-bold flex-row mb-4 mt-2" href="/">

@@ -111,7 +111,7 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
   };
 
   return (
-    <div className="flex items-center justify-between bg-neutral-200 dark:bg-black px-4 py-4 w-full">
+    <div className="flex items-center justify-between bg-background px-4 py-4 w-full border-b">
       <div className="flex items-center gap-4">
         <GoBackButton checkIfDataChanged={checkIfDataChanged} />
         <div>
@@ -121,12 +121,14 @@ const EditorNavbar: FunctionComponent<EditorNavbarProps> = ({ workflow }) => {
       </div>
       <div className="flex gap-3 items-center">
         {isDataChanged && (
-          <p className="text-sm text-neutral-400">You have unsaved changes</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            You have unsaved changes
+          </p>
         )}
         <Button
           size="sm"
-          variant="secondary"
-          className="w-[60px]"
+          variant="outline"
+          className="w-[60px] border-neutral-300 dark:bg-neutral-800 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-700"
           onClick={handleSave}
         >
           {isSavePending ? <Loader size={16} /> : "Save"}
@@ -206,7 +208,7 @@ const GoBackButton = ({ checkIfDataChanged }: GoBackButtonProps) => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         className="p-1.5 rounded-full"
         onClick={handleGoBack}

@@ -15,10 +15,10 @@ const Layout: FunctionComponent<LayoutProps> = ({ children }: LayoutProps) => {
       enableSystem
       disableTransitionOnChange
     >
-      <div className="flex overflow-hidden h-screen">
+      <div className="flex overflow-hidden h-screen bg-neutral-50 dark:bg-neutral-950">
         <Sidebar />
         <div className="w-full">
-          <div className="border-l-[1px] border-t-[1px] pb-20 h-screen rounded-l-3xl border-muted-foreground/20 overflow-scroll">
+          <div className="border-l-[1px] border-t-[1px] h-screen rounded-l-3xl border-muted-foreground/20 overflow-hidden">
             {children}
           </div>
         </div>
