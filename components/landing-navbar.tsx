@@ -10,7 +10,7 @@ const LandingNavBar: FunctionComponent<NavBarProps> = () => {
   return (
     <header className="fixed top-0 right-0 p-4 px-8 w-full flex items-center justify-between bg-black/40 backdrop-blur-lg z-[100] border-b-[1px] border-neutral-900">
       <aside className="flex items-center">
-        <p className="text-2xl font-semibold">AutoMate</p>
+        <p className="text-white text-2xl font-semibold">AutoMate</p>
         <Image src="/logo.svg" alt="AutoMateX logo" width={20} height={20} />
       </aside>
       <aside>

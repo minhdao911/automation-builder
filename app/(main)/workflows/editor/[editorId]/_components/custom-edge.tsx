@@ -1,6 +1,6 @@
 import { useEditorStore } from "@/stores/editor-store";
 import { useEffect } from "react";
-import { BaseEdge, getBezierPath } from "reactflow";
+import { BaseEdge, getSmoothStepPath } from "reactflow";
 
 interface CustomEdgeProps {
   id: string;
@@ -20,7 +20,7 @@ const CustomEdge = ({
   selected,
 }: CustomEdgeProps) => {
   const { removeEdge } = useEditorStore();
-  const [edgePath] = getBezierPath({
+  const [edgePath] = getSmoothStepPath({
     sourceX,
     sourceY,
     targetX,
