@@ -7,6 +7,8 @@ import {
   getConnection,
 } from "./_actions/connection";
 import { ConnectionType } from "@/model/types";
+import { Suspense } from "react";
+import Loading from "@/app/loading";
 
 interface IParams {
   error?: string;
@@ -58,21 +60,23 @@ const Connections = async ({ searchParams }: { searchParams: IParams }) => {
   const connection = await onUserConnection();
 
   return (
-    <PageContainer
-      title="Connections"
-      errorMessage={errorMessage}
-      successMessage={successMessage}
-    >
-      <div className="relative flex flex-col gap-4">
-        <section className="flex flex-col gap-4 p-6 text-muted-foreground">
-          Connect all your apps directly from here. You may need to connect
-          these apps regularly to refresh verification
-          {CONNECTIONS.map((data, index) => (
-            <ConnectionCard key={index} {...data} connection={connection} />
-          ))}
-        </section>
-      </div>
-    </PageContainer>
+    <Suspense fallback={<Loading />}>
+      <PageContainer
+        title="Connections"
+        errorMessage={errorMessage}
+        successMessage={successMessage}
+      >
+        <div className="relative flex flex-col gap-4">
+          <section className="flex flex-col gap-4 p-6 text-muted-foreground">
+            Connect all your apps directly from here. You may need to connect
+            these apps regularly to refresh verification
+            {CONNECTIONS.map((data, index) => (
+              <ConnectionCard key={index} {...data} connection={connection} />
+            ))}
+          </section>
+        </div>
+      </PageContainer>
+    </Suspense>
   );
 };
 

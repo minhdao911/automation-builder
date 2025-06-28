@@ -3,6 +3,8 @@ import { DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/toaster";
 
 const font = DM_Sans({ subsets: ["latin"] });
 
@@ -19,9 +21,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${font.className} !pointer-events-auto`}>
-          {children}
-        </body>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+          <body className={`${font.className} !pointer-events-auto`}>
+            {children}
+          </body>
+          <Toaster />
+        </ThemeProvider>
       </html>
     </ClerkProvider>
   );
